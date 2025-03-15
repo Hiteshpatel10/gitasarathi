@@ -68,16 +68,16 @@ class CoreNotificationService {
 
     debugPrint("-------------- $from");
     logger.e(payload);
-    if (payload.containsKey('route') && payload.containsKey('arguments')) {
+    if (payload.containsKey('screen') && payload.containsKey('arguments')) {
       final  arguments = json.decode(payload['arguments']);
 
       if(arguments == null){
         return;
       }
 
-      goConfig.pushNamed(payload['route'], extra: arguments);
-    } else if (payload.containsKey('route') == true) {
-      goConfig.pushNamed(payload['route']);
+      goConfig.pushNamed(payload['screen'], extra: arguments);
+    } else if (payload.containsKey('screen') == true) {
+      goConfig.pushNamed(payload['screen']);
     }
   }
 

@@ -1,13 +1,11 @@
-import 'package:chapter/chapter_module/bloc/chapter_cubit.dart';
+import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/chapter_module/bloc/user_activity_cubit.dart';
 import 'package:chapter/chapter_module/model/chapter_model.dart';
 import 'package:chapter/chapter_module/model/user_activity_model.dart';
 import 'package:chapter/components/parallax_container.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
-import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/utility/services/firebase_analytics_service.dart';
-import 'package:chapter/utility/services/firebase_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -36,47 +34,47 @@ class _ChaptersViewState extends State<ChaptersView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: BlocBuilder<ChapterCubit, ChapterState>(builder: (context, state) {
-        if (state is SuccessState) {
-          return CustomScrollView(
-            slivers: [
-              const SliverAppBar(
-                expandedHeight: 60,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: UserWeekActivityWidget(),
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: _chapterModel.chapters?.length ?? 0,
-                  (context, index) {
-                    final chapter = _chapterModel.chapters?[index];
-
-                    return GestureDetector(
-                      onTap: () {
-                        context.pushNamed(
-                          AppRoutes.chapterDetail,
-                          extra: {
-                            "chapter_no": index,
-                          },
-                        );
-                      },
-                      child: ParallaxContainer(
-                        imageUrl: '${ApiEndpoints.s3BaseURL}ch${index + 1}.png',
-                        name: chapter?.title ?? '-',
-                        progress: state.state.result?.reads?[index].progress,
-                        country: "Chapter ${index + 1}",
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 400),
-              )
-            ],
-          );
-        }
+      body: BlocBuilder<ChaptersAndVerseCubit, ChaptersAndVerseState>(builder: (context, state) {
+        // if (state is SuccessState) {
+        //   return CustomScrollView(
+        //     slivers: [
+        //       const SliverAppBar(
+        //         expandedHeight: 60,
+        //         flexibleSpace: FlexibleSpaceBar(
+        //           background: UserWeekActivityWidget(),
+        //         ),
+        //       ),
+        //       SliverList(
+        //         delegate: SliverChildBuilderDelegate(
+        //           childCount: _chapterModel.chapters?.length ?? 0,
+        //           (context, index) {
+        //             final chapter = _chapterModel.chapters?[index];
+        //
+        //             return GestureDetector(
+        //               onTap: () {
+        //                 context.pushNamed(
+        //                   AppRoutes.chapterDetail,
+        //                   extra: {
+        //                     "chapter_no": index,
+        //                   },
+        //                 );
+        //               },
+        //               child: ParallaxContainer(
+        //                 imageUrl: '${ApiEndpoints.s3BaseURL}ch${index + 1}.png',
+        //                 name: chapter?.title ?? '-',
+        //                 progress: state.state.result?.reads?[index].progress,
+        //                 country: "Chapter ${index + 1}",
+        //               ),
+        //             );
+        //           },
+        //         ),
+        //       ),
+        //       const SliverToBoxAdapter(
+        //         child: SizedBox(height: 400),
+        //       )
+        //     ],
+        //   );
+        // }
 
         if (state is LoadingState) {
           return const Center(

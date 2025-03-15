@@ -38,7 +38,7 @@ Future<Map<String, dynamic>?> postRequest({
   required String apiEndPoint,
   required Map<String, dynamic> postData,
 }) async {
-  Map<String, dynamic>? responseBody;
+ dynamic response;
   try {
     debugPrint(
         "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint postRequest postData $postData ~~~~~~~~~~~~~~~~~~~~");
@@ -48,7 +48,7 @@ Future<Map<String, dynamic>?> postRequest({
       'Authorization': 'Bearer ${prefs.getString("email")}',
     };
 
-    final response = await http.post(
+     response = await http.post(
       Uri.parse("${ApiEndpoints.baseURL}$apiEndPoint/"),
       headers: headers,
       body: json.encode(postData),
@@ -58,7 +58,6 @@ Future<Map<String, dynamic>?> postRequest({
       throw "error";
     }
 
-    responseBody = jsonDecode(response.body);
 
     debugPrint("~~~~~~~~~~~~~~~~~~~~ $apiEndPoint postRequest End ~~~~~~~~~~~~~~~~~~~~");
   } catch (error) {
@@ -66,5 +65,5 @@ Future<Map<String, dynamic>?> postRequest({
     rethrow;
   }
 
-  return responseBody;
+  return response;
 }

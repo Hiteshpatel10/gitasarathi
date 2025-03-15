@@ -1,15 +1,15 @@
-part of 'chapter_cubit.dart';
+part of 'chapters_and_verse_cubit.dart';
 
 @immutable
-sealed class ChapterState {}
+sealed class ChaptersAndVerseState {}
 
-final class ChapterInitial extends ChapterState {}
+final class ChapterInitial extends ChaptersAndVerseState {}
 
-class LoadingState extends ChapterState {}
+class LoadingState extends ChaptersAndVerseState {}
 
-class ErrorState extends ChapterState {}
+class ErrorState extends ChaptersAndVerseState {}
 
-class SuccessState extends ChapterState {
-  SuccessState({required this.state});
-  final UserDataModel state;
+class ChapterAndVerseSuccessState extends ChaptersAndVerseState {
+  ChapterAndVerseSuccessState({required this.chaptersAndVerse});
+  final ChaptersAndVerseModel chaptersAndVerse;
 }

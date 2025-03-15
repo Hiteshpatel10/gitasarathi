@@ -1,4 +1,4 @@
-import 'package:chapter/chapter_module/bloc/chapter_cubit.dart';
+import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/chapter_module/model/chapter_model.dart';
 import 'package:chapter/components/parallax_container.dart';
 import 'package:chapter/components/push_button.dart';
@@ -46,71 +46,71 @@ class _ChapterDetailViewState extends State<ChapterDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<ChapterCubit, ChapterState>(
+      body: BlocBuilder<ChaptersAndVerseCubit, ChaptersAndVerseState>(
         builder: (context, state) {
-          if (state is SuccessState) {
-            final model = state.state.result;
+          if (state is ChapterAndVerseSuccessState) {
+            final model = state.chaptersAndVerse.result;
 
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    reverse: true,
-                    itemCount: _chapter.verses?.toInt() ?? 0,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final baseY = index * _gapHeight;
-
-                      return Transform.translate(
-                        offset: Offset(
-                          100 *
-                              math.sin(
-                                  (scrollController.offset + index * _gapHeight + baseY) / 150),
-                          0,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Center(
-                            child: LevelAnimatedButton(
-                              onPressed: () {
-                                context.pushNamed(
-                                  AppRoutes.verse,
-                                  extra: {
-                                    "chapter_no": widget.chapterNo + 1,
-                                    "verse_no": index + 1,
-                                  },
-                                );
-                              },
-                              height: 50,
-                              buttonHeight: 10,
-                              width: 65,
-                              backgroundColor:
-                                  model?.reads?[widget.chapterNo].verses?.contains(index + 1) ==
-                                          true
-                                      ? CoreColors.butterScotch
-                                      : CoreColors.lavenderBlush,
-                              buttonType: LevelButtonTypes.oval,
-                              child: Text(
-                                (index + 1).toString(),
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  ParallaxContainer(
-                    imageUrl: '${ApiEndpoints.s3BaseURL}ch${widget.chapterNo + 1}.png',
-                    name: _chapter.title ?? '-',
-                    country: "Chapter ${widget.chapterNo + 1}",
-                    progress: model?.reads?[widget.chapterNo].progress,
-                  ),
-                ],
-              ),
-            );
+            // return SingleChildScrollView(
+            //   controller: scrollController,
+            //   child: Column(
+            //     children: [
+            //       ListView.builder(
+            //         shrinkWrap: true,
+            //         reverse: true,
+            //         itemCount: _chapter.verses?.toInt() ?? 0,
+            //         physics: const NeverScrollableScrollPhysics(),
+            //         itemBuilder: (context, index) {
+            //           final baseY = index * _gapHeight;
+            //
+            //           return Transform.translate(
+            //             offset: Offset(
+            //               100 *
+            //                   math.sin(
+            //                       (scrollController.offset + index * _gapHeight + baseY) / 150),
+            //               0,
+            //             ),
+            //             child: Padding(
+            //               padding: const EdgeInsets.symmetric(vertical: 12),
+            //               child: Center(
+            //                 child: LevelAnimatedButton(
+            //                   onPressed: () {
+            //                     context.pushNamed(
+            //                       AppRoutes.verse,
+            //                       extra: {
+            //                         "chapter_no": widget.chapterNo + 1,
+            //                         "verse_no": index + 1,
+            //                       },
+            //                     );
+            //                   },
+            //                   height: 50,
+            //                   buttonHeight: 10,
+            //                   width: 65,
+            //                   backgroundColor:
+            //                       model?.reads?[widget.chapterNo].verses?.contains(index + 1) ==
+            //                               true
+            //                           ? CoreColors.butterScotch
+            //                           : CoreColors.lavenderBlush,
+            //                   buttonType: LevelButtonTypes.oval,
+            //                   child: Text(
+            //                     (index + 1).toString(),
+            //                     style: Theme.of(context).textTheme.labelMedium,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       ),
+            //       ParallaxContainer(
+            //         imageUrl: '${ApiEndpoints.s3BaseURL}ch${widget.chapterNo + 1}.png',
+            //         name: _chapter.title ?? '-',
+            //         country: "Chapter ${widget.chapterNo + 1}",
+            //         progress: model?.reads?[widget.chapterNo].progress,
+            //       ),
+            //     ],
+            //   ),
+            // );
           }
 
           if (state is ErrorState) {

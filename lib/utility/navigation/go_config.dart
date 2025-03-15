@@ -1,21 +1,36 @@
 import 'package:chapter/auth_module/views/sign_in_view.dart';
 import 'package:chapter/chapter_module/views/chapter_detail_view.dart';
 import 'package:chapter/chapter_module/views/chapters_view.dart';
+import 'package:chapter/home_module/view/home_view.dart';
+import 'package:chapter/home_module/view/language_and_author_selection_view.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
+import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/views/verse_view.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-
 final goConfig = GoRouter(
-  initialLocation: prefs.getBool('signIn') == true? AppRoutes.chapters : AppRoutes.signIn,
+  initialLocation: getInitialRoute(),
   routes: [
+    GoRoute(
+      path: AppRoutes.home,
+      name: AppRoutes.home,
+      builder: (context, state) {
+        return const HomeView();
+      },
+    ),
     GoRoute(
       path: AppRoutes.signIn,
       name: AppRoutes.signIn,
       builder: (context, state) {
         return const SignInView();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.languageAndAuthor,
+      name: AppRoutes.languageAndAuthor,
+      builder: (context, state) {
+        return const LanguageAndAuthorSelectionView();
       },
     ),
     GoRoute(
@@ -48,3 +63,20 @@ final goConfig = GoRouter(
     )
   ],
 );
+
+String getInitialRoute() {
+  final token = prefs.getString(AppPrefKeys.token);
+  final authId = prefs.getInt(AppPrefKeys.authorId);
+  final langId = prefs.getInt(AppPrefKeys.languageId);
+  final isLoggedIn = token?.isNotEmpty == true;
+  // final isFirstTimeUser = prefs.getBool(AppPrefKeys.isFirstTimeUser) ?? true;
+  // final hasProfileSetup = prefs.getBool(AppPrefKeys.hasProfileSetup) ?? false;
+
+  if (!isLoggedIn) {
+    return AppRoutes.signIn; // User not logged in, navigate to Sign In
+  } else if (authId == null || langId == null) {
+    return AppRoutes.languageAndAuthor; // First-time user, go to onboarding
+  } else {
+    return AppRoutes.home; // Default to Home
+  }
+}
