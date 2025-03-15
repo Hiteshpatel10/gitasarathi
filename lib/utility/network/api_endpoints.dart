@@ -8,6 +8,7 @@ class ApiEndpoints {
   static const authentication = "authentication";
   static const chaptersAndVerses = "chaptersAndVerses";
   static const languageAndAuthors = "languageAndAuthors";
+  static const verseExplanation = "verseExplanation";
 
 
 
