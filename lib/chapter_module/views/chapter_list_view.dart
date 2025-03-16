@@ -1,7 +1,9 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/parallax_container.dart';
+import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ChapterListView extends StatelessWidget {
   const ChapterListView({super.key});
@@ -19,6 +21,12 @@ class ChapterListView extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
+                  GoRouter.of(context).pushNamed(
+                    AppRoutes.chaptersVerse,
+                    extra: {
+                      "chapter_no": chapter?.chapterNumber,
+                    },
+                  );
                   // context.pushNamed(
                   //   AppRoutes.chapterDetail,
                   //   extra: {

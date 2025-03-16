@@ -35,10 +35,10 @@ class _ChapterDetailViewState extends State<ChapterDetailView> {
 
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
-        scrollController.animateTo((_chapter.verses ?? 0) * 80, duration: const Duration(seconds: 2), curve: Curves.easeIn);
+        scrollController.animateTo((_chapter.verses ?? 0) * 80,
+            duration: const Duration(seconds: 2), curve: Curves.easeIn);
       },
     );
-
 
     super.initState();
   }
@@ -62,7 +62,7 @@ class _ChapterDetailViewState extends State<ChapterDetailView> {
             //         physics: const NeverScrollableScrollPhysics(),
             //         itemBuilder: (context, index) {
             //           final baseY = index * _gapHeight;
-            //
+
             //           return Transform.translate(
             //             offset: Offset(
             //               100 *
@@ -102,6 +102,7 @@ class _ChapterDetailViewState extends State<ChapterDetailView> {
             //           );
             //         },
             //       ),
+
             //       ParallaxContainer(
             //         imageUrl: '${ApiEndpoints.s3BaseURL}ch${widget.chapterNo + 1}.png',
             //         name: _chapter.title ?? '-',

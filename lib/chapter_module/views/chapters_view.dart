@@ -2,13 +2,9 @@ import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/chapter_module/bloc/user_activity_cubit.dart';
 import 'package:chapter/chapter_module/model/chapter_model.dart';
 import 'package:chapter/chapter_module/model/user_activity_model.dart';
-import 'package:chapter/components/parallax_container.dart';
-import 'package:chapter/utility/navigation/app_routes.dart';
-import 'package:chapter/utility/network/api_endpoints.dart';
 import 'package:chapter/utility/services/firebase_analytics_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class ChaptersView extends StatefulWidget {
   const ChaptersView({super.key});
@@ -34,7 +30,8 @@ class _ChaptersViewState extends State<ChaptersView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: BlocBuilder<ChaptersAndVerseCubit, ChaptersAndVerseState>(builder: (context, state) {
+      body: BlocBuilder<ChaptersAndVerseCubit, ChaptersAndVerseState>(
+          builder: (context, state) {
         // if (state is SuccessState) {
         //   return CustomScrollView(
         //     slivers: [
@@ -96,7 +93,15 @@ class UserWeekActivityWidget extends StatefulWidget {
 }
 
 class _UserWeekActivityWidgetState extends State<UserWeekActivityWidget> {
-  final daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  final daysOfWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
 
   ActivityStatus getActivityStatus(List<Activity>? activity, String? day) {
     final today = DateTime.now().weekday;
@@ -164,14 +169,18 @@ class _UserWeekActivityWidgetState extends State<UserWeekActivityWidget> {
                 state.userActivity.result?.length ?? 0,
                 (index) {
                   final activity = state.userActivity.result?[index];
-                  final activityStatus = getActivityStatus(activity?.activity, activity?.day);
+                  final activityStatus =
+                      getActivityStatus(activity?.activity, activity?.day);
                   final iconAndColor = getIconAndColor(activityStatus);
 
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     constraints: const BoxConstraints(minWidth: 42),
                     decoration: BoxDecoration(
-                      color: activityStatus == ActivityStatus.upcoming ? null : iconAndColor['color'],
+                      color: activityStatus == ActivityStatus.upcoming
+                          ? null
+                          : iconAndColor['color'],
                       borderRadius: BorderRadius.circular(8),
                       border: activityStatus == ActivityStatus.upcoming
                           ? Border.all(color: iconAndColor['color'])
@@ -180,7 +189,6 @@ class _UserWeekActivityWidgetState extends State<UserWeekActivityWidget> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-
                         Text(
                           activity?.day?.substring(0, 3) ?? '-',
                           style: Theme.of(context).textTheme.titleSmall,

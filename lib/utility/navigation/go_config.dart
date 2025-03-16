@@ -1,11 +1,13 @@
 import 'package:chapter/auth_module/views/sign_in_view.dart';
 import 'package:chapter/chapter_module/views/chapter_detail_view.dart';
+import 'package:chapter/chapter_module/views/chapter_verse_list_view.dart';
 import 'package:chapter/chapter_module/views/chapters_view.dart';
 import 'package:chapter/home_module/view/home_view.dart';
 import 'package:chapter/home_module/view/language_and_author_selection_view.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
+import 'package:chapter/verse_module/views/verse_explanation_view.dart';
 import 'package:chapter/verse_module/views/verse_view.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,6 +40,24 @@ final goConfig = GoRouter(
       name: AppRoutes.chapters,
       builder: (context, state) {
         return const ChaptersView();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.chaptersVerse,
+      name: AppRoutes.chaptersVerse,
+      builder: (context, state) {
+        final arguments = state.extra as Map<String, dynamic>?;
+        final chapterNo = arguments?["chapter_no"] as int? ?? 1;
+        return ChapterVerseListView(chapterNo: chapterNo);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.verseExplanation,
+      name: AppRoutes.verseExplanation,
+      builder: (context, state) {
+        final arguments = state.extra as Map<String, dynamic>?;
+        final verseId = arguments?["verse_id"] as int? ?? 1;
+        return VerseExplanationView(verseId: verseId);
       },
     ),
     GoRoute(

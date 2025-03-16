@@ -1,57 +1,34 @@
 {
   "project_info": {
-    "project_number": "609438969064",
-    "project_id": "flutter-mysiponline",
-    "storage_bucket": "flutter-mysiponline.appspot.com"
+    "project_number": "393406614769",
+    "project_id": "gita-sarathi",
+    "storage_bucket": "gita-sarathi.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:609438969064:android:a4fed167b4b1e2b86ced5d",
+        "mobilesdk_app_id": "1:393406614769:android:db3aa5f337004c98f36d50",
         "android_client_info": {
-          "package_name": "com.mysiponline"
+          "package_name": "com.geekaid.emi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "609438969064-7ecueshl383t4ibiadhav8ur9q32nkmk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline",
-            "certificate_hash": "36e8fd4c322c955350d1bceb20ad6d0a0e9c1996"
-          }
-        },
-        {
-          "client_id": "609438969064-hdvs6t59m9i9db732okqqrk43jp9vj5i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline",
-            "certificate_hash": "d02beb9e1b85a4ca342478fd3f9146e60ed45be0"
-          }
-        },
-        {
-          "client_id": "609438969064-nqbbiu2ovs098rrsub9u5eveh8s8735u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline",
-            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
-          }
+          "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+          "current_key": "AIzaSyCdJoD0lKc_I-BmX9Gh6PigzjyHbo0Fygk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.mysiponline.calculator"
-              }
+              "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }
@@ -59,51 +36,28 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:609438969064:android:2b1c05cc3e5b091a6ced5d",
+        "mobilesdk_app_id": "1:393406614769:android:21935277ba9b5241f36d50",
         "android_client_info": {
-          "package_name": "com.mysiponline.calculator"
+          "package_name": "com.geekaid.ifsccode"
         }
       },
       "oauth_client": [
         {
-          "client_id": "609438969064-a4bgovrokgtudpqescc35onn1psa8bot.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline.calculator",
-            "certificate_hash": "d02beb9e1b85a4ca342478fd3f9146e60ed45be0"
-          }
-        },
-        {
-          "client_id": "609438969064-jlsos00lvf7p8489rhbi0987spb4uph4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline.calculator",
-            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
-          }
-        },
-        {
-          "client_id": "609438969064-vtb446ivdqmqego64bbgbr373aq1gjdf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mysiponline.calculator",
-            "certificate_hash": "d95b02c990ceaedca61f0c25db5277cf9d74258e"
-          }
+          "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+          "current_key": "AIzaSyCdJoD0lKc_I-BmX9Gh6PigzjyHbo0Fygk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.mysiponline.calculator"
-              }
+              "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }
@@ -111,43 +65,60 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:609438969064:android:d286e0c45dbf96736ced5d",
+        "mobilesdk_app_id": "1:393406614769:android:2dc622a37a64da1df36d50",
         "android_client_info": {
-          "package_name": "com.mysiponline.portfolio"
+          "package_name": "com.gitasarathi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "609438969064-0em5ddr59vqoaepsg8g77rlg1gqcrtiq.apps.googleusercontent.com",
+          "client_id": "393406614769-1kq03odgtcg21c30097vidf6uorui7fq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mysiponline.portfolio",
-            "certificate_hash": "64e56a5b6ec1129dc0de8a0fe142fdbe4944884b"
+            "package_name": "com.gitasarathi",
+            "certificate_hash": "7749770daefb29c76205ce44aadd0b62694b4029"
           }
         },
         {
-          "client_id": "609438969064-4kfg7pd3hcsul22dq65brhcjd77ttst3.apps.googleusercontent.com",
+          "client_id": "393406614769-65qhul4iv45cj6ahbombjvn5modtn9mh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mysiponline.portfolio",
-            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
+            "package_name": "com.gitasarathi",
+            "certificate_hash": "c9d94f2a308c0b7e108b8a62bd303fa89c8978a8"
           }
+        },
+        {
+          "client_id": "393406614769-rgvnrqd9gelqlbsbati6sopg0n0f8n3g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gitasarathi",
+            "certificate_hash": "ec8035a1ca7dc4ac5560e724ccd38062f8a2c8ae"
+          }
+        },
+        {
+          "client_id": "393406614769-rj9j2f48svr7o8plqf0r6huuk3ijurj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gitasarathi",
+            "certificate_hash": "5eb9d27076d0b63f35748c565135c1eef01cfb61"
+          }
+        },
+        {
+          "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+          "current_key": "AIzaSyCdJoD0lKc_I-BmX9Gh6PigzjyHbo0Fygk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.mysiponline.calculator"
-              }
+              "client_id": "393406614769-2ugl92fg2n2dkio0h3jv4n7pls39ien7.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         }

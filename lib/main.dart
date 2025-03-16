@@ -6,6 +6,7 @@ import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/verse_module/bloc/verse_cubit.dart';
+import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -32,7 +33,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void _handleMessage(RemoteMessage message) {
   logger.i("Received message with data: ${message.data}");
   if (message.data.isNotEmpty) {
-    CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage");
+    CoreNotificationService()
+        .onNotificationClicked(payload: message.data, from: "_handleMessage");
   } else {
     logger.w("Received message with no data");
   }
@@ -85,7 +87,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
     // a terminated state.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
 
     // If the message also contains a data property with a "type" of "chat",
     // navigate to a chat screen
@@ -95,16 +98,19 @@ class _MyAppState extends State<MyApp> {
 
     // Also handle any interaction when the app is in the background via a
     // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      logger.i("Received message with data: ${message.data}");
-      if (message.data.isNotEmpty) {
-        CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage=>onMessageOpenedApp");
-      } else {
-        logger.w("Received message with no data");
-      }
-    },);
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        logger.i("Received message with data: ${message.data}");
+        if (message.data.isNotEmpty) {
+          CoreNotificationService().onNotificationClicked(
+              payload: message.data,
+              from: "_handleMessage=>onMessageOpenedApp");
+        } else {
+          logger.w("Received message with no data");
+        }
+      },
+    );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -112,15 +118,22 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider<VerseCubit>(create: (context) => VerseCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
-        BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
-        BlocProvider<ChaptersAndVerseCubit>(create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
-        BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
+        BlocProvider<LanguageAndAuthorCubit>(
+            create: (context) => LanguageAndAuthorCubit()),
+        BlocProvider<ChaptersAndVerseCubit>(
+            create: (context) =>
+                ChaptersAndVerseCubit()..getChaptersAndVerse()),
+        BlocProvider<UserActivityCubit>(
+            create: (context) => UserActivityCubit()),
+        BlocProvider<VerseExplanationCubit>(
+            create: (context) => VerseExplanationCubit()),
       ],
       child: MaterialApp.router(
         title: 'Gita Sarathi',
         scaffoldMessengerKey: globalScaffoldMessengerKey,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
           useMaterial3: true,
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(

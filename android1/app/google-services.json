@@ -1,0 +1,158 @@
+{
+  "project_info": {
+    "project_number": "609438969064",
+    "project_id": "flutter-mysiponline",
+    "storage_bucket": "flutter-mysiponline.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609438969064:android:a4fed167b4b1e2b86ced5d",
+        "android_client_info": {
+          "package_name": "com.mysiponline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609438969064-7ecueshl383t4ibiadhav8ur9q32nkmk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline",
+            "certificate_hash": "36e8fd4c322c955350d1bceb20ad6d0a0e9c1996"
+          }
+        },
+        {
+          "client_id": "609438969064-hdvs6t59m9i9db732okqqrk43jp9vj5i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline",
+            "certificate_hash": "d02beb9e1b85a4ca342478fd3f9146e60ed45be0"
+          }
+        },
+        {
+          "client_id": "609438969064-nqbbiu2ovs098rrsub9u5eveh8s8735u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline",
+            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mysiponline.calculator"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609438969064:android:2b1c05cc3e5b091a6ced5d",
+        "android_client_info": {
+          "package_name": "com.mysiponline.calculator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609438969064-a4bgovrokgtudpqescc35onn1psa8bot.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline.calculator",
+            "certificate_hash": "d02beb9e1b85a4ca342478fd3f9146e60ed45be0"
+          }
+        },
+        {
+          "client_id": "609438969064-jlsos00lvf7p8489rhbi0987spb4uph4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline.calculator",
+            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
+          }
+        },
+        {
+          "client_id": "609438969064-vtb446ivdqmqego64bbgbr373aq1gjdf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline.calculator",
+            "certificate_hash": "d95b02c990ceaedca61f0c25db5277cf9d74258e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mysiponline.calculator"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609438969064:android:d286e0c45dbf96736ced5d",
+        "android_client_info": {
+          "package_name": "com.mysiponline.portfolio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609438969064-0em5ddr59vqoaepsg8g77rlg1gqcrtiq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline.portfolio",
+            "certificate_hash": "64e56a5b6ec1129dc0de8a0fe142fdbe4944884b"
+          }
+        },
+        {
+          "client_id": "609438969064-4kfg7pd3hcsul22dq65brhcjd77ttst3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mysiponline.portfolio",
+            "certificate_hash": "8986a91534249d6685dc698d82657c99c645ff8e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDJ9yPKwPDK_9kvHt3iuPQVKPGuQD1_cA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609438969064-6fmhd53ba8trcagf6jnvai0ffhse936e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mysiponline.calculator"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

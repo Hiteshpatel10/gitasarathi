@@ -15,13 +15,15 @@ class ChaptersAndVerseCubit extends Cubit<ChaptersAndVerseState> {
 
   getChaptersAndVerse() async {
     logger.d("ChapterCubit => getChaptersAndVerse > Start");
-    final cache = ObjectPref.getData(AppPrefKeys.chaptersAndVerses, ChaptersAndVerseModel.fromJson);
+    final cache = ObjectPref.getData(
+        AppPrefKeys.chaptersAndVerses, ChaptersAndVerseModel.fromJson);
     if (cache != null) {
       emit(ChapterAndVerseSuccessState(chaptersAndVerse: cache));
       return;
     }
     try {
-      final response = await getRequest(apiEndPoint: ApiEndpoints.chaptersAndVerses);
+      final response =
+          await getRequest(apiEndPoint: ApiEndpoints.chaptersAndVerses);
 
       final model = ChaptersAndVerseModel.fromJson(response);
       emit(ChapterAndVerseSuccessState(chaptersAndVerse: model));
@@ -33,5 +35,23 @@ class ChaptersAndVerseCubit extends Cubit<ChaptersAndVerseState> {
 
       logger.e("ChapterCubit => getChaptersAndVerse > End with error\n$e");
     }
+  }
+
+  Future<Result?> searchChapter(num chapterNo) async {
+    if (state is! ChapterAndVerseSuccessState) {
+      await getChaptersAndVerse();
+    }
+
+    if (state is ChapterAndVerseSuccessState) {
+      final currentState = state as ChapterAndVerseSuccessState;
+
+      for (var chapter in currentState.chaptersAndVerse.result ?? []) {
+        if (chapter.chapterNumber == chapterNo) {
+          return chapter;
+        }
+      }
+    }
+
+    return null;
   }
 }
