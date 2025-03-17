@@ -1,17 +1,15 @@
 import 'package:chapter/auth_module/views/sign_in_view.dart';
-import 'package:chapter/chapter_module/views/chapter_detail_view.dart';
 import 'package:chapter/chapter_module/views/chapter_verse_list_view.dart';
-import 'package:chapter/chapter_module/views/chapters_view.dart';
 import 'package:chapter/home_module/view/home_view.dart';
 import 'package:chapter/home_module/view/language_and_author_selection_view.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/views/verse_explanation_view.dart';
-import 'package:chapter/verse_module/views/verse_view.dart';
 import 'package:go_router/go_router.dart';
 
 final goConfig = GoRouter(
+  navigatorKey: globalNavigatorKey,
   initialLocation: getInitialRoute(),
   routes: [
     GoRoute(
@@ -36,13 +34,6 @@ final goConfig = GoRouter(
       },
     ),
     GoRoute(
-      path: AppRoutes.chapters,
-      name: AppRoutes.chapters,
-      builder: (context, state) {
-        return const ChaptersView();
-      },
-    ),
-    GoRoute(
       path: AppRoutes.chaptersVerse,
       name: AppRoutes.chaptersVerse,
       builder: (context, state) {
@@ -60,27 +51,6 @@ final goConfig = GoRouter(
         return VerseExplanationView(verseId: verseId);
       },
     ),
-    GoRoute(
-      path: AppRoutes.chapterDetail,
-      name: AppRoutes.chapterDetail,
-      builder: (context, state) {
-        final arguments = state.extra as Map<String, dynamic>?;
-        final chapterNo = arguments?["chapter_no"] as int? ?? 12;
-
-        return ChapterDetailView(chapterNo: chapterNo);
-      },
-    ),
-    GoRoute(
-      path: AppRoutes.verse,
-      name: AppRoutes.verse,
-      builder: (context, state) {
-        final arguments = state.extra as Map<String, dynamic>;
-
-        final verseNo = arguments["verse_no"] as int;
-        final chapterNo = arguments["chapter_no"] as int;
-        return VerseView(chapterNo: chapterNo, verseNo: verseNo);
-      },
-    )
   ],
 );
 

@@ -13,17 +13,19 @@ part 'chapter_state.dart';
 class ChaptersAndVerseCubit extends Cubit<ChaptersAndVerseState> {
   ChaptersAndVerseCubit() : super(ChapterInitial());
 
-  getChaptersAndVerse() async {
+  getChaptersAndVerse({bool invalidCache = false}) async {
+    emit(ChapterAndVerseLoadingState());
     logger.d("ChapterCubit => getChaptersAndVerse > Start");
     final cache = ObjectPref.getData(
-        AppPrefKeys.chaptersAndVerses, ChaptersAndVerseModel.fromJson);
-    if (cache != null) {
+      AppPrefKeys.chaptersAndVerses,
+      ChaptersAndVerseModel.fromJson,
+    );
+    if (cache != null && invalidCache == false) {
       emit(ChapterAndVerseSuccessState(chaptersAndVerse: cache));
       return;
     }
     try {
-      final response =
-          await getRequest(apiEndPoint: ApiEndpoints.chaptersAndVerses);
+      final response = await getRequest(apiEndPoint: ApiEndpoints.chaptersAndVerses);
 
       final model = ChaptersAndVerseModel.fromJson(response);
       emit(ChapterAndVerseSuccessState(chaptersAndVerse: model));
@@ -31,7 +33,7 @@ class ChaptersAndVerseCubit extends Cubit<ChaptersAndVerseState> {
       logger.d("ChapterCubit => getChaptersAndVerse > Success");
       return response;
     } catch (e) {
-      emit(ErrorState());
+      emit(ChapterAndVerseErrorState());
 
       logger.e("ChapterCubit => getChaptersAndVerse > End with error\n$e");
     }

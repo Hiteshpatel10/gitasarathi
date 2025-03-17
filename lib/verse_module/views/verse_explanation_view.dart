@@ -1,9 +1,11 @@
+import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
+import 'package:chapter/components/app_error_widget.dart';
+import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_flip/page_flip.dart';
-import 'package:chapter/verse_module/model/verse_explanation_model.dart'
-    as verse_explanation_model;
+import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
 
 class VerseExplanationView extends StatefulWidget {
   const VerseExplanationView({super.key, this.verseId});
@@ -28,6 +30,23 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     _verseExplanationCubit.getVerseExplanation(verseId: widget.verseId);
   }
 
+  void _updateUserInteractions({num? chapterNo, num? verseNo}) {
+    BlocProvider.of<UserCubit>(context).insertUserActivity(
+      chapterNo: chapterNo,
+      verseNo: verseNo,
+      activity: UserActivity.verseRead,
+    );
+
+    if (chapterNo != null && verseNo != null) {
+      BlocProvider.of<UserCubit>(context).insertUserRead(
+        chapterNo: chapterNo,
+        verseNo: verseNo,
+      );
+    }
+
+    BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,8 +55,15 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
             _splitText();
+            _updateUserInteractions(verseNo: verse?.verseNumber, chapterNo: verse?.chapterNumber);
             return _buildPageFlip();
           }
+          if (state is ChapterAndVerseErrorState) {
+            return const Center(
+              child: AppErrorWidget(errorCode: AppErrorCode.serverError),
+            );
+          }
+
           return const Center(child: CircularProgressIndicator());
         },
       ),
@@ -46,13 +72,11 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
   void _splitText() {
     if (verse?.verseTranslation?.isNotEmpty == true) {
-      explanationTextSplit =
-          _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
+      explanationTextSplit = _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
       totalPage += explanationTextSplit.length;
     }
     if (verse?.verseCommentary?.isNotEmpty == true) {
-      commentaryTextSplit =
-          _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
+      commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
   }
@@ -60,8 +84,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> _splitTextIntoPages(String textData) {
     List<String> pageList = [];
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    TextStyle textStyle =
-        Theme.of(context).textTheme.headlineSmall ?? TextStyle(fontSize: 32);
+    TextStyle textStyle = Theme.of(context).textTheme.headlineSmall ?? TextStyle(fontSize: 32);
     double pageWidth = MediaQuery.of(context).size.width - 32;
     double pageHeight = MediaQuery.of(context).size.height - 220;
 
@@ -70,9 +93,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       textPainter.text = TextSpan(text: remainingText, style: textStyle);
       textPainter.layout(maxWidth: pageWidth);
 
-      int endIndex = textPainter
-          .getPositionForOffset(Offset(pageWidth, pageHeight))
-          .offset;
+      int endIndex = textPainter.getPositionForOffset(Offset(pageWidth, pageHeight)).offset;
       if (endIndex == 0) endIndex = remainingText.length;
 
       pageList.add(remainingText.substring(0, endIndex).trim());

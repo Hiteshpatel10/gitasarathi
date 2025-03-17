@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppPrefKeys {
   static const token = "token";
+  static const fcmToken = "fcm_token";
   static const email = "email";
   static const lastCacheDate = "lastCacheDate";
   static const chaptersAndVerses = "chaptersAndVerses";

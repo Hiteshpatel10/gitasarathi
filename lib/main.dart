@@ -1,12 +1,12 @@
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
-import 'package:chapter/chapter_module/bloc/user_activity_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
+import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
-import 'package:chapter/verse_module/bloc/verse_cubit.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,15 +30,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // }
 }
 
-void _handleMessage(RemoteMessage message) {
-  logger.i("Received message with data: ${message.data}");
-  if (message.data.isNotEmpty) {
-    CoreNotificationService()
-        .onNotificationClicked(payload: message.data, from: "_handleMessage");
-  } else {
-    logger.w("Received message with no data");
-  }
-}
+// void _handleMessage(RemoteMessage message) {
+//   logger.i("Received message with data: ${message.data}");
+//   if (message.data.isNotEmpty) {
+//     CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage");
+//   } else {
+//     logger.w("Received message with no data");
+//   }
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +51,9 @@ void main() async {
 
   if (kDebugMode) {
     FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
   }
+
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -76,64 +77,27 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    setupInteractedMessage();
-
     CoreNotificationService().fcmListener();
-
+    CoreNotificationService().setupInteractedMessage();
     super.initState();
-  }
-
-  // It is assumed that all messages contain a data field with the key 'type'
-  Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(
-      (message) {
-        logger.i("Received message with data: ${message.data}");
-        if (message.data.isNotEmpty) {
-          CoreNotificationService().onNotificationClicked(
-              payload: message.data,
-              from: "_handleMessage=>onMessageOpenedApp");
-        } else {
-          logger.w("Received message with no data");
-        }
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<VerseCubit>(create: (context) => VerseCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
-        BlocProvider<LanguageAndAuthorCubit>(
-            create: (context) => LanguageAndAuthorCubit()),
+        BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
         BlocProvider<ChaptersAndVerseCubit>(
-            create: (context) =>
-                ChaptersAndVerseCubit()..getChaptersAndVerse()),
-        BlocProvider<UserActivityCubit>(
-            create: (context) => UserActivityCubit()),
-        BlocProvider<VerseExplanationCubit>(
-            create: (context) => VerseExplanationCubit()),
+            create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
+        BlocProvider<VerseExplanationCubit>(create: (context) => VerseExplanationCubit()),
+        BlocProvider<UserCubit>(create: (context) => UserCubit()),
       ],
       child: MaterialApp.router(
         title: 'Gita Sarathi',
         scaffoldMessengerKey: globalScaffoldMessengerKey,
         theme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
           useMaterial3: true,
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(

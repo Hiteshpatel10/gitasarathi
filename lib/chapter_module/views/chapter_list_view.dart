@@ -1,4 +1,5 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
+import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/components/parallax_container.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -27,26 +28,25 @@ class ChapterListView extends StatelessWidget {
                       "chapter_no": chapter?.chapterNumber,
                     },
                   );
-                  // context.pushNamed(
-                  //   AppRoutes.chapterDetail,
-                  //   extra: {
-                  //     "chapter_no": index,
-                  //   },
-                  // );
                 },
                 child: ParallaxContainer(
                   imageUrl: chapter?.imageName ?? '',
                   name: chapter?.nameTranslation ?? '-',
-                  progress: 0,
+                  progress: chapter?.progress,
                   country: "Chapter ${chapter?.chapterNumber}",
                 ),
               );
             },
           );
         }
-        return Column(
-          children: [],
-        );
+
+        if (state is ChapterAndVerseErrorState) {
+          return const Center(
+            child: AppErrorWidget(errorCode: AppErrorCode.serverError),
+          );
+        }
+
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }

@@ -57,6 +57,7 @@ class Result {
     nameTranslation = json['name_translation'];
     nameTransliterated = json['name_transliterated'];
     versesCount = json['verses_count'];
+    progress = json['progress'];
     if (json['verses'] != null) {
       verses = [];
       json['verses'].forEach((v) {
@@ -75,6 +76,7 @@ class Result {
   String? nameTranslation;
   String? nameTransliterated;
   num? versesCount;
+  num? progress;
   List<Verses>? verses;
 
   Map<String, dynamic> toJson() {
@@ -125,6 +127,7 @@ class Verses {
     wordMeanings = json['word_meanings'];
     verseTranslation = json['verse_translation'];
     verseCommentary = json['verse_commentary'];
+    isRead = json['is_read'];
   }
   num? id;
   num? chapterId;
@@ -134,6 +137,7 @@ class Verses {
   String? title;
   num? verseNumber;
   num? verseOrder;
+  bool? isRead;
   String? transliteration;
   String? wordMeanings;
   dynamic verseTranslation;

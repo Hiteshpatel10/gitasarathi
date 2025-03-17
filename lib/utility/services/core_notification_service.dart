@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:chapter/main.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
-import 'package:chapter/utility/network/api_request.dart';
+import 'package:chapter/utility/network/dio_request_template.dart';
+import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class CoreNotificationService {
@@ -26,20 +26,16 @@ class CoreNotificationService {
     final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
-
     );
-
 
     // ------- Android notification click handler
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse details) {
         try {
-
           final Map payload = json.decode(details.payload ?? "");
 
-
-          onNotificationClicked(payload: payload, from: "onDidReceiveNotificationResponse" );
+          onNotificationClicked(payload: payload, from: "onDidReceiveNotificationResponse");
         } catch (e) {
           logger.e("onDidReceiveNotificationResponse error $e");
         }
@@ -53,7 +49,7 @@ class CoreNotificationService {
   }
 
   fcmListener({Function()? onTap}) {
-    logger.i("Notification Recieved => fcmListener  ");
+    logger.i("Notification Recieved => fcmListener initialized");
 
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
@@ -63,15 +59,12 @@ class CoreNotificationService {
     );
   }
 
-
   onNotificationClicked({required Map payload, required String from}) {
-
-    debugPrint("-------------- $from");
     logger.e(payload);
     if (payload.containsKey('screen') && payload.containsKey('arguments')) {
-      final  arguments = json.decode(payload['arguments']);
+      final arguments = json.decode(payload['arguments']);
 
-      if(arguments == null){
+      if (arguments == null) {
         return;
       }
 
@@ -132,40 +125,50 @@ class CoreNotificationService {
     }
   }
 
-  Future<void> updateFCMToken(String? fcmToken, String? clientEndPoint) async {
+  Future<void> updateFCMToken() async {
     _firebaseMessaging.requestPermission();
 
-    final token = await _firebaseMessaging.getToken();
+    final fcmToken = await _firebaseMessaging.getToken();
 
-    logger.i("----------FCM TOKEN $token----------");
-
-    if (token == null) {
-      logger.i("----------  updateFCMTokenAPI Stopped FCM Token in NULL ----------");
-
+    if (fcmToken == null) {
+      logger.e("----------  updateFCMTokenAPI Stopped FCM Token in NULL ----------");
       return;
     }
 
-    if (clientEndPoint == null || fcmToken == null) {
-      final response = await postRequest(
-        apiEndPoint: ApiEndpoints.snsCreate,
+    final prefsFCM = prefs.getString(AppPrefKeys.fcmToken);
+
+    if (prefsFCM == null || prefsFCM != fcmToken) {
+      prefs.setString(AppPrefKeys.fcmToken, fcmToken);
+      await putRequest(
+        apiEndPoint: ApiEndpoints.updateFcmToken,
         postData: {
-          "fcm_token": token,
+          "fcm_token": fcmToken,
         },
       );
-      logger.d(response);
+    } else if (prefsFCM == fcmToken) {
+      logger.i("----------  updateFCMTokenAPI Stopped Same FCM Token ----------");
       return;
+    }
+  }
+
+  Future<void> setupInteractedMessage() async {
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      CoreNotificationService()
+          .onNotificationClicked(payload: initialMessage.data, from: "_handleMessage");
     }
 
-    if (fcmToken != token) {
-      final response = await postRequest(
-        apiEndPoint: ApiEndpoints.snsUpdate,
-        postData: {
-          "fcm_token": token,
-          "client_endpoint": clientEndPoint,
-        },
-      );
-      logger.d(response);
-      return;
-    }
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) {
+        logger.i("Received message with data: ${message.data}");
+        if (message.data.isNotEmpty) {
+          CoreNotificationService().onNotificationClicked(
+              payload: message.data, from: "_handleMessage=>onMessageOpenedApp");
+        } else {
+          logger.w("Received message with no data");
+        }
+      },
+    );
   }
 }

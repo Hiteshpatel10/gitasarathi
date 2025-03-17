@@ -5,9 +5,9 @@ sealed class ChaptersAndVerseState {}
 
 final class ChapterInitial extends ChaptersAndVerseState {}
 
-class LoadingState extends ChaptersAndVerseState {}
+class ChapterAndVerseLoadingState extends ChaptersAndVerseState {}
 
-class ErrorState extends ChaptersAndVerseState {}
+class ChapterAndVerseErrorState extends ChaptersAndVerseState {}
 
 class ChapterAndVerseSuccessState extends ChaptersAndVerseState {
   ChapterAndVerseSuccessState({required this.chaptersAndVerse});

@@ -63,3 +63,36 @@ Future<dynamic> postRequest({
 
   return response.data;
 }
+
+Future<dynamic> putRequest({
+  required String apiEndPoint,
+  required Map<String, dynamic> postData,
+}) async {
+  Dio client = CoreDioClient().init();
+  Response? response;
+
+  try {
+    debugPrint(
+        "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint putRequest Start $postData ~~~~~~~~~~~~~~~~~~~~ ");
+
+    response = await client.put(apiEndPoint, data: postData);
+
+    if (response.statusCode != 200) {
+      throw DioError(
+        requestOptions: RequestOptions(path: apiEndPoint),
+      );
+    }
+
+    debugPrint("~~~~~~~~~~~~~~~~~~~~ $apiEndPoint putRequest End ~~~~~~~~~~~~~~~~~~~~ ");
+  } on DioError catch (dioError) {
+    debugPrint("Error in putRequest: Failed to call api ${dioError.message}");
+    rethrow;
+  } catch (error) {
+    debugPrint("Error in putRequest:");
+    rethrow;
+  }
+
+  return response.data;
+}
+
+

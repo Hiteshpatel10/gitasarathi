@@ -12,6 +12,7 @@ class VerseExplanationCubit extends Cubit<VerseExplanationState> {
   VerseExplanationCubit() : super(VerseExplanationInitial());
 
   getVerseExplanation({num? verseId}) async {
+    emit(VerseExplanationLoading());
     logger.d("VerseExplanationCubit => getVerseExplanation > Start");
     try {
       final response = await postRequest(
