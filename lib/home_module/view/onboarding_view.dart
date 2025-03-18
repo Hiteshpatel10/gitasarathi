@@ -19,15 +19,15 @@ class OnboardingView extends StatelessWidget {
             PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
             String buildNumber = packageInfo.buildNumber;
-            bool isInReview =
-                (state.onboarding.googleReview?.buildNo ?? 0) >= int.parse(buildNumber);
+            bool isInReview = (state.onboarding.googleReview?.buildNo ?? 0) >=
+                int.parse(buildNumber);
 
             if (isInReview && state.onboarding.googleReview?.inReview == true) {
               prefs.setString(
                 AppPrefKeys.token,
                 state.onboarding.googleReview?.token ?? '',
               );
-              goConfig.pushReplacementNamed(AppRoutes.home);
+              goConfig.pushReplacementNamed(AppRoutes.languageAndAuthor);
             } else {
               goConfig.pushReplacementNamed(AppRoutes.signIn);
             }
