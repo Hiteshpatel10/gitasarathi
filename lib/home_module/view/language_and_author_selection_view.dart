@@ -31,7 +31,7 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Select Language & Author")),
+      appBar: AppBar(title: const Text("Language & Author")),
       body: BlocBuilder<LanguageAndAuthorCubit, LanguageAndAuthorState>(
         builder: (context, state) {
           if (state is LanguageAndAuthorSuccess) {
@@ -42,7 +42,9 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Select Language", style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 24),
+                  Text("Select Translation Language",
+                      style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   Wrap(
                     runSpacing: 12,
@@ -65,7 +67,8 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
                   ),
                   if (_selectedLanguageIndex != -1) ...[
                     const SizedBox(height: 40),
-                    Text("Select Author", style: Theme.of(context).textTheme.titleLarge),
+                    Text("Select Translation Author",
+                        style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 12),
                     Wrap(
                       runSpacing: 12,

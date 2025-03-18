@@ -25,40 +25,73 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset("assets/rasters/logo.png", height: 200, width: 200),
-            const SizedBox(height: 24),
-            Text(
-              "Gita Sarathi",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.w500, color: CoreColors.yellowishOrange),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
-                final response = await _authCubit.signInUser();
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthFailed) {
+            coreMessenger(
+              "Failed to authenticate.",
+              messageType: CoreScaffoldMessengerType.error,
+            );
 
-                if (response == null || response?['status'] == 0) {
-                  coreMessenger(
-                    "Failed to authenticate user",
-                    messageType: CoreScaffoldMessengerType.error,
-                  );
-                  return;
-                }
+            return;
+          }
 
-                GoRouter.of(context).pushNamed(AppRoutes.languageAndAuthor);
-              },
-              child: const Text("Start Journey"),
+          if (state is AuthSuccess) {
+            coreMessenger(
+              "Successfully signed in.",
+              messageType: CoreScaffoldMessengerType.success,
+            );
+            GoRouter.of(context).pushReplacementNamed(AppRoutes.languageAndAuthor);
+            return;
+          }
+        },
+        builder: (context, state) {
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/rasters/logo.png", height: 200, width: 200),
+                const SizedBox(height: 24),
+                Text(
+                  "Gita Sarathi",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(fontWeight: FontWeight.w500, color: CoreColors.yellowishOrange),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    final response = await _authCubit.signInUser();
+
+                    if (response == null || response?['status'] == 0) {
+                      coreMessenger(
+                        "Failed to authenticate user",
+                        messageType: CoreScaffoldMessengerType.error,
+                      );
+                      return;
+                    }
+                  },
+                  child: state is Authenticating
+                      ? const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                            SizedBox(width: 8),
+                            Text("Singing In...")
+                          ],
+                        )
+                      : const Text("Start Journey"),
+                ),
+                const SizedBox(height: 100),
+              ],
             ),
-            const SizedBox(height: 100),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

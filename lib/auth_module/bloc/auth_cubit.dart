@@ -13,13 +13,14 @@ class AuthCubit extends Cubit<AuthState> {
 
   signInUser() async {
     logger.d("AuthCubit => signInUser > Start");
+    emit(Authenticating());
     try {
       GoogleSignIn googleSignIn = GoogleSignIn();
 
       googleSignIn.signOut();
       final oAuthResponse = await googleSignIn.signIn();
       if (oAuthResponse == null) {
-        throw "Google AUth Failed";
+        throw "Google Auth Failed";
       }
 
       final response = await postRequest(
@@ -38,7 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
       logger.d("AuthCubit => signInUser > Success");
       return response;
     } catch (e) {
-      emit(AuthFailed(errorMessage: "Failed to sign in user"));
+      emit(AuthFailed(errorMessage: e.toString()));
 
       logger.e("AuthCubit => signInUser > End with error\n$e");
     }
