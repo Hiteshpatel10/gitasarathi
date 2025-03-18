@@ -10,6 +10,7 @@ class ApiEndpoints {
   static const insertUserActivity = "insertUserActivity";
   static const updateFcmToken = "updateFcmToken";
   static const user = "user";
+  static const onboarding = "onboarding";
 
 
 }

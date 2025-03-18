@@ -1,6 +1,7 @@
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
+import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
@@ -87,6 +88,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()..getOnboarding()),
         BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
         BlocProvider<ChaptersAndVerseCubit>(
             create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),

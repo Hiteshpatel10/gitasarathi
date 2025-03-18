@@ -4,5 +4,6 @@ class AppRoutes {
   static const languageAndAuthor = '/languageAndAuthor';
   static const chaptersVerse = '/chaptersVerse';
   static const verseExplanation = '/verseExplanation';
+  static const onBoarding = '/onBoarding';
 
 }
