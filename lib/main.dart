@@ -5,7 +5,7 @@ import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
-import 'package:chapter/utility/services/core_notification_service.dart';
+import 'package:chapter/utility/services/network_check_service.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,8 +46,6 @@ void main() async {
   await Firebase.initializeApp();
   logger = Logger();
 
-  await CoreNotificationService().init();
-
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (kDebugMode) {
@@ -76,12 +74,35 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool? show;
+  late final CoreConnectionCheckService _connectivityService;
   @override
   void initState() {
-    CoreNotificationService().fcmListener();
-    CoreNotificationService().setupInteractedMessage();
     super.initState();
+    _connectivityService = CoreConnectionCheckService();
+    _connectivityService.startListening(
+      AppLifecycleState.resumed,
+      onConnected: () {
+        if (show == true) {
+          setState(() {
+            show = false;
+          });
+        }
+      },
+      onDisconnected: () {
+        setState(() {
+          show = true;
+        });
+      },
+    );
   }
+
+  // @override
+  // void initState() {
+  //   CoreNotificationService().fcmListener();
+  //   CoreNotificationService().setupInteractedMessage();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +119,61 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp.router(
         title: 'Gita Sarathi',
         scaffoldMessengerKey: globalScaffoldMessengerKey,
+        builder: (context, child) {
+          final boldText = MediaQuery.boldTextOf(context);
+
+          final newMediaQueryData = MediaQuery.of(context).copyWith(
+            boldText: boldText,
+            textScaler: const TextScaler.linear(1.0),
+          );
+
+          return MediaQuery(
+            data: newMediaQueryData,
+            child: Stack(
+              children: [
+                child ?? const SizedBox(),
+                Positioned(
+                  bottom: kBottomNavigationBarHeight + 20,
+                  child: AnimatedCrossFade(
+                    duration: Durations.long2,
+                    crossFadeState:
+                        show == true ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                    firstChild: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: CoreColors.whiteFrost,
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.wifi_off),
+                          const SizedBox(width: 12),
+                          Text(
+                            "No Internet Connection",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          )
+                        ],
+                      ),
+                    ),
+                    secondChild: SizedBox(width: MediaQuery.of(context).size.width, height: 0),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
           useMaterial3: true,
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),

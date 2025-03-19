@@ -18,13 +18,16 @@ class LanguageAndAuthorSelectionView extends StatefulWidget {
 
 class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelectionView> {
   late final LanguageAndAuthorCubit _languageAndAuthorCubit;
+  late final PageController _pageController;
   Authors? _selectedAuthor;
-  int _selectedLanguageIndex = -1;
+  int _selectedLanguageIndex = 0;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _languageAndAuthorCubit = BlocProvider.of<LanguageAndAuthorCubit>(context);
+    _pageController = PageController();
     _languageAndAuthorCubit.getLanguageAndAuthor();
   }
 
@@ -37,61 +40,81 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
           if (state is LanguageAndAuthorSuccess) {
             final languages = state.languageAndAuthors.result ?? [];
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  Text("Select Translation Language",
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    runSpacing: 12,
-                    spacing: 12,
-                    children: List.generate(languages.length, (index) {
-                      final language = languages[index];
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedLanguageIndex = index;
-                            _selectedAuthor = null;
-                          });
-                        },
-                        child: _buildSelector(
-                          name: language.language,
-                          isSelected: index == _selectedLanguageIndex,
-                        ),
-                      );
-                    }),
-                  ),
-                  if (_selectedLanguageIndex != -1) ...[
-                    const SizedBox(height: 40),
-                    Text("Select Translation Author",
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      runSpacing: 12,
-                      spacing: 12,
-                      children: List.generate(
-                        languages[_selectedLanguageIndex].authors?.length ?? 0,
-                        (index) {
-                          final author = languages[_selectedLanguageIndex].authors?[index];
+            return PageView(
+              controller: _pageController,
+              onPageChanged: (value) {
+                setState(() {
+                  _currentIndex = value;
+                });
+              },
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      Text(
+                        "Select Translation Language",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        runSpacing: 12,
+                        spacing: 12,
+                        children: List.generate(languages.length, (index) {
+                          final language = languages[index];
                           return GestureDetector(
                             onTap: () {
-                              setState(() => _selectedAuthor = author);
+                              setState(() {
+                                _selectedLanguageIndex = index;
+                                _selectedAuthor = null;
+                              });
                             },
                             child: _buildSelector(
-                              name: author?.name,
-                              isSelected: author?.id == _selectedAuthor?.id,
+                              name: language.language,
+                              isSelected: index == _selectedLanguageIndex,
                             ),
                           );
-                        },
+                        }),
                       ),
-                    ),
-                  ]
-                ],
-              ),
+                    ],
+                  ),
+                ),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24),
+                      Text(
+                        "Select Translation Author",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        runSpacing: 12,
+                        spacing: 12,
+                        children: List.generate(
+                          languages[_selectedLanguageIndex].authors?.length ?? 0,
+                          (index) {
+                            final author = languages[_selectedLanguageIndex].authors?[index];
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() => _selectedAuthor = author);
+                              },
+                              child: _buildSelector(
+                                name: author?.name,
+                                isSelected: author?.id == _selectedAuthor?.id,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }
           return const Center(child: CircularProgressIndicator());
@@ -99,19 +122,59 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            if (_selectedAuthor == null) {
-              coreMessenger("Please select an author");
-              return;
-            }
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_currentIndex != 0) ...[
+              Flexible(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(54),
+                  ),
+                  onPressed: () {
+                    _pageController.previousPage(duration: Durations.long2, curve: Curves.easeOut);
+                  },
+                  child: const Text("Back"),
+                ),
+              ),
+              const SizedBox(width: 12),
+            ],
+            Flexible(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(54),
+                ),
+                onPressed: () {
+                  if (_selectedLanguageIndex == -1) {
+                    coreMessenger(
+                      "Please select language",
+                      messageType: CoreScaffoldMessengerType.error,
+                    );
+                    return;
+                  }
 
-            prefs.setInt(AppPrefKeys.authorId, _selectedAuthor!.id!.toInt());
-            prefs.setInt(AppPrefKeys.languageId, _selectedAuthor!.languageId!.toInt());
+                  if (_currentIndex == 0) {
+                    _pageController.nextPage(duration: Durations.long2, curve: Curves.easeOut);
+                    return;
+                  }
 
-            GoRouter.of(context).pushReplacementNamed(AppRoutes.home);
-          },
-          child: const Text("Save Language & Author"),
+                  if (_selectedAuthor == null) {
+                    coreMessenger(
+                      "Please select an author",
+                      messageType: CoreScaffoldMessengerType.error,
+                    );
+                    return;
+                  }
+
+                  prefs.setInt(AppPrefKeys.authorId, _selectedAuthor!.id!.toInt());
+                  prefs.setInt(AppPrefKeys.languageId, _selectedAuthor!.languageId!.toInt());
+
+                  GoRouter.of(context).pushReplacementNamed(AppRoutes.home);
+                },
+                child: const Text("Next"),
+              ),
+            ),
+          ],
         ),
       ),
     );

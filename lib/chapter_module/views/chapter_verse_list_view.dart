@@ -35,7 +35,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   void initState() {
     super.initState();
     _chaptersAndVerseCubit = BlocProvider.of<ChaptersAndVerseCubit>(context);
-    _scrollController = ScrollController()..addListener(() => setState(() {}));
+    _scrollController = ScrollController();
     _loadChapter().then((value) {
       WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) {
@@ -78,30 +78,22 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
         }
       }, builder: (context, state) {
         if (state is ChapterAndVerseSuccessState) {
-          return SingleChildScrollView(
+          return ListView.builder(
+            reverse: true,
             controller: _scrollController,
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  reverse: true,
-                  itemCount: _selectedChapter?.verses?.length ?? 0,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final baseY = index * _gapHeight;
-                    final verse = _selectedChapter?.verses?[index];
+            itemCount: _selectedChapter?.verses?.length ?? 0,
+            itemBuilder: (context, index) {
+              final baseY = index * _gapHeight;
+              final verse = _selectedChapter?.verses?[index];
 
-                    return _buildVerseItem(
-                      baseY: baseY,
-                      index: index,
-                      verseNo: verse?.verseNumber ?? (index + 1),
-                      verseId: verse?.id,
-                      isRead: verse?.isRead,
-                    );
-                  },
-                ),
-              ],
-            ),
+              return _buildVerseItem(
+                baseY: baseY,
+                index: index,
+                verseNo: verse?.verseNumber ?? (index + 1),
+                verseId: verse?.id,
+                isRead: verse?.isRead,
+              );
+            },
           );
         }
 

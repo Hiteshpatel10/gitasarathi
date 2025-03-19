@@ -1,6 +1,8 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
+import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
+import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +20,7 @@ class VerseExplanationView extends StatefulWidget {
 
 class _VerseExplanationViewState extends State<VerseExplanationView> {
   late final VerseExplanationCubit _verseExplanationCubit;
+
   List<String> explanationTextSplit = [];
   List<String> commentaryTextSplit = [];
   verse_explanation_model.Result? verse;
