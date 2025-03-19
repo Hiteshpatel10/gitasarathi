@@ -1,6 +1,6 @@
 import 'dart:io';
+import 'package:chapter/home_module/model/onboarding_model.dart';
 import 'package:chapter/main.dart';
-import 'package:chapter/user_module/model/user_model.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -53,8 +53,8 @@ _handleInAppUpdate(AppUpdate? appUpdate) async {
 }
 
 _handleForceUpdate(AppUpdate? appUpdate) {
-  BuildContext? context =
-      globalNavigatorKey.currentContext ?? globalNavigatorKey.currentState?.overlay?.context;
+  BuildContext? context = globalNavigatorKey.currentContext ??
+      globalNavigatorKey.currentState?.overlay?.context;
 
   if (context == null) {
     return;
@@ -67,7 +67,8 @@ _handleForceUpdate(AppUpdate? appUpdate) {
         canPop: false,
         child: CupertinoAlertDialog(
           title: Text(appUpdate?.title ?? 'Update Available'),
-          content: Text(appUpdate?.message ?? 'A new version of the app is available.'),
+          content: Text(
+              appUpdate?.message ?? 'A new version of the app is available.'),
           actions: [
             CupertinoDialogAction(
               child: const Text('Update'),
