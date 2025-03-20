@@ -105,7 +105,7 @@ class ParallaxContainer extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.76,
             child: LinearProgressIndicator(
-              value: (progress ?? 0) / 100,
+              value: (progress ?? 1) / 100,
               borderRadius: BorderRadius.circular(12),
             ),
           ),

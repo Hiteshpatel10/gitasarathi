@@ -1,10 +1,13 @@
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
-import 'package:chapter/chapter_module/bloc/chapter_cubit.dart';
-import 'package:chapter/chapter_module/bloc/user_activity_cubit.dart';
+import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
+import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
+import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
+import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
-import 'package:chapter/utility/services/core_notification_service.dart';
-import 'package:chapter/verse_module/bloc/verse_cubit.dart';
+import 'package:chapter/utility/services/network_check_service.dart';
+import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,6 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 late final SharedPreferences prefs;
 late Logger logger;
+late final GlobalKey<NavigatorState> globalNavigatorKey;
+late final GlobalKey<ScaffoldMessengerState> globalScaffoldMessengerKey;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -26,14 +31,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // }
 }
 
-void _handleMessage(RemoteMessage message) {
-  logger.i("Received message with data: ${message.data}");
-  if (message.data.isNotEmpty) {
-    CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage");
-  } else {
-    logger.w("Received message with no data");
-  }
-}
+// void _handleMessage(RemoteMessage message) {
+//   logger.i("Received message with data: ${message.data}");
+//   if (message.data.isNotEmpty) {
+//     CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage");
+//   } else {
+//     logger.w("Received message with no data");
+//   }
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +46,13 @@ void main() async {
   await Firebase.initializeApp();
   logger = Logger();
 
-  await CoreNotificationService().init();
-
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (kDebugMode) {
     FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
   }
+
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
@@ -56,6 +61,8 @@ void main() async {
     return true;
   };
 
+  globalNavigatorKey = GlobalKey<NavigatorState>();
+  globalScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   runApp(const MyApp());
 }
 
@@ -67,54 +74,106 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool? show;
+  late final CoreConnectionCheckService _connectivityService;
   @override
   void initState() {
-    setupInteractedMessage();
-
-    CoreNotificationService().fcmListener();
-
     super.initState();
+    _connectivityService = CoreConnectionCheckService();
+    _connectivityService.startListening(
+      AppLifecycleState.resumed,
+      onConnected: () {
+        if (show == true) {
+          setState(() {
+            show = false;
+          });
+        }
+      },
+      onDisconnected: () {
+        setState(() {
+          show = true;
+        });
+      },
+    );
   }
 
-  // It is assumed that all messages contain a data field with the key 'type'
-  Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      logger.i("Received message with data: ${message.data}");
-      if (message.data.isNotEmpty) {
-        CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage=>onMessageOpenedApp");
-      } else {
-        logger.w("Received message with no data");
-      }
-    },);
-  }
-
+  // @override
+  // void initState() {
+  //   CoreNotificationService().fcmListener();
+  //   CoreNotificationService().setupInteractedMessage();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<VerseCubit>(create: (context) => VerseCubit()),
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
-        BlocProvider<ChapterCubit>(create: (context) => ChapterCubit()..getUser(context)),
-        BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
+        BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()..getOnboarding()),
+        BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
+        BlocProvider<ChaptersAndVerseCubit>(
+            create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
+        BlocProvider<VerseExplanationCubit>(create: (context) => VerseExplanationCubit()),
+        BlocProvider<UserCubit>(create: (context) => UserCubit()),
       ],
       child: MaterialApp.router(
         title: 'Gita Sarathi',
+        scaffoldMessengerKey: globalScaffoldMessengerKey,
+        builder: (context, child) {
+          final boldText = MediaQuery.boldTextOf(context);
+
+          final newMediaQueryData = MediaQuery.of(context).copyWith(
+            boldText: boldText,
+            textScaler: const TextScaler.linear(1.0),
+          );
+
+          return MediaQuery(
+            data: newMediaQueryData,
+            child: Stack(
+              children: [
+                child ?? const SizedBox(),
+                Positioned(
+                  bottom: kBottomNavigationBarHeight + 20,
+                  child: AnimatedCrossFade(
+                    duration: Durations.long2,
+                    crossFadeState:
+                        show == true ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                    firstChild: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: CoreColors.whiteFrost,
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.wifi_off),
+                          const SizedBox(width: 12),
+                          Text(
+                            "No Internet Connection",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          )
+                        ],
+                      ),
+                    ),
+                    secondChild: SizedBox(width: MediaQuery.of(context).size.width, height: 0),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
           useMaterial3: true,
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
