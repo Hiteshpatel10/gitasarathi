@@ -23,9 +23,9 @@ class ChapterListView extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   GoRouter.of(context).pushNamed(
-                    AppRoutes.chaptersVerse,
-                    extra: {
-                      "chapter_no": chapter?.chapterNumber,
+                    AppRoutes.chaptersVerse.name,
+                    pathParameters: {
+                      "chapter_no": '${chapter?.chapterNumber}',
                     },
                   );
                 },

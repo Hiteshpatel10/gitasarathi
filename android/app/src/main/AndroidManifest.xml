@@ -31,6 +31,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="gitasarathi.geekaid.in" />
+            </intent-filter>
         </activity>
 
 
@@ -47,6 +55,12 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="push_notification" />
+
+
+        <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
+
+
+        <!-- End-->
 
 
     </application>

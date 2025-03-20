@@ -68,9 +68,9 @@ class CoreNotificationService {
         return;
       }
 
-      goConfig.pushNamed(payload['screen'], extra: arguments);
+      goRouter.pushNamed(payload['screen'], pathParameters: arguments);
     } else if (payload.containsKey('screen') == true) {
-      goConfig.pushNamed(payload['screen']);
+      goRouter.pushNamed(payload['screen']);
     }
   }
 

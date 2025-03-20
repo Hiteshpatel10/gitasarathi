@@ -49,7 +49,7 @@ class UserProfileView extends StatelessWidget {
                   ),
                   ListTile(
                     onTap: () {
-                      GoRouter.of(context).pushNamed(AppRoutes.languageAndAuthor, extra: {
+                      GoRouter.of(context).pushNamed(AppRoutes.languageAndAuthor.name, extra: {
                         "edit_mode": true,
                       });
                     },
@@ -68,7 +68,7 @@ class UserProfileView extends StatelessWidget {
                   ListTile(
                     onTap: () {
                       prefs.clear();
-                      GoRouter.of(context).pushReplacementNamed(AppRoutes.signIn);
+                      GoRouter.of(context).pushReplacementNamed(AppRoutes.signIn.name);
                     },
                     title: const Text("Logout"),
                     trailing: const Icon(Icons.keyboard_arrow_right),

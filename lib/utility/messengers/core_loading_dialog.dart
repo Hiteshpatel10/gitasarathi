@@ -29,5 +29,5 @@ coreLoadingDialog({
 }
 
 coreCloseDialog() {
-  goConfig.pop();
+  goRouter.pop();
 }

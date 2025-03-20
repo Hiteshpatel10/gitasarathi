@@ -41,7 +41,7 @@ class _SignInViewState extends State<SignInView> {
               "Successfully signed in.",
               messageType: CoreScaffoldMessengerType.success,
             );
-            GoRouter.of(context).pushReplacementNamed(AppRoutes.languageAndAuthor);
+            GoRouter.of(context).pushReplacementNamed(AppRoutes.languageAndAuthor.name);
             return;
           }
         },

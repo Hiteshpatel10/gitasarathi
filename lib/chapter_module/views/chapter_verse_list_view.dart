@@ -133,9 +133,9 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
           child: LevelAnimatedButton(
             onPressed: () {
               GoRouter.of(context).pushNamed(
-                AppRoutes.verseExplanation,
-                extra: {
-                  "verse_id": verseId,
+                AppRoutes.verseExplanation.name,
+                pathParameters: {
+                  "verse_id": '$verseId',
                 },
               );
             },

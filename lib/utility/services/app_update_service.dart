@@ -80,7 +80,7 @@ _handleForceUpdate(AppUpdate? appUpdate) {
               CupertinoDialogAction(
                 child: const Text('Close'),
                 onPressed: () {
-                  goConfig.pop();
+                  goRouter.pop();
                 },
               ),
           ],

@@ -183,7 +183,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         ),
-        routerConfig: goConfig,
+        routerConfig: goRouter,
       ),
     );
   }

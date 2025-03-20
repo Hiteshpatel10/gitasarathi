@@ -205,7 +205,7 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
                   prefs.setInt(AppPrefKeys.authorId, _selectedAuthor!.id!.toInt());
                   prefs.setInt(AppPrefKeys.languageId, _selectedAuthor!.languageId!.toInt());
 
-                  GoRouter.of(context).pushReplacementNamed(AppRoutes.home);
+                  GoRouter.of(context).pushReplacementNamed(AppRoutes.home.name);
                 },
                 child: const Text("Next"),
               ),

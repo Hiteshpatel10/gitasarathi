@@ -27,9 +27,9 @@ class OnboardingView extends StatelessWidget {
                 AppPrefKeys.token,
                 state.onboarding.googleReview?.token ?? '',
               );
-              goConfig.pushReplacementNamed(AppRoutes.languageAndAuthor);
+              goRouter.pushReplacementNamed(AppRoutes.languageAndAuthor.name);
             } else {
-              goConfig.pushReplacementNamed(AppRoutes.signIn);
+              goRouter.pushReplacementNamed(AppRoutes.signIn.name);
             }
           }
         },

@@ -37,6 +37,7 @@ dependencies:
   flutter_intro: ^3.4.0
   showcaseview: ^4.0.1
   lottie: ^3.2.0
+  app_links: ^6.4.0
 
 
 dev_dependencies:
