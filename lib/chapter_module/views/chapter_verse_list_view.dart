@@ -4,6 +4,7 @@ import 'package:chapter/components/push_button.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chapter/chapter_module/model/chapters_and_verse_model.dart'
     as chapter_and_verse_model;
@@ -36,16 +37,17 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
     super.initState();
     _chaptersAndVerseCubit = BlocProvider.of<ChaptersAndVerseCubit>(context);
     _scrollController = ScrollController();
+    _scrollController.addListener(() => setState(() {}));
     _loadChapter().then((value) {
-      WidgetsBinding.instance.addPostFrameCallback(
-        (timeStamp) {
-          _scrollController.animateTo(
-            (_selectedChapter?.versesCount ?? 0) * 80,
-            duration: const Duration(seconds: 2),
-            curve: Curves.easeIn,
-          );
-        },
-      );
+      // WidgetsBinding.instance.addPostFrameCallback(
+      //   (timeStamp) {
+      //     _scrollController.animateTo(
+      //       (_selectedChapter?.versesCount ?? 0) * 80,
+      //       duration: const Duration(seconds: 2),
+      //       curve: Curves.easeIn,
+      //     );
+      //   },
+      // );
     });
   }
 
@@ -54,7 +56,9 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
       widget.chapterNo,
     );
 
-    _updateUserInteractions(chapterNo: chapter?.chapterNumber);
+    if (kDebugMode == false) {
+      _updateUserInteractions(chapterNo: chapter?.chapterNumber);
+    }
     if (mounted) {
       setState(() => _selectedChapter = chapter);
     }

@@ -52,8 +52,8 @@ class UserCubit extends Cubit<UserState> {
 
     try {
       final postData = {
-        "verse_no": chapterNo,
-        "chapter_no": verseNo,
+        "verse_no": verseNo,
+        "chapter_no": chapterNo,
         "activity": activity,
       };
       final response = await postRequest(

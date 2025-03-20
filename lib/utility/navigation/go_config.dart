@@ -39,7 +39,9 @@ final goConfig = GoRouter(
       path: AppRoutes.languageAndAuthor,
       name: AppRoutes.languageAndAuthor,
       builder: (context, state) {
-        return const LanguageAndAuthorSelectionView();
+        final arguments = state.extra as Map<String, dynamic>?;
+        final editMode = arguments?["edit_mode"] as bool? ?? false;
+        return LanguageAndAuthorSelectionView(editMode: editMode);
       },
     ),
     GoRoute(

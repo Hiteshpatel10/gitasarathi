@@ -10,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class LanguageAndAuthorSelectionView extends StatefulWidget {
-  const LanguageAndAuthorSelectionView({super.key});
+  const LanguageAndAuthorSelectionView({super.key, required this.editMode});
+
+  final bool editMode;
 
   @override
   State<LanguageAndAuthorSelectionView> createState() => _LanguageAndAuthorSelectionViewState();
@@ -28,7 +30,41 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
     super.initState();
     _languageAndAuthorCubit = BlocProvider.of<LanguageAndAuthorCubit>(context);
     _pageController = PageController();
-    _languageAndAuthorCubit.getLanguageAndAuthor();
+    _languageAndAuthorCubit.getLanguageAndAuthor().then((value) {
+      if (_languageAndAuthorCubit.state is LanguageAndAuthorSuccess) {
+        final state = _languageAndAuthorCubit.state as LanguageAndAuthorSuccess;
+        fillData(state.languageAndAuthors);
+      }
+    });
+  }
+
+  void fillData(LanguageAndAuthorModel? languageAndAuthor) {
+    if (widget.editMode == false) {
+      return;
+    }
+
+    final authorId = prefs.getInt(AppPrefKeys.authorId);
+    final languageId = prefs.getInt(AppPrefKeys.languageId);
+
+    if (languageId == null) return;
+
+    for (int index = 0; index < (languageAndAuthor?.result?.length ?? 0); index++) {
+      final language = languageAndAuthor!.result?[index];
+
+      if (language?.id == languageId) {
+        for (var element in language?.authors ?? []) {
+          if (authorId == element.id) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              setState(() {
+                _selectedLanguageIndex = index;
+                _selectedAuthor = element;
+              });
+            });
+            return;
+          }
+        }
+      }
+    }
   }
 
   @override

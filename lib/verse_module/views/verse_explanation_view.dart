@@ -1,14 +1,17 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
-import 'package:chapter/theme/core_colors.dart';
+import 'package:chapter/main.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
-import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
+import 'package:chapter/utility/constants/asset_paths.dart';
+import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:page_flip/page_flip.dart';
-import 'package:chapter/verse_module/model/verse_explanation_model.dart'
-    as verse_explanation_model;
+import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
+import 'package:showcaseview/showcaseview.dart';
 
 class VerseExplanationView extends StatefulWidget {
   const VerseExplanationView({super.key, this.verseId});
@@ -26,6 +29,9 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> commentaryTextSplit = [];
   verse_explanation_model.Result? verse;
   int totalPage = 1;
+
+  final GlobalKey _paginationKey = GlobalKey();
+  bool _callShowCase = true;
 
   @override
   void initState() {
@@ -48,8 +54,27 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       );
     }
 
-    BlocProvider.of<ChaptersAndVerseCubit>(context)
-        .getChaptersAndVerse(invalidCache: true);
+    BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
+  }
+
+  void _showIntro(BuildContext context) {
+    if (_callShowCase == false) return;
+
+    final canShowIntro = prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
+
+    if (canShowIntro == false) {
+      _callShowCase = false;
+      return;
+    }
+
+    _callShowCase = false;
+
+    Future.delayed(Durations.short2, () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ShowCaseWidget.of(context).startShowCase([_paginationKey]);
+        prefs.setBool(AppPrefKeys.showVerseExplanationIntro, false);
+      });
+    });
   }
 
   @override
@@ -60,9 +85,46 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
             _splitText();
-            _updateUserInteractions(
-                verseNo: verse?.verseNumber, chapterNo: verse?.chapterNumber);
-            return _buildPageFlip();
+
+            if (kDebugMode == false) {
+              _updateUserInteractions(
+                verseNo: verse?.verseNumber,
+                chapterNo: verse?.chapterNumber,
+              );
+            }
+            return ShowCaseWidget(
+              builder: (showcaseContext) {
+                _showIntro(showcaseContext);
+                return Showcase.withWidget(
+                  key: _paginationKey,
+                  blurValue: 4,
+                  height: 240,
+                  width: MediaQuery.of(context).size.width,
+                  container: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        LottieBuilder.asset(
+                          AssetPaths.swipeLeftLottie,
+                          height: 120,
+                        ),
+                        const SizedBox(height: 12),
+                        const Text("Swipe left and right to turn pages"),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            ShowCaseWidget.of(showcaseContext).dismiss();
+                          },
+                          child: const Text("Ok, Got It"),
+                        ),
+                        const SizedBox(height: 36)
+                      ],
+                    ),
+                  ),
+                  child: _buildPageFlip(),
+                );
+              },
+            );
           }
           if (state is ChapterAndVerseErrorState) {
             return const Center(
@@ -78,13 +140,11 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
   void _splitText() {
     if (verse?.verseTranslation?.isNotEmpty == true) {
-      explanationTextSplit =
-          _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
+      explanationTextSplit = _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
       totalPage += explanationTextSplit.length;
     }
     if (verse?.verseCommentary?.isNotEmpty == true) {
-      commentaryTextSplit =
-          _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
+      commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
   }
@@ -92,8 +152,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> _splitTextIntoPages(String textData) {
     List<String> pageList = [];
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    TextStyle textStyle = Theme.of(context).textTheme.headlineSmall ??
-        const TextStyle(fontSize: 32);
+    TextStyle textStyle =
+        Theme.of(context).textTheme.headlineSmall ?? const TextStyle(fontSize: 32);
     double pageWidth = MediaQuery.of(context).size.width - 32;
     double pageHeight = MediaQuery.of(context).size.height - 220;
 
@@ -102,9 +162,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       textPainter.text = TextSpan(text: remainingText, style: textStyle);
       textPainter.layout(maxWidth: pageWidth);
 
-      int endIndex = textPainter
-          .getPositionForOffset(Offset(pageWidth, pageHeight))
-          .offset;
+      int endIndex = textPainter.getPositionForOffset(Offset(pageWidth, pageHeight)).offset;
       if (endIndex == 0) endIndex = remainingText.length;
 
       pageList.add(remainingText.substring(0, endIndex).trim());
@@ -149,7 +207,16 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
               ),
             ),
           ),
-          const SizedBox(height: kToolbarHeight),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12, bottom: 12),
+              child: Text(
+                "1 / $totalPage",
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+          ),
         ],
       ),
     );

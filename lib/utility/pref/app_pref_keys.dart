@@ -10,4 +10,5 @@ class AppPrefKeys {
 
   static const authorId = "authorId";
   static const languageId = "languageId";
+  static const showVerseExplanationIntro = "showVerseExplanationIntro";
 }

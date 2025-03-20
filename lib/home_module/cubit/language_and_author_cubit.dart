@@ -12,7 +12,7 @@ part 'language_and_author_state.dart';
 class LanguageAndAuthorCubit extends Cubit<LanguageAndAuthorState> {
   LanguageAndAuthorCubit() : super(LanguageAndAuthorInitial());
 
-  void getLanguageAndAuthor() async {
+  Future<void> getLanguageAndAuthor() async {
     logger.d("LanguageAndAuthorCubit => getLanguageAndAuthor > Start");
     final cache = ObjectPref.getData(
       AppPrefKeys.languageAndAuthors,
