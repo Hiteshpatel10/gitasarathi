@@ -15,7 +15,7 @@ class CoreNotificationService {
     _firebaseMessaging.deleteToken();
   }
 
-  init() async {
+  Future<void> init() async {
     await _firebaseMessaging.requestPermission();
 
     const initializationSettingsAndroid = AndroidInitializationSettings('mipmap/ic_notification');
@@ -126,7 +126,7 @@ class CoreNotificationService {
   }
 
   Future<void> updateFCMToken() async {
-    _firebaseMessaging.requestPermission();
+    await _firebaseMessaging.requestPermission();
 
     final fcmToken = await _firebaseMessaging.getToken();
 
@@ -146,7 +146,7 @@ class CoreNotificationService {
         },
       );
     } else if (prefsFCM == fcmToken) {
-      logger.i("----------  updateFCMTokenAPI Stopped Same FCM Token ----------");
+      logger.i("----------  updateFCMTokenAPI Stopped Same FCM Token $fcmToken ----------");
       return;
     }
   }
@@ -155,8 +155,10 @@ class CoreNotificationService {
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      CoreNotificationService()
-          .onNotificationClicked(payload: initialMessage.data, from: "_handleMessage");
+      CoreNotificationService().onNotificationClicked(
+        payload: initialMessage.data,
+        from: "_handleMessage",
+      );
     }
 
     FirebaseMessaging.onMessageOpenedApp.listen(
@@ -164,7 +166,9 @@ class CoreNotificationService {
         logger.i("Received message with data: ${message.data}");
         if (message.data.isNotEmpty) {
           CoreNotificationService().onNotificationClicked(
-              payload: message.data, from: "_handleMessage=>onMessageOpenedApp");
+            payload: message.data,
+            from: "_handleMessage=>onMessageOpenedApp",
+          );
         } else {
           logger.w("Received message with no data");
         }

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
@@ -58,6 +57,7 @@ void main() async {
   FlutterError.onError = (errorDetails) {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
+
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;

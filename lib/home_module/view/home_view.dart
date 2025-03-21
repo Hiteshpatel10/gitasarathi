@@ -20,6 +20,9 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     _initDeepLinks();
     CoreNotificationService().updateFCMToken();
+    CoreNotificationService().init().then((value) {
+      CoreNotificationService().fcmListener();
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await rateUs(context);
     });
@@ -71,7 +74,7 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: const ChapterListView(),
+      // body: const ChapterListView(),
     );
   }
 }
