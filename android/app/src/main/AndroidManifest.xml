@@ -33,12 +33,35 @@
             </intent-filter>
 
 
+
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+
+            <!-- Deep Link for Specific Paths (Chapters & Verse) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="gitasarathi.geekaid.in" />
+
+                <data android:scheme="https"
+                    android:host="links.gitasarathi.geekaid.in"
+                    android:pathPrefix="/chapters"/>
+
+                <data android:scheme="https"
+                    android:host="links.gitasarathi.geekaid.in"
+                    android:pathPrefix="/verse"/>
             </intent-filter>
+
+            <!-- General Deep Link (Opens App but No Specific Navigation) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https"
+                    android:host="links.gitasarathi.geekaid.in"/>
+            </intent-filter>
+
+
         </activity>
 
 
@@ -57,7 +80,6 @@
             android:value="push_notification" />
 
 
-        <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
 
 
         <!-- End-->

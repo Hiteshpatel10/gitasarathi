@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
@@ -96,13 +98,6 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
-
-  // @override
-  // void initState() {
-  //   CoreNotificationService().fcmListener();
-  //   CoreNotificationService().setupInteractedMessage();
-  //   super.initState();
-  // }
 
   @override
   Widget build(BuildContext context) {
