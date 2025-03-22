@@ -6,6 +6,7 @@ import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
+import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/utility/services/network_check_service.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 
 late final SharedPreferences prefs;
 late Logger logger;
@@ -26,20 +28,9 @@ late final GlobalKey<ScaffoldMessengerState> globalScaffoldMessengerKey;
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  //
-  // if (message.data.isNotEmpty) {
-  //   // Handle background notification data
-  // }
 }
 
-// void _handleMessage(RemoteMessage message) {
-//   logger.i("Received message with data: ${message.data}");
-//   if (message.data.isNotEmpty) {
-//     CoreNotificationService().onNotificationClicked(payload: message.data, from: "_handleMessage");
-//   } else {
-//     logger.w("Received message with no data");
-//   }
-// }
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

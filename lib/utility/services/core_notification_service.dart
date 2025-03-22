@@ -15,8 +15,8 @@ class CoreNotificationService {
     _firebaseMessaging.deleteToken();
   }
 
-  Future<void> init() async {
-    await _firebaseMessaging.requestPermission();
+  Future<void> init({bool requestPermission = true}) async {
+    if(requestPermission) await _firebaseMessaging.requestPermission();
 
     const initializationSettingsAndroid = AndroidInitializationSettings('mipmap/ic_notification');
     final initializationSettingsDarwin = DarwinInitializationSettings(
@@ -175,4 +175,46 @@ class CoreNotificationService {
       },
     );
   }
+
+
+  static Future<void> createManualNotification({
+    required String title,
+    required String body,
+    Map<String, dynamic>? payloadData,
+  }) async {
+    try {
+      final int id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      const androidNotificationDetails = AndroidNotificationDetails(
+        'manual_notification', // Unique channel ID
+        'Manual Notification', // Channel name
+        importance: Importance.max,
+        priority: Priority.high,
+        largeIcon: DrawableResourceAndroidBitmap('mipmap/ic_launcher'),
+      );
+
+      const iosNotificationDetail = DarwinNotificationDetails();
+
+      const notificationDetails = NotificationDetails(
+        iOS: iosNotificationDetail,
+        android: androidNotificationDetails,
+      );
+
+      // Encode payload data if available
+      String? payload = payloadData != null ? json.encode(payloadData) : null;
+
+      await flutterLocalNotificationsPlugin.show(
+        id,
+        title,
+        body,
+        notificationDetails,
+        payload: payload,
+      );
+
+      logger.i("Manual Notification Created: $title - $body");
+    } catch (error) {
+      logger.e("Manual Notification Error: $error");
+    }
+  }
+
 }

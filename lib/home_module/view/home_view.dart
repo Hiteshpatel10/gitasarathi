@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:chapter/chapter_module/views/chapter_list_view.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
@@ -74,6 +73,14 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text("start"),
+          )
+        ],
+      ),
       // body: const ChapterListView(),
     );
   }
