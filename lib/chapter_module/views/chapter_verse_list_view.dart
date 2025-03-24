@@ -135,7 +135,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
               GoRouter.of(context).pushNamed(
                 AppRoutes.verseExplanation.name,
                 pathParameters: {
-                  "verse_id": '$verseId',
+                  "verseId": '$verseId',
                 },
               );
             },

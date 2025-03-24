@@ -16,7 +16,7 @@ class CoreNotificationService {
   }
 
   Future<void> init({bool requestPermission = true}) async {
-    if(requestPermission) await _firebaseMessaging.requestPermission();
+    if (requestPermission) await _firebaseMessaging.requestPermission();
 
     const initializationSettingsAndroid = AndroidInitializationSettings('mipmap/ic_notification');
     final initializationSettingsDarwin = DarwinInitializationSettings(
@@ -50,7 +50,6 @@ class CoreNotificationService {
 
   fcmListener({Function()? onTap}) {
     logger.i("Notification Recieved => fcmListener initialized");
-
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
         logger.i("Notification Recieved => fcmListener > $message ");
@@ -61,16 +60,21 @@ class CoreNotificationService {
 
   onNotificationClicked({required Map payload, required String from}) {
     logger.e(payload);
-    if (payload.containsKey('screen') && payload.containsKey('arguments')) {
-      final arguments = json.decode(payload['arguments']);
 
-      if (arguments == null) {
+    if (payload.containsKey('screen_path') == true) {
+      goRouter.push(payload['screen_path']);
+      return;
+    }
+
+    if (payload.containsKey('screen_name') == true) {
+      if (payload.containsKey('path_parameters') == true) {
+        final Map<String, dynamic> pathParameterDynamic = jsonDecode(payload['path_parameters']);
+        final Map<String, String> pathParameters =
+            pathParameterDynamic.map((key, value) => MapEntry(key, value.toString()));
+        goRouter.pushNamed(payload['screen_name'], pathParameters: pathParameters);
         return;
       }
-
-      goRouter.pushNamed(payload['screen'], pathParameters: arguments);
-    } else if (payload.containsKey('screen') == true) {
-      goRouter.pushNamed(payload['screen']);
+      goRouter.pushNamed(payload['screen_name']);
     }
   }
 
@@ -176,7 +180,6 @@ class CoreNotificationService {
     );
   }
 
-
   static Future<void> createManualNotification({
     required String title,
     required String body,
@@ -216,5 +219,4 @@ class CoreNotificationService {
       logger.e("Manual Notification Error: $error");
     }
   }
-
 }

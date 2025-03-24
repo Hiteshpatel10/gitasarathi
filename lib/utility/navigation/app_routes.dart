@@ -12,14 +12,5 @@ class AppRoutes {
   static const chaptersVerse = AppRoute('chaptersVerse', '/chapters/:chapterNo');
   static const verseExplanation = AppRoute('verseExplanation', '/verse/:verseId');
   static const onBoarding = AppRoute('onBoarding', '/onBoarding');
-
-  // 🔹 List of all routes (optional, useful for debugging or generating route lists)
-  static const List<AppRoute> allRoutes = [
-    home,
-    signIn,
-    languageAndAuthor,
-    chaptersVerse,
-    verseExplanation,
-    onBoarding,
-  ];
+  static const profile = AppRoute('profile', '/profile');
 }

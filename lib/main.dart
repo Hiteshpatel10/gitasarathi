@@ -4,9 +4,10 @@ import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
 import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
+import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
-import 'package:chapter/utility/services/core_notification_service.dart';
+import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/utility/services/network_check_service.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -18,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 late final SharedPreferences prefs;
 late Logger logger;
@@ -30,14 +30,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
   logger = Logger();
 
+  if (kDebugMode) {
+    prefs.setString(
+      AppPrefKeys.token,
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2NzMsImlzcyI6ImNvbS5naXRhc2FyYXRoaSIsImV4cCI6MTc3NDM0MTI5OX0.w4gJm3Dz3k4RplzNDqCWxO0_UhN-VxhHJcuCsIn6Vec",
+    );
+  }
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (kDebugMode) {
@@ -95,6 +99,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
         BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()..getOnboarding()),
         BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
         BlocProvider<ChaptersAndVerseCubit>(

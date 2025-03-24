@@ -25,7 +25,7 @@ class ChapterListView extends StatelessWidget {
                   GoRouter.of(context).pushNamed(
                     AppRoutes.chaptersVerse.name,
                     pathParameters: {
-                      "chapter_no": '${chapter?.chapterNumber}',
+                      "chapterNo": '${chapter?.chapterNumber}',
                     },
                   );
                 },

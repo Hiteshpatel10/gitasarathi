@@ -11,6 +11,7 @@ class ApiEndpoints {
   static const updateFcmToken = "updateFcmToken";
   static const user = "user";
   static const onboarding = "onboarding";
+  static const userVerseRead = "userVerseRead";
 
 
 }

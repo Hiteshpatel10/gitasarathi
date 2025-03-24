@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
@@ -14,7 +13,9 @@ class UserProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text("Profile"),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: BlocBuilder<UserCubit, UserState>(
@@ -22,9 +23,10 @@ class UserProfileView extends StatelessWidget {
             if (state is UserSuccessState) {
               final user = state.user.result;
               return Column(
-                children: [
+                children: <Widget>[
                   Row(
-                    children: [
+                    children: <Widget>[
+                      const SizedBox(width: 16),
                       Container(
                         height: 44,
                         width: 44,
@@ -33,25 +35,31 @@ class UserProfileView extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: CoreColors.brown,
                         ),
-                        child: Text(
-                          user?.displayName?[0] ?? '-',
-                          style:
-                              Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
+                        child: Center(
+                          child: Text(
+                            user?.displayName?[0] ?? '-',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(color: Colors.white),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Text(
                         user?.displayName ?? '-',
                         style:
-                            Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.white),
+                            Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.brown),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 40),
                   ListTile(
                     onTap: () {
-                      GoRouter.of(context).pushNamed(AppRoutes.languageAndAuthor.name, extra: {
-                        "edit_mode": true,
-                      });
+                      GoRouter.of(context).pushNamed(
+                        AppRoutes.languageAndAuthor.name,
+                        queryParameters: {"edit_mode": 'true'},
+                      );
                     },
                     title: const Text("Language and Author"),
                     trailing: const Icon(Icons.keyboard_arrow_right),
@@ -59,7 +67,7 @@ class UserProfileView extends StatelessWidget {
                   const Divider(),
                   ListTile(
                     onTap: () {
-                      rateUs(context);
+                      rateUs(context, showError: true);
                     },
                     title: const Text("Rate Us"),
                     trailing: const Icon(Icons.keyboard_arrow_right),
@@ -68,10 +76,20 @@ class UserProfileView extends StatelessWidget {
                   ListTile(
                     onTap: () {
                       prefs.clear();
+                      while (GoRouter.of(context).canPop()) {
+                        GoRouter.of(context).pop();
+                      }
                       GoRouter.of(context).pushReplacementNamed(AppRoutes.signIn.name);
                     },
+                    titleTextStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: CoreColors.cadmiumRed),
                     title: const Text("Logout"),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
+                    trailing: const Icon(
+                      Icons.keyboard_arrow_right,
+                      color: CoreColors.cadmiumRed,
+                    ),
                   ),
                 ],
               );

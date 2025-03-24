@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'package:chapter/main.dart';
+import 'package:chapter/theme/core_colors.dart';
+import 'package:chapter/user_module/cubit/user_cubit.dart';
+import 'package:chapter/user_module/view/user_activity_view.dart';
 import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
+import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/utility/services/rate_my_app_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:chapter/chapter_module/views/chapter_list_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -25,6 +31,8 @@ class _HomeViewState extends State<HomeView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await rateUs(context);
     });
+
+    BlocProvider.of<UserCubit>(context).getUser();
     super.initState();
   }
 
@@ -72,16 +80,23 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              GoRouter.of(context).pushNamed(AppRoutes.profile.name);
+            },
+            icon: const Icon(Icons.person, color: Colors.brown),
+          )
+        ],
+      ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text("start"),
-          )
+          UserActivityView(),
         ],
       ),
       // body: const ChapterListView(),
     );
   }
 }
+

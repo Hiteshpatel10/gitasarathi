@@ -3,11 +3,13 @@ import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/constants/asset_paths.dart';
+import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_flip/page_flip.dart';
 import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
@@ -147,6 +149,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
+    totalPage += 1;
   }
 
   List<String> _splitTextIntoPages(String textData) {
@@ -174,12 +177,22 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   Widget _buildPageFlip() {
     return PageFlipWidget(
       backgroundColor: Colors.white,
-      // lastPage: Container(
-      //   color: Colors.white,
-      //   child: const Center(
-      //     child: Text('Last Page!'),
-      //   ),
-      // ),
+      lastPage: Container(
+        color: Colors.white,
+        child: Center(
+          child: ElevatedButton(
+            child: const Text('Read Next Verse'),
+            onPressed: () {
+              GoRouter.of(context).pushReplacementNamed(
+                AppRoutes.verseExplanation.name,
+                pathParameters: {
+                  "verseId": '${(widget.verseId ?? 0) + 1}',
+                },
+              );
+            },
+          ),
+        ),
+      ),
       children: [
         _buildTitlePage(),
         ..._buildExplanationPages(),

@@ -3,6 +3,7 @@ import 'package:chapter/main.dart';
 import 'package:chapter/user_module/model/user_model.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
 import 'package:chapter/utility/network/dio_request_template.dart';
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
 part 'user_state.dart';
@@ -28,6 +29,7 @@ class UserCubit extends Cubit<UserState> {
   }
 
   insertUserRead({required num chapterNo, required num verseNo}) async {
+    if (kDebugMode) return;
     logger.d("UserCubit => insertUserRead > Start");
 
     try {
@@ -48,6 +50,7 @@ class UserCubit extends Cubit<UserState> {
   }
 
   insertUserActivity({num? chapterNo, num? verseNo, required String activity}) async {
+    if (kDebugMode) return;
     logger.d("UserCubit => insertUserRead > Start");
 
     try {
