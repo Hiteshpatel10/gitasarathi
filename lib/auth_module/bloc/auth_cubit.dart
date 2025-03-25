@@ -29,6 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
           "email": oAuthResponse.email,
           "google_auth_id": oAuthResponse.id,
           "display_name": oAuthResponse.displayName,
+          "display_image": oAuthResponse.photoUrl
         },
       );
 

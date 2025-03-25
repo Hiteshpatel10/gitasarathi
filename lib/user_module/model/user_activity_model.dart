@@ -23,7 +23,6 @@ class UserActivityModel {
     if (json['user_activity'] != null) {
       userActivity = [];
       json['user_activity'].forEach((v) {
-        logger.e("--------sdfs");
         userActivity?.add(UserActivity.fromJson(v));
       });
     }

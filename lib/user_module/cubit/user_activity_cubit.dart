@@ -10,12 +10,20 @@ part 'user_activity_state.dart';
 class UserActivityCubit extends Cubit<UserActivityState> {
   UserActivityCubit() : super(UserActivityInitial());
 
-  Future<void> getUserActivity() async {
+  Future<void> getMonthlyUserActivity({required num month, required num year}) async {
     emit(UserActivityLoadingState());
     logger.d("UserCubit => getUser > Start");
 
     try {
-      final response = await getRequest(apiEndPoint: ApiEndpoints.userVerseRead);
+      final postData = {
+        "month": month,
+        "year": year,
+      };
+
+      final response = await postRequest(
+        apiEndPoint: ApiEndpoints.monthlyUserRead,
+        postData: postData,
+      );
 
       final model = UserActivityModel.fromJson(response);
       emit(UserActivitySuccessState(userActivity: model));

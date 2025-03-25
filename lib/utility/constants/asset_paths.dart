@@ -10,5 +10,8 @@ class AssetPaths{
 
   static const serverErrorPNG = "$_errorPaths/500.png";
   static const swipeLeftLottie = "$_lottiePaths/swipe_left.json";
+  static const maxStreakLottie = "$_lottiePaths/streak_max.json";
+  static const lowStreakLottie = "$_lottiePaths/streak_low.json";
+  static const noStreakLottie = "$_lottiePaths/no_streak.json";
 
 }

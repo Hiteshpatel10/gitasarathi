@@ -1,6 +1,5 @@
 class ApiEndpoints {
   static const baseURL = "https://gitasarathi.geekaid.in/";
-  static const s3BaseURL = "https://gita-path.s3.ap-south-1.amazonaws.com/chapter-images/";
 
   static const authentication = "authentication";
   static const chaptersAndVerses = "chaptersAndVerses";
@@ -11,7 +10,5 @@ class ApiEndpoints {
   static const updateFcmToken = "updateFcmToken";
   static const user = "user";
   static const onboarding = "onboarding";
-  static const userVerseRead = "userVerseRead";
-
-
+  static const monthlyUserRead = "monthlyUserRead";
 }

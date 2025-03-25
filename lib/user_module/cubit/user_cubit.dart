@@ -3,6 +3,7 @@ import 'package:chapter/main.dart';
 import 'package:chapter/user_module/model/user_model.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
 import 'package:chapter/utility/network/dio_request_template.dart';
+import 'package:chapter/utility/services/session_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
@@ -54,10 +55,12 @@ class UserCubit extends Cubit<UserState> {
     logger.d("UserCubit => insertUserRead > Start");
 
     try {
+      final sessionId = await SessionService().getOrCreateSessionId();
       final postData = {
         "verse_no": verseNo,
         "chapter_no": chapterNo,
         "activity": activity,
+        "session_id": sessionId,
       };
       final response = await postRequest(
         apiEndPoint: ApiEndpoints.insertUserActivity,

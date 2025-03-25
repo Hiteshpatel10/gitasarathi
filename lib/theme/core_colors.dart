@@ -9,6 +9,7 @@ class CoreColors {
   static const butterScotch = Color(0xFFFDB441);
   static const yellowishOrange = Color(0xFFFEA713);
   static const brown = Color(0xFF99582A);
+  static const dawnPink = Color(0xFFF2E8E2);
   static const blackBean = Color(0xFF230007);
   static const fuelYellow = Color(0xFFF1A731);
   static const earlyDawn = Color(0xFFFFF8EC);
@@ -22,4 +23,10 @@ class CoreColors {
   static const shareGreen = Color(0xFF137333);
 
   static const toryBlue = Color(0xFF1A51AA);
+
+
+  static const textGrey = Color(0xff747474);
+  static const ironSideGrey = Color(0xFF666666);
+  static const smokeGrey50 = Color(0x80747474);
+  static const osloGrey = Color(0xFF8F8F8F);
 }
