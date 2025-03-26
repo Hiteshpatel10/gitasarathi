@@ -10,7 +10,16 @@ part 'user_activity_state.dart';
 class UserActivityCubit extends Cubit<UserActivityState> {
   UserActivityCubit() : super(UserActivityInitial());
 
-  Future<void> getMonthlyUserActivity({required num month, required num year}) async {
+  bool isStateDirty = true;
+
+  Future<void> getMonthlyUserActivity({
+    required num month,
+    required num year,
+  }) async {
+    if (isStateDirty == false) {
+      logger.d("UserCubit => getUser > Stopped (Clean State)R");
+      return;
+    }
     emit(UserActivityLoadingState());
     logger.d("UserCubit => getUser > Start");
 
@@ -27,7 +36,7 @@ class UserActivityCubit extends Cubit<UserActivityState> {
 
       final model = UserActivityModel.fromJson(response);
       emit(UserActivitySuccessState(userActivity: model));
-
+      isStateDirty = false;
       logger.d("UserCubit => getUser > Success");
     } catch (e) {
       emit(UserActivityErrorState());

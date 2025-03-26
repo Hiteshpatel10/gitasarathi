@@ -30,7 +30,10 @@ class UserCubit extends Cubit<UserState> {
   }
 
   insertUserRead({required num chapterNo, required num verseNo}) async {
-    if (kDebugMode) return;
+    if (kDebugMode) {
+      logger.i("UserCubit => insertUserRead > Stopped (Debug Mode)");
+      return;
+    }
     logger.d("UserCubit => insertUserRead > Start");
 
     try {
@@ -50,9 +53,17 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  insertUserActivity({num? chapterNo, num? verseNo, required String activity}) async {
-    if (kDebugMode) return;
-    logger.d("UserCubit => insertUserRead > Start");
+  insertUserActivity({
+    num? chapterNo,
+    num? verseNo,
+    required String activity,
+  }) async {
+    if (kDebugMode) {
+      logger.i("UserCubit => insertUserActivity > Stopped (Debug Mode)");
+      return;
+    }
+
+    logger.d("UserCubit => insertUserActivity > Start");
 
     try {
       final sessionId = await SessionService().getOrCreateSessionId();

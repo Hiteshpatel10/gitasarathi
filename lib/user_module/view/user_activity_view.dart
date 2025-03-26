@@ -2,8 +2,10 @@ import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/components/calender_month_view_widget.dart';
 import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
 import 'package:chapter/utility/constants/asset_paths.dart';
+import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class UserActivityView extends StatefulWidget {
@@ -17,6 +19,7 @@ class _UserActivityViewState extends State<UserActivityView> {
   @override
   void initState() {
     final now = DateTime.now();
+
     BlocProvider.of<UserActivityCubit>(context).getMonthlyUserActivity(
       month: now.month,
       year: now.year,
@@ -27,7 +30,7 @@ class _UserActivityViewState extends State<UserActivityView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      // appBar: AppBar(),
       body: BlocBuilder<UserActivityCubit, UserActivityState>(
         builder: (context, state) {
           if (state is UserActivitySuccessState) {
@@ -49,7 +52,8 @@ class _UserActivityViewState extends State<UserActivityView> {
                       border: Border.all(color: CoreColors.brown),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: CalenderMonthWidget(readCalendar: state.userActivity.readCalendar ?? {}),
+                    child: CalenderMonthWidget(
+                        readCalendar: state.userActivity.readCalendar ?? {}),
                   ),
                   const SizedBox(height: 24),
                   Padding(
@@ -61,12 +65,20 @@ class _UserActivityViewState extends State<UserActivityView> {
                   ),
                   ListView.separated(
                     shrinkWrap: true,
+                    padding: EdgeInsets.zero,
                     itemCount: state.userActivity.userActivity?.length ?? 0,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       final item = state.userActivity.userActivity?[index];
                       return ListTile(
-                        title: Text("Chapter ${item?.chapterId} - Verse ${item?.verseId}"),
+                        onTap: () {
+                          GoRouter.of(context).pushNamed(
+                            AppRoutes.verseExplanation.name,
+                            pathParameters: {"verseId": "${item?.verseId}"},
+                          );
+                        },
+                        title: Text(
+                            "Chapter ${item?.chapterId} - Verse ${item?.verseId}"),
                         subtitle: Text("${item?.createdAt}"),
                         trailing: const Icon(Icons.keyboard_arrow_right),
                       );
@@ -102,7 +114,10 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "0",
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.textGrey),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: CoreColors.textGrey),
         )
       ] else if (streak < 3) ...[
         LottieBuilder.asset(
@@ -113,8 +128,10 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "$streak",
-          style:
-              Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.yellowishOrange),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: CoreColors.yellowishOrange),
         ),
       ] else ...[
         LottieBuilder.asset(
@@ -125,7 +142,10 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "$streak",
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.brown),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: CoreColors.brown),
         ),
       ],
       Text(

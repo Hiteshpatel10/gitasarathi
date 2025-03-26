@@ -1,6 +1,7 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/main.dart';
+import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/constants/asset_paths.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
@@ -12,7 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_flip/page_flip.dart';
-import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
+import 'package:chapter/verse_module/model/verse_explanation_model.dart'
+    as verse_explanation_model;
 import 'package:showcaseview/showcaseview.dart';
 
 class VerseExplanationView extends StatefulWidget {
@@ -56,13 +58,17 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       );
     }
 
-    BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
+    BlocProvider.of<UserActivityCubit>(context).isStateDirty = true;
+
+    BlocProvider.of<ChaptersAndVerseCubit>(context)
+        .getChaptersAndVerse(invalidCache: true);
   }
 
   void _showIntro(BuildContext context) {
     if (_callShowCase == false) return;
 
-    final canShowIntro = prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
+    final canShowIntro =
+        prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
 
     if (canShowIntro == false) {
       _callShowCase = false;
@@ -82,18 +88,20 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<VerseExplanationCubit, VerseExplanationState>(
-        builder: (context, state) {
+      body: BlocConsumer<VerseExplanationCubit, VerseExplanationState>(
+        listener: (context, state) {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
             _splitText();
 
-            if (kDebugMode == false) {
-              _updateUserInteractions(
-                verseNo: verse?.verseNumber,
-                chapterNo: verse?.chapterNumber,
-              );
-            }
+            _updateUserInteractions(
+              verseNo: verse?.verseNumber,
+              chapterNo: verse?.chapterNumber,
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is VerseExplanationSuccess) {
             return ShowCaseWidget(
               builder: (showcaseContext) {
                 _showIntro(showcaseContext);
@@ -142,11 +150,13 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
   void _splitText() {
     if (verse?.verseTranslation?.isNotEmpty == true) {
-      explanationTextSplit = _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
+      explanationTextSplit =
+          _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
       totalPage += explanationTextSplit.length;
     }
     if (verse?.verseCommentary?.isNotEmpty == true) {
-      commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
+      commentaryTextSplit =
+          _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
     totalPage += 1;
@@ -155,8 +165,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> _splitTextIntoPages(String textData) {
     List<String> pageList = [];
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    TextStyle textStyle =
-        Theme.of(context).textTheme.headlineSmall ?? const TextStyle(fontSize: 32);
+    TextStyle textStyle = Theme.of(context).textTheme.headlineSmall ??
+        const TextStyle(fontSize: 32);
     double pageWidth = MediaQuery.of(context).size.width - 32;
     double pageHeight = MediaQuery.of(context).size.height - 220;
 
@@ -165,7 +175,9 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       textPainter.text = TextSpan(text: remainingText, style: textStyle);
       textPainter.layout(maxWidth: pageWidth);
 
-      int endIndex = textPainter.getPositionForOffset(Offset(pageWidth, pageHeight)).offset;
+      int endIndex = textPainter
+          .getPositionForOffset(Offset(pageWidth, pageHeight))
+          .offset;
       if (endIndex == 0) endIndex = remainingText.length;
 
       pageList.add(remainingText.substring(0, endIndex).trim());
