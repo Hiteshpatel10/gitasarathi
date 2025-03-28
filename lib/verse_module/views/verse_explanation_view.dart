@@ -8,7 +8,6 @@ import 'package:chapter/utility/constants/asset_paths.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -150,6 +149,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
         bloc: _verseExplanationCubit,
         builder: (context, state) {
           if (state is VerseExplanationSuccess) {
+            final verse = state.verseExplanation.result;
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -161,7 +161,12 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                   ),
                   child: IconButton(
                     onPressed: () {
-                      Share.share(r'');
+                      share(
+                        verse?.verseTranslation?.first.description ?? '',
+                        chapterNo: verse?.chapterNumber ?? 0,
+                        verseNo: verse?.verseNumber ?? 0,
+                        verseId: verse?.id ?? 0,
+                      );
                     },
                     icon: const Icon(
                       Icons.share,
@@ -359,5 +364,28 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
         ],
       ),
     );
+  }
+
+  void share(
+    String translation, {
+    required num chapterNo,
+    required num verseNo,
+    required num verseId,
+  }) {
+    String message = '''Radhey Radhey! 🌸✨
+
+I just read a profound shloka from the Bhagavad Gita that resonated with me:
+
+*"$translation"*  
+(Bhagavad Gita $chapterNo.$verseNo)
+
+Would you like to explore more? Check it out on the **Bhagavad Gita - Krishna Bhakti** app!  
+
+📖 Download now:  
+https://www.jkyog.org/applinks/bhagavad-gita?verseId=$verseId
+
+Hare Krishna! 🙏💛''';
+
+    Share.share(message);
   }
 }
