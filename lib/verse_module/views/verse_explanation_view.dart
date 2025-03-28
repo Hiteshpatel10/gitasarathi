@@ -1,6 +1,7 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/main.dart';
+import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/constants/asset_paths.dart';
@@ -13,8 +14,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_flip/page_flip.dart';
-import 'package:chapter/verse_module/model/verse_explanation_model.dart'
-    as verse_explanation_model;
+import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
+import 'package:share_plus/share_plus.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 class VerseExplanationView extends StatefulWidget {
@@ -60,15 +61,13 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
     BlocProvider.of<UserActivityCubit>(context).isStateDirty = true;
 
-    BlocProvider.of<ChaptersAndVerseCubit>(context)
-        .getChaptersAndVerse(invalidCache: true);
+    BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
   }
 
   void _showIntro(BuildContext context) {
     if (_callShowCase == false) return;
 
-    final canShowIntro =
-        prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
+    final canShowIntro = prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
 
     if (canShowIntro == false) {
       _callShowCase = false;
@@ -88,7 +87,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<VerseExplanationCubit, VerseExplanationState>(
+      body: BlocConsumer(
+        bloc: _verseExplanationCubit,
         listener: (context, state) {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
@@ -145,18 +145,69 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: BlocBuilder(
+        bloc: _verseExplanationCubit,
+        builder: (context, state) {
+          if (state is VerseExplanationSuccess) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const SizedBox(width: 16),
+                Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: CoreColors.dawnPink,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      Share.share(r'');
+                    },
+                    icon: const Icon(
+                      Icons.share,
+                      color: CoreColors.brown,
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: CoreColors.dawnPink,
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      GoRouter.of(context).pushReplacementNamed(
+                        AppRoutes.verseExplanation.name,
+                        pathParameters: {
+                          "verseId": '${(widget.verseId ?? 0) + 1}',
+                        },
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.navigate_next_outlined,
+                      color: CoreColors.brown,
+                      size: 24,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 
   void _splitText() {
     if (verse?.verseTranslation?.isNotEmpty == true) {
-      explanationTextSplit =
-          _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
+      explanationTextSplit = _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
       totalPage += explanationTextSplit.length;
     }
     if (verse?.verseCommentary?.isNotEmpty == true) {
-      commentaryTextSplit =
-          _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
+      commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
     totalPage += 1;
@@ -165,8 +216,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> _splitTextIntoPages(String textData) {
     List<String> pageList = [];
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    TextStyle textStyle = Theme.of(context).textTheme.headlineSmall ??
-        const TextStyle(fontSize: 32);
+    TextStyle textStyle =
+        Theme.of(context).textTheme.headlineSmall ?? const TextStyle(fontSize: 32);
     double pageWidth = MediaQuery.of(context).size.width - 32;
     double pageHeight = MediaQuery.of(context).size.height - 220;
 
@@ -175,9 +226,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       textPainter.text = TextSpan(text: remainingText, style: textStyle);
       textPainter.layout(maxWidth: pageWidth);
 
-      int endIndex = textPainter
-          .getPositionForOffset(Offset(pageWidth, pageHeight))
-          .offset;
+      int endIndex = textPainter.getPositionForOffset(Offset(pageWidth, pageHeight)).offset;
       if (endIndex == 0) endIndex = remainingText.length;
 
       pageList.add(remainingText.substring(0, endIndex).trim());
@@ -242,6 +291,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
               ),
             ),
           ),
+          const SizedBox(height: kToolbarHeight),
         ],
       ),
     );
@@ -304,7 +354,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
-          )
+          ),
+          const SizedBox(height: 46),
         ],
       ),
     );

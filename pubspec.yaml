@@ -41,6 +41,7 @@ dependencies:
   rate_my_app: ^2.3.1
   workmanager: ^0.5.2
   uuid: ^4.5.1
+  share_plus: ^10.1.4
 
 
 dev_dependencies:
