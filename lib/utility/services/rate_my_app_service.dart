@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
+import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 
 RateMyApp rateMyApp = RateMyApp(
@@ -12,7 +15,6 @@ RateMyApp rateMyApp = RateMyApp(
   remindLaunches: 10,
   googlePlayIdentifier: 'com.gitasarathi',
 );
-
 
 Future<void> rateUs(BuildContext context, {bool showError = false}) async {
   await rateMyApp.init();
@@ -29,12 +31,15 @@ Future<void> rateUs(BuildContext context, {bool showError = false}) async {
       listener: (button) {
         switch (button) {
           case RateMyAppDialogButton.rate:
+            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate Now");
             rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
             break;
           case RateMyAppDialogButton.later:
+            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate Later");
             rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed);
             break;
           case RateMyAppDialogButton.no:
+            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate No");
             rateMyApp.callEvent(RateMyAppEventType.noButtonPressed);
             break;
         }

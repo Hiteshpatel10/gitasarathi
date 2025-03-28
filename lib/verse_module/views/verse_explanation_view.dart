@@ -376,13 +376,13 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
 I just read a profound shloka from the Bhagavad Gita that resonated with me:
 
-*"$translation"*  
+"$translation"  
 (Bhagavad Gita $chapterNo.$verseNo)
 
-Would you like to explore more? Check it out on the **Bhagavad Gita - Krishna Bhakti** app!  
+Would you like to explore more? Read more on **Gita Sarathi**:  
 
-📖 Download now:  
-https://www.jkyog.org/applinks/bhagavad-gita?verseId=$verseId
+📖 Read more:  
+https://links.gitasarathi.geekaid.in/verse/$verseId
 
 Hare Krishna! 🙏💛''';
 
