@@ -184,22 +184,3 @@
         }
     ]
 }
-
-//const dailyMessages = [
-//  { title: "Start Your Week with Wisdom! ✨", body: "A new week, a new opportunity to read the Bhagavad Gita. Open the app and begin! 📖" },
-//  { title: "Did You Know? 🤔", body: "Krishna’s teachings in Chapter 2 summarize the entire Gita. Read more today! 🧐" },
-//  { title: "Stay Consistent! 🔥", body: "You're on a journey of self-discovery. Don’t miss today’s reading! 🙏" },
-//  { title: "Midweek Motivation! 🚀", body: "Feeling tired? The Gita’s wisdom can uplift your spirit. Open the app and read! ✨" },
-//  { title: "Fun Fact Friday! 🎉", body: "Arjuna had doubts, just like us. Krishna’s words helped him find clarity—let’s read them today! 📚" },
-//  { title: "Weekend Reflection 🧘", body: "Take a moment to reflect on this week’s learnings. What was your favorite verse? 🤔" },
-//  { title: "Sunday Special! 🌿", body: "Let’s dive deeper into the teachings of the Gita. What does Dharma mean to you? 🙌" }
-//];
-
-
-//✔ Timed engagement for active users ensures they stay consistent.
-//✔ Weekly motivation for inactive users is a good balance between reminding and not annoying them.
-//✔ One-time re-engagement for 30+ days inactive users prevents notification fatigue.
-//
-//You can also track the response rate of the 30+ days group. If they don’t engage, consider email reminders or a special comeback offer (e.g., “Restart your Gita journey with a special reading challenge!”).
-//
-//Let me know if you need tweaks later! 🚀

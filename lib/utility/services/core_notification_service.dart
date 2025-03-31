@@ -3,7 +3,7 @@ import 'package:chapter/main.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
 import 'package:chapter/utility/network/dio_request_template.dart';
-import 'package:chapter/utility/pref/app_pref_keys.dart';
+import 'package:chapter/utility/services/session_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -50,6 +50,7 @@ class CoreNotificationService {
 
   fcmListener({Function()? onTap}) {
     logger.i("Notification Recieved => fcmListener initialized");
+    print("Notification Recieved => fcmListener initialized");
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
         logger.i("Notification Recieved => fcmListener > $message ");
@@ -59,7 +60,22 @@ class CoreNotificationService {
   }
 
   onNotificationClicked({required Map payload, required String from}) {
-    logger.e(payload);
+    logger.e("Notification Clicked -------- $from");
+
+    SessionService().getOrCreateSessionId().then(
+      (sessionId) {
+        final postData = {
+          "verse_no": null,
+          "chapter_no": null,
+          "activity": "Notification Click",
+          "session_id": sessionId,
+        };
+        postRequest(
+          apiEndPoint: ApiEndpoints.insertUserActivity,
+          postData: postData,
+        );
+      },
+    );
 
     if (payload.containsKey('screen_path') == true) {
       goRouter.push(payload['screen_path']);
@@ -69,8 +85,9 @@ class CoreNotificationService {
     if (payload.containsKey('screen_name') == true) {
       if (payload.containsKey('path_parameters') == true) {
         final Map<String, dynamic> pathParameterDynamic = jsonDecode(payload['path_parameters']);
-        final Map<String, String> pathParameters =
-            pathParameterDynamic.map((key, value) => MapEntry(key, value.toString()));
+        final Map<String, String> pathParameters = pathParameterDynamic.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
         goRouter.pushNamed(payload['screen_name'], pathParameters: pathParameters);
         return;
       }
@@ -102,12 +119,12 @@ class CoreNotificationService {
       final body = message.notification?.body ?? "Default Body";
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       const androidNotificationDetails = AndroidNotificationDetails(
-        'pushnotification',
-        'pushnotification',
+        'push_notification',
+        'push_notification',
         importance: Importance.max,
         priority: Priority.high,
         // styleInformation: BigPictureStyleInformation(DrawableResourceAndroidBitmap('ic_notification'), largeIcon:  DrawableResourceAndroidBitmap('ic_notification')),
-        largeIcon: DrawableResourceAndroidBitmap('mipmap/ic_launcher'),
+        largeIcon: DrawableResourceAndroidBitmap('mipmap/ic_notification'),
       );
 
       const iosNotificationDetail = DarwinNotificationDetails();
@@ -139,23 +156,16 @@ class CoreNotificationService {
       return;
     }
 
-    final prefsFCM = prefs.getString(AppPrefKeys.fcmToken);
-
-    if (prefsFCM == null || prefsFCM != fcmToken) {
-      prefs.setString(AppPrefKeys.fcmToken, fcmToken);
-      await putRequest(
-        apiEndPoint: ApiEndpoints.updateFcmToken,
-        postData: {
-          "fcm_token": fcmToken,
-        },
-      );
-    } else if (prefsFCM == fcmToken) {
-      logger.i("----------  updateFCMTokenAPI Stopped Same FCM Token $fcmToken ----------");
-      return;
-    }
+    await putRequest(
+      apiEndPoint: ApiEndpoints.updateFcmToken,
+      postData: {
+        "fcm_token": fcmToken,
+      },
+    );
   }
 
   Future<void> setupInteractedMessage() async {
+    logger.e("setupInteractedMessage");
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
@@ -168,55 +178,11 @@ class CoreNotificationService {
     FirebaseMessaging.onMessageOpenedApp.listen(
       (message) {
         logger.i("Received message with data: ${message.data}");
-        if (message.data.isNotEmpty) {
-          CoreNotificationService().onNotificationClicked(
-            payload: message.data,
-            from: "_handleMessage=>onMessageOpenedApp",
-          );
-        } else {
-          logger.w("Received message with no data");
-        }
+        CoreNotificationService().onNotificationClicked(
+          payload: message.data,
+          from: "_handleMessage=>onMessageOpenedApp",
+        );
       },
     );
-  }
-
-  static Future<void> createManualNotification({
-    required String title,
-    required String body,
-    Map<String, dynamic>? payloadData,
-  }) async {
-    try {
-      final int id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-      const androidNotificationDetails = AndroidNotificationDetails(
-        'manual_notification', // Unique channel ID
-        'Manual Notification', // Channel name
-        importance: Importance.max,
-        priority: Priority.high,
-        largeIcon: DrawableResourceAndroidBitmap('mipmap/ic_launcher'),
-      );
-
-      const iosNotificationDetail = DarwinNotificationDetails();
-
-      const notificationDetails = NotificationDetails(
-        iOS: iosNotificationDetail,
-        android: androidNotificationDetails,
-      );
-
-      // Encode payload data if available
-      String? payload = payloadData != null ? json.encode(payloadData) : null;
-
-      await flutterLocalNotificationsPlugin.show(
-        id,
-        title,
-        body,
-        notificationDetails,
-        payload: payload,
-      );
-
-      logger.i("Manual Notification Created: $title - $body");
-    } catch (error) {
-      logger.e("Manual Notification Error: $error");
-    }
   }
 }

@@ -56,9 +56,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
       widget.chapterNo,
     );
 
-    if (kDebugMode == false) {
-      _updateUserInteractions(chapterNo: chapter?.chapterNumber);
-    }
+    _updateUserInteractions(chapterNo: chapter?.chapterNumber);
     if (mounted) {
       setState(() => _selectedChapter = chapter);
     }
@@ -154,3 +152,12 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
     );
   }
 }
+
+//
+//✔ Timed engagement for active users ensures they stay consistent.
+//✔ Weekly motivation for inactive users is a good balance between reminding and not annoying them.
+//✔ One-time re-engagement for 30+ days inactive users prevents notification fatigue.
+//
+//You can also track the response rate of the 30+ days group. If they don’t engage, consider email reminders or a special comeback offer (e.g., “Restart your Gita journey with a special reading challenge!”).
+//
+//Let me know if you need tweaks later! 🚀

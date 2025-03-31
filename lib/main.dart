@@ -34,12 +34,7 @@ void main() async {
   prefs = await SharedPreferences.getInstance();
   await Firebase.initializeApp();
   logger = Logger();
-  // if (kDebugMode) {
-  //   prefs.setString(
-  //     AppPrefKeys.token,
-  //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2NzMsImlzcyI6ImNvbS5naXRhc2FyYXRoaSIsImV4cCI6MTc3NDM0MTI5OX0.w4gJm3Dz3k4RplzNDqCWxO0_UhN-VxhHJcuCsIn6Vec",
-  //   );
-  // }
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (kDebugMode) {

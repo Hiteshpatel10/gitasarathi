@@ -154,47 +154,57 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 const SizedBox(width: 16),
-                Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: CoreColors.dawnPink,
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      share(
-                        verse?.verseTranslation?.first.description ?? '',
-                        chapterNo: verse?.chapterNumber ?? 0,
-                        verseNo: verse?.verseNumber ?? 0,
-                        verseId: verse?.id ?? 0,
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.share,
-                      color: CoreColors.brown,
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(52, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
                     ),
                   ),
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: CoreColors.dawnPink,
+                  onPressed: () {
+                    share(
+                      verse?.verseTranslation?.first.description ?? '',
+                      chapterNo: verse?.chapterNumber ?? 0,
+                      verseNo: verse?.verseNumber ?? 0,
+                      verseId: verse?.id ?? 0,
+                    );
+                  },
+                  child: const Icon(
+                    Icons.share,
+                    color: CoreColors.brown,
+                    size: 24,
                   ),
-                  child: IconButton(
-                    onPressed: () {
-                      GoRouter.of(context).pushReplacementNamed(
-                        AppRoutes.verseExplanation.name,
-                        pathParameters: {
-                          "verseId": '${(widget.verseId ?? 0) + 1}',
-                        },
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.navigate_next_outlined,
-                      color: CoreColors.brown,
-                      size: 24,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(20, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
                     ),
                   ),
+                  onPressed: () {
+                    GoRouter.of(context).pushReplacementNamed(
+                      AppRoutes.verseExplanation.name,
+                      pathParameters: {
+                        "verseId": '${(widget.verseId ?? 0) + 1}',
+                      },
+                    );
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text("Next Verse"),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.navigate_next_outlined,
+                        color: CoreColors.brown,
+                        size: 24,
+                      ),
+                    ],
+                  ),
                 ),
+
                 const SizedBox(width: 16),
               ],
             );
@@ -360,7 +370,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
               ),
             ],
           ),
-          const SizedBox(height: 46),
+          const SizedBox(height: kToolbarHeight),
         ],
       ),
     );

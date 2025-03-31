@@ -33,6 +33,7 @@ class _HomeViewState extends State<HomeView> {
     CoreNotificationService().init().then((value) {
       CoreNotificationService().fcmListener();
     });
+    CoreNotificationService().setupInteractedMessage();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await rateUs(context);
     });
