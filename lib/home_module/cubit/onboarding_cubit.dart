@@ -11,22 +11,21 @@ part 'onboarding_state.dart';
 class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit() : super(OnboardingInitial());
 
-  void getOnboarding() async {
+  void getOnboarding({bool checkUpdate = false}) async {
     emit(OnboardingLoadingState());
-    logger.d("LanguageAndAuthorCubit => getLanguageAndAuthor > Start");
+    logger.d("OnboardingCubit => getOnboarding > Start");
 
     try {
       final response = await getRequest(apiEndPoint: ApiEndpoints.onboarding);
 
       final model = OnboardingModel.fromJson(response);
       emit(OnboardingSuccessState(onboarding: model));
-      appUpdateCheck(appUpdate: model.appUpdate);
+      if(checkUpdate)  appUpdateCheck(appUpdate: model.appUpdate);
 
-      logger.d("LanguageAndAuthorCubit => getLanguageAndAuthor > Success");
+      logger.d("OnboardingCubit => getOnboarding > Success");
     } catch (e) {
       emit(OnboardingErrorState(message: e.toString()));
-      logger.e(
-          "LanguageAndAuthorCubit => getLanguageAndAuthor > End with error\n$e");
+      logger.e("OnboardingCubit => getOnboarding > End with error\n$e");
     }
   }
 }

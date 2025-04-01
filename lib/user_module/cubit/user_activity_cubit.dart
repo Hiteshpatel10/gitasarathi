@@ -17,11 +17,11 @@ class UserActivityCubit extends Cubit<UserActivityState> {
     required num year,
   }) async {
     if (isStateDirty == false) {
-      logger.d("UserCubit => getUser > Stopped (Clean State)R");
+      logger.d("UserCubit => getMonthlyUserActivity > Stopped (Clean State)R");
       return;
     }
     emit(UserActivityLoadingState());
-    logger.d("UserCubit => getUser > Start");
+    logger.d("UserCubit => getMonthlyUserActivity > Start");
 
     try {
       final postData = {
@@ -37,10 +37,10 @@ class UserActivityCubit extends Cubit<UserActivityState> {
       final model = UserActivityModel.fromJson(response);
       emit(UserActivitySuccessState(userActivity: model));
       isStateDirty = false;
-      logger.d("UserCubit => getUser > Success");
+      logger.d("UserCubit => getMonthlyUserActivity > Success");
     } catch (e) {
       emit(UserActivityErrorState());
-      logger.e("UserCubit => getUser > End with error\n$e");
+      logger.e("UserCubit => getMonthlyUserActivity > End with error\n$e");
     }
   }
 }

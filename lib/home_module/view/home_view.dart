@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:chapter/chapter_module/views/chapter_list_view.dart';
+import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
@@ -9,6 +10,7 @@ import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/utility/services/rate_my_app_service.dart';
 import 'package:chapter/utility/services/session_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +28,10 @@ class _HomeViewState extends State<HomeView> {
   late final PageController _pageController;
   @override
   void initState() {
-    _pageController = PageController();
+    if (kDebugMode) {
+      _currentPageIndex = 1;
+    }
+    _pageController = PageController(initialPage: kDebugMode ? 1 : 0);
     _initDeepLinks();
     SessionService().init();
     CoreNotificationService().updateFCMToken();
@@ -39,6 +44,7 @@ class _HomeViewState extends State<HomeView> {
     });
 
     BlocProvider.of<UserCubit>(context).getUser();
+    BlocProvider.of<OnboardingCubit>(context).getOnboarding(checkUpdate: true);
     super.initState();
   }
 
@@ -64,16 +70,39 @@ class _HomeViewState extends State<HomeView> {
   void _navigateToDeepLink(String link) {
     Uri uri = Uri.parse(link);
 
-    if (uri.pathSegments.isNotEmpty) {
-      String firstSegment = uri.pathSegments.first;
-
-      if (firstSegment == "chapters" || firstSegment == "verse") {
-        GoRouter.of(context).push(Uri.parse(link).path);
-      } else {
-        coreMessenger("Invalid path");
-      }
-    } else {
+    if (uri.pathSegments.isEmpty) {
       coreMessenger("Invalid path");
+      return;
+    }
+
+    String firstSegment = uri.pathSegments.first;
+    String activity = "Deep Link Open";
+
+    switch (firstSegment) {
+      case "chapters":
+        int? chapterNo = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
+        if (chapterNo != null) {
+          GoRouter.of(context).push(uri.path);
+          BlocProvider.of<UserCubit>(context)
+              .insertUserActivity(activity: activity, chapterNo: chapterNo);
+        } else {
+          coreMessenger("Invalid chapter number");
+        }
+        break;
+      case "verse":
+        int? verseNo = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
+        if (verseNo != null) {
+          GoRouter.of(context).push(uri.path);
+          BlocProvider.of<UserCubit>(context)
+              .insertUserActivity(activity: activity, verseNo: verseNo);
+        } else {
+          coreMessenger("Invalid verse number");
+        }
+        break;
+      default:
+        BlocProvider.of<UserCubit>(context).insertUserActivity(activity: activity);
+        coreMessenger("Invalid path");
+        break;
     }
   }
 

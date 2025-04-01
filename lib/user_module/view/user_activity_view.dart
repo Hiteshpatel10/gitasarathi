@@ -6,6 +6,7 @@ import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class UserActivityView extends StatefulWidget {
@@ -16,9 +17,10 @@ class UserActivityView extends StatefulWidget {
 }
 
 class _UserActivityViewState extends State<UserActivityView> {
+  late final DateTime now;
   @override
   void initState() {
-    final now = DateTime.now();
+    now = DateTime.now();
 
     BlocProvider.of<UserActivityCubit>(context).getMonthlyUserActivity(
       month: now.month,
@@ -29,8 +31,12 @@ class _UserActivityViewState extends State<UserActivityView> {
 
   @override
   Widget build(BuildContext context) {
+    String monthName = DateFormat('MMMM').format(now);
+
     return Scaffold(
-      // appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("$monthName Summary"),
+      ),
       body: BlocBuilder<UserActivityCubit, UserActivityState>(
         builder: (context, state) {
           if (state is UserActivitySuccessState) {
@@ -53,7 +59,8 @@ class _UserActivityViewState extends State<UserActivityView> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: CalenderMonthWidget(
-                        readCalendar: state.userActivity.readCalendar ?? {}),
+                      readCalendar: state.userActivity.readCalendar ?? {},
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Padding(
@@ -63,6 +70,19 @@ class _UserActivityViewState extends State<UserActivityView> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
+                  if (state.userActivity.userActivity == null ||
+                      state.userActivity.userActivity?.isEmpty == true) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 80),
+                      child: Center(
+                        child: Text(
+                          'Not read any verse this month, start now!',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ],
                   ListView.separated(
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
@@ -77,8 +97,7 @@ class _UserActivityViewState extends State<UserActivityView> {
                             pathParameters: {"verseId": "${item?.verseId}"},
                           );
                         },
-                        title: Text(
-                            "Chapter ${item?.chapterId} - Verse ${item?.verseId}"),
+                        title: Text("Chapter ${item?.chapterId} - Verse ${item?.verseId}"),
                         subtitle: Text("${item?.createdAt}"),
                         trailing: const Icon(Icons.keyboard_arrow_right),
                       );
@@ -114,10 +133,7 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "0",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: CoreColors.textGrey),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.textGrey),
         )
       ] else if (streak < 3) ...[
         LottieBuilder.asset(
@@ -128,10 +144,8 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "$streak",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: CoreColors.yellowishOrange),
+          style:
+              Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.yellowishOrange),
         ),
       ] else ...[
         LottieBuilder.asset(
@@ -142,10 +156,7 @@ class _UserActivityViewState extends State<UserActivityView> {
         ),
         Text(
           "$streak",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: CoreColors.brown),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: CoreColors.brown),
         ),
       ],
       Text(

@@ -154,7 +154,6 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 const SizedBox(width: 16),
-
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(52, 52),
@@ -204,7 +203,6 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                     ],
                   ),
                 ),
-
                 const SizedBox(width: 16),
               ],
             );
@@ -396,6 +394,11 @@ https://links.gitasarathi.geekaid.in/verse/$verseId
 
 Hare Krishna! 🙏💛''';
 
+    BlocProvider.of<UserCubit>(context).insertUserActivity(
+      activity: "Share",
+      chapterNo: chapterNo,
+      verseNo: verseNo,
+    );
     Share.share(message);
   }
 }

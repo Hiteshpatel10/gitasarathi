@@ -40,17 +40,11 @@ class CoreNotificationService {
           logger.e("onDidReceiveNotificationResponse error $e");
         }
       },
-      // onDidReceiveBackgroundNotificationResponse: (details) {
-      //   final payLoad = jsonDecode(details.payload ?? '');
-      //
-      //   onNotificationClicked(payload: payLoad);
-      // },
     );
   }
 
   fcmListener({Function()? onTap}) {
     logger.i("Notification Recieved => fcmListener initialized");
-    print("Notification Recieved => fcmListener initialized");
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
         logger.i("Notification Recieved => fcmListener > $message ");
@@ -60,7 +54,6 @@ class CoreNotificationService {
   }
 
   onNotificationClicked({required Map payload, required String from}) {
-    logger.e("Notification Clicked -------- $from");
 
     SessionService().getOrCreateSessionId().then(
       (sessionId) {
@@ -165,7 +158,6 @@ class CoreNotificationService {
   }
 
   Future<void> setupInteractedMessage() async {
-    logger.e("setupInteractedMessage");
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
