@@ -3,7 +3,7 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 2.2.2+21
+version: 2.2.2+22
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -64,3 +64,4 @@ flutter:
     - assets/error/
     - assets/lottie/
 
+# zip -r native_symbol.zip arm64-v8a armeabi-v7a x86 x86_64

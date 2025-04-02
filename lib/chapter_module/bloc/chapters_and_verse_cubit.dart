@@ -56,4 +56,19 @@ class ChaptersAndVerseCubit extends Cubit<ChaptersAndVerseState> {
 
     return null;
   }
+
+  // openLastReadDrawer(user_activity_model.UserActivity? userActivity) {
+  //   if (userActivity == null) return;
+  //
+  //   if (state is ChapterAndVerseSuccessState) {
+  //     final model = state as ChapterAndVerseSuccessState;
+  //     model.chaptersAndVerse.result?.forEach(
+  //       (element) {
+  //         if (userActivity.chapterId == element.chapterNumber) {
+  //
+  //         }
+  //       }
+  //     );
+  //   }
+  // }
 }

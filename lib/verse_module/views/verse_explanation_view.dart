@@ -44,10 +44,10 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     _verseExplanationCubit.getVerseExplanation(verseId: widget.verseId);
   }
 
-  void _updateUserInteractions({num? chapterNo, num? verseNo}) {
+  void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) {
     BlocProvider.of<UserCubit>(context).insertUserActivity(
-      chapterNo: chapterNo,
-      verseNo: verseNo,
+      chapterId: chapterId,
+      verseId: verseId,
       activity: UserActivity.verseRead,
     );
 
@@ -59,7 +59,6 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     }
 
     BlocProvider.of<UserActivityCubit>(context).isStateDirty = true;
-
     BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
   }
 
@@ -96,6 +95,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
             _updateUserInteractions(
               verseNo: verse?.verseNumber,
               chapterNo: verse?.chapterNumber,
+              chapterId: verse?.chapterId,
+              verseId: verse?.id,
             );
           }
         },
@@ -166,7 +167,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                       verse?.verseTranslation?.first.description ?? '',
                       chapterNo: verse?.chapterNumber ?? 0,
                       verseNo: verse?.verseNumber ?? 0,
-                      verseId: verse?.id ?? 0,
+                      verseId: verse?.id ,
+                      chapterId: verse?.chapterId,
                     );
                   },
                   child: const Icon(
@@ -378,7 +380,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     String translation, {
     required num chapterNo,
     required num verseNo,
-    required num verseId,
+    required num? verseId,
+    required num? chapterId,
   }) {
     String message = '''Radhey Radhey! 🌸✨
 
@@ -396,8 +399,8 @@ Hare Krishna! 🙏💛''';
 
     BlocProvider.of<UserCubit>(context).insertUserActivity(
       activity: "Share",
-      chapterNo: chapterNo,
-      verseNo: verseNo,
+      chapterId: chapterId,
+      verseId: verseId,
     );
     Share.share(message);
   }

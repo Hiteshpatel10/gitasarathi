@@ -1,8 +1,11 @@
+import 'package:chapter/user_module/model/user_activity_model.dart';
+
 class UserModel {
   UserModel({
-      this.appUpdate, 
-      this.result, 
-      this.status,});
+    this.appUpdate,
+    this.result,
+    this.status,
+  });
 
   UserModel.fromJson(dynamic json) {
     appUpdate = json['app_update'] != null ? AppUpdate.fromJson(json['app_update']) : null;
@@ -24,19 +27,19 @@ class UserModel {
     map['status'] = status;
     return map;
   }
-
 }
 
 class Result {
   Result({
-      this.id, 
-      this.email, 
-      this.googleAuthId, 
-      this.createdAt, 
-      this.updatedAt, 
-      this.displayName, 
-      this.fcmToken, 
-      this.userReads,});
+    this.id,
+    this.email,
+    this.googleAuthId,
+    this.createdAt,
+    this.updatedAt,
+    this.displayName,
+    this.fcmToken,
+    this.userReads,
+  });
 
   Result.fromJson(dynamic json) {
     id = json['id'];
@@ -46,6 +49,7 @@ class Result {
     updatedAt = json['updated_at'];
     displayName = json['display_name'];
     fcmToken = json['fcm_token'];
+    userActivity = UserActivity.fromJson(json['last_verse_read']);
     if (json['user_reads'] != null) {
       userReads = [];
       json['user_reads'].forEach((v) {
@@ -61,6 +65,7 @@ class Result {
   String? displayName;
   String? fcmToken;
   List<UserReads>? userReads;
+  UserActivity? userActivity;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -76,18 +81,18 @@ class Result {
     }
     return map;
   }
-
 }
 
 class UserReads {
   UserReads({
-      this.id, 
-      this.userId, 
-      this.chapter, 
-      this.verses, 
-      this.progress, 
-      this.createdAt, 
-      this.updatedAt,});
+    this.id,
+    this.userId,
+    this.chapter,
+    this.verses,
+    this.progress,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   UserReads.fromJson(dynamic json) {
     id = json['id'];
@@ -117,16 +122,16 @@ class UserReads {
     map['updated_at'] = updatedAt;
     return map;
   }
-
 }
 
 class AppUpdate {
   AppUpdate({
-      this.buildNo, 
-      this.forceUpdate, 
-      this.message, 
-      this.softUpdate, 
-      this.title,});
+    this.buildNo,
+    this.forceUpdate,
+    this.message,
+    this.softUpdate,
+    this.title,
+  });
 
   AppUpdate.fromJson(dynamic json) {
     buildNo = json['build_no'];
@@ -150,7 +155,4 @@ class AppUpdate {
     map['title'] = title;
     return map;
   }
-
 }
-
-

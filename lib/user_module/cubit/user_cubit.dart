@@ -54,8 +54,8 @@ class UserCubit extends Cubit<UserState> {
   }
 
   insertUserActivity({
-    num? chapterNo,
-    num? verseNo,
+    num? chapterId,
+    num? verseId,
     required String activity,
   }) async {
     if (kDebugMode) {
@@ -68,8 +68,8 @@ class UserCubit extends Cubit<UserState> {
     try {
       final sessionId = await SessionService().getOrCreateSessionId();
       final postData = {
-        "verse_no": verseNo,
-        "chapter_no": chapterNo,
+        "verse_no": verseId,
+        "chapter_no": chapterId,
         "activity": activity,
         "session_id": sessionId,
       };

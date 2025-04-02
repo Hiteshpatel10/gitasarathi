@@ -6,6 +6,7 @@ import 'package:chapter/utility/network/dio_request_template.dart';
 import 'package:chapter/utility/services/session_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class CoreNotificationService {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -54,7 +55,6 @@ class CoreNotificationService {
   }
 
   onNotificationClicked({required Map payload, required String from}) {
-
     SessionService().getOrCreateSessionId().then(
       (sessionId) {
         final postData = {
@@ -149,10 +149,15 @@ class CoreNotificationService {
       return;
     }
 
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String buildNumber = packageInfo.buildNumber;
+
+    final buildNo = int.tryParse(buildNumber);
     await putRequest(
       apiEndPoint: ApiEndpoints.updateFcmToken,
       postData: {
         "fcm_token": fcmToken,
+        "build_no": buildNo,
       },
     );
   }

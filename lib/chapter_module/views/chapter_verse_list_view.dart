@@ -4,7 +4,6 @@ import 'package:chapter/components/push_button.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:chapter/chapter_module/model/chapters_and_verse_model.dart'
     as chapter_and_verse_model;
@@ -56,16 +55,16 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
       widget.chapterNo,
     );
 
-    _updateUserInteractions(chapterNo: chapter?.chapterNumber);
+    _updateUserInteractions(chapterId: chapter?.id);
     if (mounted) {
       setState(() => _selectedChapter = chapter);
     }
   }
 
-  void _updateUserInteractions({num? chapterNo, num? verseNo}) {
+  void _updateUserInteractions({num? chapterId, num? verseId}) {
     BlocProvider.of<UserCubit>(context).insertUserActivity(
-      chapterNo: chapterNo,
-      verseNo: verseNo,
+      chapterId: chapterId,
+      verseId: verseId,
       activity: UserActivity.chapterOpen,
     );
   }

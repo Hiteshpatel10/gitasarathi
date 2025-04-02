@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/chapter_module/views/chapter_list_view.dart';
 import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/main.dart';
@@ -43,7 +44,14 @@ class _HomeViewState extends State<HomeView> {
       await rateUs(context);
     });
 
-    BlocProvider.of<UserCubit>(context).getUser();
+    final chapterAndVerseCubit = BlocProvider.of<ChaptersAndVerseCubit>(context);
+    final userCubit = BlocProvider.of<UserCubit>(context);
+    userCubit.getUser();
+    userCubit.stream.listen((event) {
+      if (event is UserSuccessState) {
+        chapterAndVerseCubit.getChaptersAndVerse();
+      }
+    });
     BlocProvider.of<OnboardingCubit>(context).getOnboarding(checkUpdate: true);
     super.initState();
   }
@@ -80,21 +88,25 @@ class _HomeViewState extends State<HomeView> {
 
     switch (firstSegment) {
       case "chapters":
-        int? chapterNo = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
-        if (chapterNo != null) {
+        int? chapterId = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
+        if (chapterId != null) {
           GoRouter.of(context).push(uri.path);
-          BlocProvider.of<UserCubit>(context)
-              .insertUserActivity(activity: activity, chapterNo: chapterNo);
+          BlocProvider.of<UserCubit>(context).insertUserActivity(
+            activity: activity,
+            chapterId: chapterId,
+          );
         } else {
           coreMessenger("Invalid chapter number");
         }
         break;
       case "verse":
-        int? verseNo = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
-        if (verseNo != null) {
+        int? verseId = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
+        if (verseId != null) {
           GoRouter.of(context).push(uri.path);
-          BlocProvider.of<UserCubit>(context)
-              .insertUserActivity(activity: activity, verseNo: verseNo);
+          BlocProvider.of<UserCubit>(context).insertUserActivity(
+            activity: activity,
+            verseId: verseId,
+          );
         } else {
           coreMessenger("Invalid verse number");
         }
