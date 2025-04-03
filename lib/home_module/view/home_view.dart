@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/chapter_module/views/chapter_list_view.dart';
+import 'package:chapter/favourite_module/view/favourites_view.dart';
 import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
@@ -138,6 +139,7 @@ class _HomeViewState extends State<HomeView> {
         children: const [
           ChapterListView(),
           UserActivityView(),
+          FavouritesView(),
           UserProfileView(),
         ],
       ),
@@ -164,6 +166,10 @@ class _HomeViewState extends State<HomeView> {
             BottomNavigationBarItem(
               icon: Icon(Icons.timeline),
               label: "Activity",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: "Favourite",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

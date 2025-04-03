@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
+import 'package:chapter/favourite_module/cubit/favourite_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
 import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
 import 'package:chapter/theme/core_colors.dart';
@@ -99,6 +100,7 @@ class _MyAppState extends State<MyApp> {
             create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
         BlocProvider<VerseExplanationCubit>(create: (context) => VerseExplanationCubit()),
         BlocProvider<UserCubit>(create: (context) => UserCubit()),
+        BlocProvider<FavouriteCubit>(create: (context) => FavouriteCubit()),
       ],
       child: MaterialApp.router(
         title: 'Gita Sarathi',

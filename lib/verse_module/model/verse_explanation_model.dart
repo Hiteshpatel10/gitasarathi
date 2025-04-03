@@ -1,3 +1,5 @@
+import 'package:chapter/favourite_module/model/favourite_model.dart' as favourite_model;
+
 class VerseExplanationModel {
   VerseExplanationModel({
     this.message,
@@ -64,6 +66,13 @@ class Result {
         verseCommentary?.add(VerseExplanation.fromJson(v));
       });
     }
+
+    if (json['favorites'] != null) {
+      favorites = [];
+      json['favorites'].forEach((v) {
+        favorites?.add(Favorites.fromJson(v));
+      });
+    }
   }
   num? id;
   num? chapterId;
@@ -77,6 +86,7 @@ class Result {
   String? wordMeanings;
   List<VerseExplanation>? verseTranslation;
   List<VerseExplanation>? verseCommentary;
+  List<Favorites>? favorites;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -141,6 +151,39 @@ class VerseExplanation {
     map['language_id'] = languageId;
     map['verse_number'] = verseNumber;
     map['verse_id'] = verseId;
+    return map;
+  }
+}
+
+class Favorites {
+  Favorites({
+    this.id,
+    this.userId,
+    this.verseId,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  Favorites.fromJson(dynamic json) {
+    id = json['id'];
+    userId = json['user_id'];
+    verseId = json['verse_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+  num? id;
+  num? userId;
+  num? verseId;
+  String? createdAt;
+  String? updatedAt;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['user_id'] = userId;
+    map['verse_id'] = verseId;
+    map['created_at'] = createdAt;
+    map['updated_at'] = updatedAt;
     return map;
   }
 }

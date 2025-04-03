@@ -9,8 +9,7 @@ Future<dynamic> getRequest({
 
   Response? response;
   try {
-    debugPrint(
-        "^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest Start ^^^^^^^^^^^^^^^^^^");
+    debugPrint("^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest Start ^^^^^^^^^^^^^^^^^^");
 
     response = await client.get(apiEndPoint);
 
@@ -95,4 +94,45 @@ Future<dynamic> putRequest({
   return response.data;
 }
 
+enum HttpMethod { post, put, delete }
 
+Future<dynamic> sendRequest({
+  required String apiEndPoint,
+  required Map<String, dynamic> data,
+  required HttpMethod method,
+}) async {
+  Dio client = CoreDioClient().init();
+  Response? response;
+
+  try {
+    debugPrint(
+        "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint ${method.name} Request Start $data ~~~~~~~~~~~~~~~~~~~~ ");
+
+    switch (method) {
+      case HttpMethod.post:
+        response = await client.post(apiEndPoint, data: data);
+        break;
+      case HttpMethod.put:
+        response = await client.put(apiEndPoint, data: data);
+        break;
+      case HttpMethod.delete:
+        response = await client.delete(apiEndPoint, data: data);
+        break;
+    }
+
+    if (response.statusCode != 200) {
+      throw DioError(requestOptions: RequestOptions(path: apiEndPoint));
+    }
+
+    debugPrint(
+        "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint ${method.name} Request End ~~~~~~~~~~~~~~~~~~~~ ");
+  } on DioError catch (dioError) {
+    debugPrint("Error in ${method.name} request: Failed to call API ${dioError.message}");
+    rethrow;
+  } catch (error) {
+    debugPrint("Error in ${method.name} request:");
+    rethrow;
+  }
+
+  return response.data;
+}

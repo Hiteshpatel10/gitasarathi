@@ -24,6 +24,7 @@ class VerseExplanationCubit extends Cubit<VerseExplanationState> {
         },
       );
 
+      logger.i(response);
       final model = VerseExplanationModel.fromJson(response);
       emit(VerseExplanationSuccess(verseExplanation: model));
       logger.d("VerseExplanationCubit => getVerseExplanation > Success");

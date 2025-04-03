@@ -8,12 +8,18 @@ class CoreDioClient {
   Dio init() {
     Dio dio = Dio();
 
-    // final prefs = GetStorage();
-    //
     var token = prefs.getString(AppPrefKeys.token);
     dio.options.headers["Authorization"] = token;
     dio.options.headers["device"] = Platform.isAndroid ? 'Android' : 'IOS';
     dio.options.baseUrl = ApiEndpoints.baseURL;
+
+    // Add logging interceptor
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        print("REQUEST URL: ${options.baseUrl}${options.path}");
+        return handler.next(options);
+      },
+    ));
 
     return dio;
   }

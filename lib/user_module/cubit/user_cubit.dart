@@ -29,7 +29,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  insertUserRead({required num chapterNo, required num verseNo}) async {
+  Future<void> insertUserRead({required num chapterNo, required num verseNo}) async {
     if (kDebugMode) {
       logger.i("UserCubit => insertUserRead > Stopped (Debug Mode)");
       return;

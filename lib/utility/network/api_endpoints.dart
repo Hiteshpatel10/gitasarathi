@@ -11,4 +11,11 @@ class ApiEndpoints {
   static const user = "user";
   static const onboarding = "onboarding";
   static const monthlyUserRead = "monthlyUserRead";
+
+
+  static const favoriteRemove = "favorite/remove";
+  static const favoriteAdd = "favorite/add";
+  static const favoriteList = "favorite/list";
+
+
 }

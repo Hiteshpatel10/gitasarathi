@@ -1,13 +1,16 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
+import 'package:chapter/favourite_module/cubit/favourite_cubit.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/constants/asset_paths.dart';
+import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -28,12 +31,17 @@ class VerseExplanationView extends StatefulWidget {
 
 class _VerseExplanationViewState extends State<VerseExplanationView> {
   late final VerseExplanationCubit _verseExplanationCubit;
+  late final FavouriteCubit _favouriteCubit;
+  late final UserActivityCubit _userActivityCubit;
+  late final ChaptersAndVerseCubit _chaptersAndVerseCubit;
 
   List<String> explanationTextSplit = [];
   List<String> commentaryTextSplit = [];
   verse_explanation_model.Result? verse;
   int totalPage = 1;
 
+  bool? isFavourite;
+  verse_explanation_model.Favorites? fav;
   final GlobalKey _paginationKey = GlobalKey();
   bool _callShowCase = true;
 
@@ -41,10 +49,13 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   void initState() {
     super.initState();
     _verseExplanationCubit = context.read<VerseExplanationCubit>();
+    _favouriteCubit = context.read<FavouriteCubit>();
+    _userActivityCubit = context.read<UserActivityCubit>();
+    _chaptersAndVerseCubit = context.read<ChaptersAndVerseCubit>();
     _verseExplanationCubit.getVerseExplanation(verseId: widget.verseId);
   }
 
-  void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) {
+  void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) async {
     BlocProvider.of<UserCubit>(context).insertUserActivity(
       chapterId: chapterId,
       verseId: verseId,
@@ -52,14 +63,14 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     );
 
     if (chapterNo != null && verseNo != null) {
-      BlocProvider.of<UserCubit>(context).insertUserRead(
+      await BlocProvider.of<UserCubit>(context).insertUserRead(
         chapterNo: chapterNo,
         verseNo: verseNo,
       );
-    }
 
-    BlocProvider.of<UserActivityCubit>(context).isStateDirty = true;
-    BlocProvider.of<ChaptersAndVerseCubit>(context).getChaptersAndVerse(invalidCache: true);
+      _userActivityCubit.isStateDirty = true;
+      _chaptersAndVerseCubit.getChaptersAndVerse(invalidCache: true);
+    }
   }
 
   void _showIntro(BuildContext context) {
@@ -90,6 +101,12 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
         listener: (context, state) {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
+
+            if (verse?.favorites != null && verse?.favorites?.isNotEmpty == true) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                setState(() => isFavourite = true);
+              });
+            }
             _splitText();
 
             _updateUserInteractions(
@@ -101,6 +118,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           }
         },
         builder: (context, state) {
+          if (kDebugMode) return const SizedBox();
           if (state is VerseExplanationSuccess) {
             return ShowCaseWidget(
               builder: (showcaseContext) {
@@ -162,12 +180,49 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                       borderRadius: BorderRadius.circular(26),
                     ),
                   ),
+                  onPressed: () async {
+                    if (verse?.id == null) {
+                      coreMessenger("Invalid verse ID");
+                      return;
+                    }
+                    final isAdding = isFavourite == null || isFavourite == false;
+
+                    try {
+                      final response = isAdding
+                          ? await _favouriteCubit.addFavourite(verseId: verse!.id)
+                          : await _favouriteCubit.removeFavourite(verseId: verse!.id);
+
+                      if (response == null || response?['status'] == 0) {
+                        coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                        return;
+                      }
+
+                      setState(() {
+                        isFavourite = isAdding;
+                      });
+                    } catch (e) {
+                      coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                    }
+                  },
+                  child: Icon(
+                    (isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
+                    color: CoreColors.brown,
+                    size: 24,
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(52, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
                   onPressed: () {
                     share(
                       verse?.verseTranslation?.first.description ?? '',
                       chapterNo: verse?.chapterNumber ?? 0,
                       verseNo: verse?.verseNumber ?? 0,
-                      verseId: verse?.id ,
+                      verseId: verse?.id,
                       chapterId: verse?.chapterId,
                     );
                   },
