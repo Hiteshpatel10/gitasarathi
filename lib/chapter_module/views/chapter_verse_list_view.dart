@@ -31,6 +31,8 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   chapter_and_verse_model.Result? _selectedChapter;
   final double _gapHeight = 60;
 
+  bool _isInteractionInserted = false;
+
   @override
   void initState() {
     super.initState();
@@ -62,50 +64,56 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   }
 
   void _updateUserInteractions({num? chapterId, num? verseId}) {
-    BlocProvider.of<UserCubit>(context).insertUserActivity(
-      chapterId: chapterId,
-      verseId: verseId,
-      activity: UserActivity.chapterOpen,
-    );
+    if (_isInteractionInserted == false) {
+      BlocProvider.of<UserCubit>(context).insertUserActivity(
+        chapterId: chapterId,
+        verseId: verseId,
+        activity: UserActivity.chapterOpen,
+      );
+      _isInteractionInserted = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: BlocConsumer<ChaptersAndVerseCubit, ChaptersAndVerseState>(listener: (context, state) {
-        if (state is ChapterAndVerseSuccessState) {
-          _loadChapter();
-        }
-      }, builder: (context, state) {
-        if (state is ChapterAndVerseSuccessState) {
-          return ListView.builder(
-            reverse: true,
-            controller: _scrollController,
-            itemCount: _selectedChapter?.verses?.length ?? 0,
-            itemBuilder: (context, index) {
-              final baseY = index * _gapHeight;
-              final verse = _selectedChapter?.verses?[index];
+      body: BlocConsumer<ChaptersAndVerseCubit, ChaptersAndVerseState>(
+        listener: (context, state) {
+          if (state is ChapterAndVerseSuccessState) {
+            _loadChapter();
+          }
+        },
+        builder: (context, state) {
+          if (state is ChapterAndVerseSuccessState) {
+            return ListView.builder(
+              reverse: true,
+              controller: _scrollController,
+              itemCount: _selectedChapter?.verses?.length ?? 0,
+              itemBuilder: (context, index) {
+                final baseY = index * _gapHeight;
+                final verse = _selectedChapter?.verses?[index];
 
-              return _buildVerseItem(
-                baseY: baseY,
-                index: index,
-                verseNo: verse?.verseNumber ?? (index + 1),
-                verseId: verse?.id,
-                isRead: verse?.isRead,
-              );
-            },
-          );
-        }
+                return _buildVerseItem(
+                  baseY: baseY,
+                  index: index,
+                  verseNo: verse?.verseNumber ?? (index + 1),
+                  verseId: verse?.id,
+                  isRead: verse?.isRead,
+                );
+              },
+            );
+          }
 
-        if (state is ChapterAndVerseErrorState) {
-          return const Center(
-            child: AppErrorWidget(errorCode: AppErrorCode.serverError),
-          );
-        }
+          if (state is ChapterAndVerseErrorState) {
+            return const Center(
+              child: AppErrorWidget(errorCode: AppErrorCode.serverError),
+            );
+          }
 
-        return const Center(child: CircularProgressIndicator());
-      }),
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
     );
   }
 
@@ -139,7 +147,9 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
             height: 50,
             buttonHeight: 10,
             width: 65,
-            backgroundColor: isRead == true ? CoreColors.butterScotch : CoreColors.lavenderBlush,
+            backgroundColor: isRead == true
+                ? CoreColors.butterScotch
+                : CoreColors.lavenderBlush,
             buttonType: LevelButtonTypes.oval,
             child: Text(
               (index + 1).toString(),

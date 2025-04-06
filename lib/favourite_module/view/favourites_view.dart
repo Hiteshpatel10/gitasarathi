@@ -33,6 +33,11 @@ class _FavouritesViewState extends State<FavouritesView> {
         bloc: _favouriteCubit,
         builder: (context, state) {
           if (state is FavouriteSuccessState) {
+            if (state.favouriteModel.favorites?.isEmpty == true) {
+              return const Center(
+                child: Text("No Verses added to faourites"),
+              );
+            }
             return ListView.separated(
               itemCount: state.favouriteModel.favorites?.length ?? 0,
               itemBuilder: (context, index) {
@@ -41,7 +46,8 @@ class _FavouritesViewState extends State<FavouritesView> {
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: const BoxDecoration(
-                      color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12))),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
                   child: ListTile(
                     title: Text(
                       "Chapter ${favourite?.verse?.chapterNumber} Verse ${favourite?.verse?.verseNumber}",
@@ -53,7 +59,8 @@ class _FavouritesViewState extends State<FavouritesView> {
                     ),
                     trailing: IconButton(
                       onPressed: () async {
-                        coreLoadingDialog(context: context, content: "Deleting...");
+                        coreLoadingDialog(
+                            context: context, content: "Deleting...");
                         final response = await _favouriteCubit.removeFavourite(
                           verseId: favourite?.verseId,
                         );

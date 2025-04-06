@@ -16,7 +16,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_flip/page_flip.dart';
-import 'package:chapter/verse_module/model/verse_explanation_model.dart' as verse_explanation_model;
+import 'package:chapter/verse_module/model/verse_explanation_model.dart'
+    as verse_explanation_model;
 import 'package:share_plus/share_plus.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -55,7 +56,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     _verseExplanationCubit.getVerseExplanation(verseId: widget.verseId);
   }
 
-  void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) async {
+  void _updateUserInteractions(
+      {num? chapterNo, num? verseNo, num? chapterId, num? verseId}) async {
     BlocProvider.of<UserCubit>(context).insertUserActivity(
       chapterId: chapterId,
       verseId: verseId,
@@ -76,7 +78,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   void _showIntro(BuildContext context) {
     if (_callShowCase == false) return;
 
-    final canShowIntro = prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
+    final canShowIntro =
+        prefs.getBool(AppPrefKeys.showVerseExplanationIntro) ?? true;
 
     if (canShowIntro == false) {
       _callShowCase = false;
@@ -102,7 +105,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           if (state is VerseExplanationSuccess) {
             verse = state.verseExplanation.result;
 
-            if (verse?.favorites != null && verse?.favorites?.isNotEmpty == true) {
+            if (verse?.favorites != null &&
+                verse?.favorites?.isNotEmpty == true) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 setState(() => isFavourite = true);
               });
@@ -118,7 +122,6 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           }
         },
         builder: (context, state) {
-          if (kDebugMode) return const SizedBox();
           if (state is VerseExplanationSuccess) {
             return ShowCaseWidget(
               builder: (showcaseContext) {
@@ -185,15 +188,19 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                       coreMessenger("Invalid verse ID");
                       return;
                     }
-                    final isAdding = isFavourite == null || isFavourite == false;
+                    final isAdding =
+                        isFavourite == null || isFavourite == false;
 
                     try {
                       final response = isAdding
-                          ? await _favouriteCubit.addFavourite(verseId: verse!.id)
-                          : await _favouriteCubit.removeFavourite(verseId: verse!.id);
+                          ? await _favouriteCubit.addFavourite(
+                              verseId: verse!.id)
+                          : await _favouriteCubit.removeFavourite(
+                              verseId: verse!.id);
 
                       if (response == null || response?['status'] == 0) {
-                        coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                        coreMessenger(
+                            "Failed to ${isAdding ? 'add' : 'remove'} favourite");
                         return;
                       }
 
@@ -201,11 +208,14 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
                         isFavourite = isAdding;
                       });
                     } catch (e) {
-                      coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                      coreMessenger(
+                          "Failed to ${isAdding ? 'add' : 'remove'} favourite");
                     }
                   },
                   child: Icon(
-                    (isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
+                    (isFavourite ?? false)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
                     color: CoreColors.brown,
                     size: 24,
                   ),
@@ -273,11 +283,13 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
 
   void _splitText() {
     if (verse?.verseTranslation?.isNotEmpty == true) {
-      explanationTextSplit = _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
+      explanationTextSplit =
+          _splitTextIntoPages(verse?.verseTranslation?.first.description ?? '');
       totalPage += explanationTextSplit.length;
     }
     if (verse?.verseCommentary?.isNotEmpty == true) {
-      commentaryTextSplit = _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
+      commentaryTextSplit =
+          _splitTextIntoPages(verse?.verseCommentary?.first.description ?? '');
       totalPage += commentaryTextSplit.length;
     }
     totalPage += 1;
@@ -286,8 +298,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> _splitTextIntoPages(String textData) {
     List<String> pageList = [];
     TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
-    TextStyle textStyle =
-        Theme.of(context).textTheme.headlineSmall ?? const TextStyle(fontSize: 32);
+    TextStyle textStyle = Theme.of(context).textTheme.headlineSmall ??
+        const TextStyle(fontSize: 32);
     double pageWidth = MediaQuery.of(context).size.width - 32;
     double pageHeight = MediaQuery.of(context).size.height - 220;
 
@@ -296,7 +308,9 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       textPainter.text = TextSpan(text: remainingText, style: textStyle);
       textPainter.layout(maxWidth: pageWidth);
 
-      int endIndex = textPainter.getPositionForOffset(Offset(pageWidth, pageHeight)).offset;
+      int endIndex = textPainter
+          .getPositionForOffset(Offset(pageWidth, pageHeight))
+          .offset;
       if (endIndex == 0) endIndex = remainingText.length;
 
       pageList.add(remainingText.substring(0, endIndex).trim());
