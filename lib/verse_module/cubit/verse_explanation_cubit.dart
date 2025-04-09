@@ -11,7 +11,7 @@ part 'verse_explanation_state.dart';
 class VerseExplanationCubit extends Cubit<VerseExplanationState> {
   VerseExplanationCubit() : super(VerseExplanationInitial());
 
-  getVerseExplanation({num? verseId}) async {
+  Future<void> getVerseExplanation({num? verseId}) async {
     emit(VerseExplanationLoading());
     logger.d("VerseExplanationCubit => getVerseExplanation > Start");
     try {
