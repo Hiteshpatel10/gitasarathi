@@ -3,6 +3,7 @@ import 'package:chapter/chapter_module/views/chapter_verse_list_view.dart';
 import 'package:chapter/home_module/view/home_view.dart';
 import 'package:chapter/home_module/view/language_and_author_selection_view.dart';
 import 'package:chapter/home_module/view/onboarding_view.dart';
+import 'package:chapter/home_module/view/streak_celebration_view.dart';
 import 'package:chapter/main.dart';
 import 'package:chapter/user_module/view/user_profile_view.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
@@ -34,10 +35,13 @@ final goRouter = GoRouter(
       name: AppRoutes.languageAndAuthor.name,
       builder: (context, state) {
         final editMode = (state.uri.queryParameters['edit_mode'] ?? 'false') == 'true';
-        return LanguageAndAuthorSelectionView(editMode: editMode);
+        final redirectPath = state.uri.queryParameters['redirect'];
+        return LanguageAndAuthorSelectionView(
+          editMode: editMode,
+          redirectPath: redirectPath != null ? Uri.decodeComponent(redirectPath) : null,
+        );
       },
     ),
-
     GoRoute(
       path: AppRoutes.chaptersVerse.path,
       name: AppRoutes.chaptersVerse.name,
@@ -49,6 +53,16 @@ final goRouter = GoRouter(
     GoRoute(
       path: AppRoutes.verseExplanation.path,
       name: AppRoutes.verseExplanation.name,
+      redirect: (context, state) {
+        final authId = prefs.getInt(AppPrefKeys.authorId);
+        final langId = prefs.getInt(AppPrefKeys.languageId);
+
+        if (authId == null || langId == null) {
+          final redirectUrl = Uri.encodeComponent(state.uri.toString());
+          return '${AppRoutes.languageAndAuthor.path}?redirect=$redirectUrl';
+        }
+        return null;
+      },
       builder: (context, state) {
         final verseId = int.tryParse(state.pathParameters['verseId'] ?? '1') ?? 1;
         return VerseExplanationView(verseId: verseId);
@@ -61,19 +75,25 @@ final goRouter = GoRouter(
         return const UserProfileView();
       },
     ),
+    GoRoute(
+      path: AppRoutes.streakCelebration.path,
+      name: AppRoutes.streakCelebration.name,
+      builder: (context, state) {
+        final returnTo = state.uri.queryParameters['returnTo'];
+        final currentStreak = num.parse(state.pathParameters['currentStreak']!);
+
+        return StreakCelebrationView(returnTo: returnTo, currentStreak: currentStreak);
+      },
+    ),
   ],
 );
 
 String getInitialRoute() {
   final token = prefs.getString(AppPrefKeys.token);
-  final authId = prefs.getInt(AppPrefKeys.authorId);
-  final langId = prefs.getInt(AppPrefKeys.languageId);
-  final isLoggedIn = token?.isNotEmpty ?? false;
 
+  final isLoggedIn = token?.isNotEmpty ?? false;
   if (!isLoggedIn) {
     return AppRoutes.onBoarding.path;
-  } else if (authId == null || langId == null) {
-    return AppRoutes.languageAndAuthor.path;
   } else {
     return AppRoutes.home.path;
   }

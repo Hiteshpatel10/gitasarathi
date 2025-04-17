@@ -41,8 +41,8 @@ class AuthCubit extends Cubit<AuthState> {
       return response;
     } catch (e) {
       emit(AuthFailed(errorMessage: e.toString()));
-
       logger.e("AuthCubit => signInUser > End with error\n$e");
+      return null;
     }
   }
 }

@@ -31,6 +31,7 @@ class VerseExplanationView extends StatefulWidget {
 class _VerseExplanationViewState extends State<VerseExplanationView> {
   late final VerseExplanationCubit _verseExplanationCubit;
   late final FavouriteCubit _favouriteCubit;
+  late final UserCubit _userCubit;
   late final UserActivityCubit _userActivityCubit;
   late final ChaptersAndVerseCubit _chaptersAndVerseCubit;
 
@@ -38,6 +39,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   List<String> commentaryTextSplit = [];
   verse_explanation_model.Result? verse;
   int totalPage = 1;
+  num? streakChange;
 
   bool? isFavourite;
   verse_explanation_model.Favorites? fav;
@@ -50,6 +52,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     _verseExplanationCubit = context.read<VerseExplanationCubit>();
     _favouriteCubit = context.read<FavouriteCubit>();
     _userActivityCubit = context.read<UserActivityCubit>();
+    _userCubit = context.read<UserCubit>();
     _chaptersAndVerseCubit = context.read<ChaptersAndVerseCubit>();
     getVerse();
   }
@@ -68,6 +71,10 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       }
       _splitText();
 
+      if (verse?.id != null) {
+        prefs.setInt(AppPrefKeys.lastReadVerseId, verse?.id?.toInt() ?? 1);
+      }
+
       _updateUserInteractions(
         verseNo: verse?.verseNumber,
         chapterNo: verse?.chapterNumber,
@@ -78,12 +85,6 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   }
 
   void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) async {
-    BlocProvider.of<UserCubit>(context).insertUserActivity(
-      chapterId: chapterId,
-      verseId: verseId,
-      activity: UserActivity.verseRead,
-    );
-
     if (chapterNo != null && verseNo != null) {
       await BlocProvider.of<UserCubit>(context).insertUserRead(
         chapterNo: chapterNo,
@@ -93,6 +94,19 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       _userActivityCubit.isStateDirty = true;
       _chaptersAndVerseCubit.getChaptersAndVerse(invalidCache: true);
     }
+
+    await _userCubit.insertUserActivity(
+      chapterId: chapterId,
+      verseId: verseId,
+      activity: UserActivity.verseRead,
+    );
+
+    final now = DateTime.now();
+
+    streakChange = await _userActivityCubit.checkStreakChange(
+      month: now.month,
+      year: now.year,
+    );
   }
 
   void _showIntro(BuildContext context) {
@@ -115,179 +129,182 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     });
   }
 
+  void _checkStreakCelebration({bool navigateNext = false}) {
+    final nextVerseRoute =
+        "${AppRoutes.verseExplanation.path.split('/:').first}/${(widget.verseId ?? 0) + 1}";
+
+    if (streakChange == null) {
+      if (navigateNext == true) {
+        GoRouter.of(context).pushReplacement(nextVerseRoute);
+        return;
+      }
+
+      GoRouter.of(context).pop();
+      return;
+    }
+
+    GoRouter.of(context).pushReplacementNamed(AppRoutes.streakCelebration.name, pathParameters: {
+      "currentStreak": '$streakChange',
+    }, queryParameters: {
+      if (navigateNext == true) "returnTo": nextVerseRoute,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocConsumer(
-        bloc: _verseExplanationCubit,
-        listener: (context, state) {
-          // if (state is VerseExplanationSuccess) {
-          //   verse = state.verseExplanation.result;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        _checkStreakCelebration();
+      },
+      child: Scaffold(
+        body: BlocBuilder(
+          bloc: _verseExplanationCubit,
+          builder: (context, state) {
+            if (state is VerseExplanationSuccess) {
+              return ShowCaseWidget(
+                builder: (showcaseContext) {
+                  _showIntro(showcaseContext);
+                  return Showcase.withWidget(
+                    key: _paginationKey,
+                    blurValue: 4,
+                    height: 240,
+                    width: MediaQuery.of(context).size.width,
+                    container: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          LottieBuilder.asset(
+                            AssetPaths.swipeLeftLottie,
+                            height: 120,
+                          ),
+                          const SizedBox(height: 12),
+                          const Text("Swipe left and right to turn pages"),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              ShowCaseWidget.of(showcaseContext).dismiss();
+                            },
+                            child: const Text("Ok, Got It"),
+                          ),
+                          const SizedBox(height: 36)
+                        ],
+                      ),
+                    ),
+                    child: _buildPageFlip(),
+                  );
+                },
+              );
+            }
+            if (state is ChapterAndVerseErrorState) {
+              return const Center(
+                child: AppErrorWidget(errorCode: AppErrorCode.serverError),
+              );
+            }
 
-          //   if (verse?.favorites != null && verse?.favorites?.isNotEmpty == true) {
-          //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          //       setState(() => isFavourite = true);
-          //     });
-          //   }
-          //   _splitText();
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: BlocBuilder(
+          bloc: _verseExplanationCubit,
+          builder: (context, state) {
+            if (state is VerseExplanationSuccess) {
+              final verse = state.verseExplanation.result;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(52, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (verse?.id == null) {
+                        coreMessenger("Invalid verse ID");
+                        return;
+                      }
+                      final isAdding = isFavourite == null || isFavourite == false;
 
-          //   _updateUserInteractions(
-          //     verseNo: verse?.verseNumber,
-          //     chapterNo: verse?.chapterNumber,
-          //     chapterId: verse?.chapterId,
-          //     verseId: verse?.id,
-          //   );
-          // }
-        },
-        builder: (context, state) {
-          if (state is VerseExplanationSuccess) {
-            return ShowCaseWidget(
-              builder: (showcaseContext) {
-                _showIntro(showcaseContext);
-                return Showcase.withWidget(
-                  key: _paginationKey,
-                  blurValue: 4,
-                  height: 240,
-                  width: MediaQuery.of(context).size.width,
-                  container: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        LottieBuilder.asset(
-                          AssetPaths.swipeLeftLottie,
-                          height: 120,
+                      try {
+                        final response = isAdding
+                            ? await _favouriteCubit.addFavourite(verseId: verse!.id)
+                            : await _favouriteCubit.removeFavourite(verseId: verse!.id);
+
+                        if (response == null || response?['status'] == 0) {
+                          coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                          return;
+                        }
+
+                        setState(() {
+                          isFavourite = isAdding;
+                        });
+                      } catch (e) {
+                        coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
+                      }
+                    },
+                    child: Icon(
+                      (isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
+                      color: CoreColors.brown,
+                      size: 24,
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(52, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                    ),
+                    onPressed: () {
+                      share(
+                        verse?.verseTranslation?.first.description ?? '',
+                        chapterNo: verse?.chapterNumber ?? 0,
+                        verseNo: verse?.verseNumber ?? 0,
+                        verseId: verse?.id,
+                        chapterId: verse?.chapterId,
+                      );
+                    },
+                    child: const Icon(
+                      Icons.share,
+                      color: CoreColors.brown,
+                      size: 24,
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(20, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                    ),
+                    onPressed: () {
+                      _checkStreakCelebration(navigateNext: true);
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Next Verse"),
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.navigate_next_outlined,
+                          color: CoreColors.brown,
+                          size: 24,
                         ),
-                        const SizedBox(height: 12),
-                        const Text("Swipe left and right to turn pages"),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            ShowCaseWidget.of(showcaseContext).dismiss();
-                          },
-                          child: const Text("Ok, Got It"),
-                        ),
-                        const SizedBox(height: 36)
                       ],
                     ),
                   ),
-                  child: _buildPageFlip(),
-                );
-              },
-            );
-          }
-          if (state is ChapterAndVerseErrorState) {
-            return const Center(
-              child: AppErrorWidget(errorCode: AppErrorCode.serverError),
-            );
-          }
+                  const SizedBox(width: 16),
+                ],
+              );
+            }
 
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: BlocBuilder(
-        bloc: _verseExplanationCubit,
-        builder: (context, state) {
-          if (state is VerseExplanationSuccess) {
-            final verse = state.verseExplanation.result;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(52, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (verse?.id == null) {
-                      coreMessenger("Invalid verse ID");
-                      return;
-                    }
-                    final isAdding = isFavourite == null || isFavourite == false;
-
-                    try {
-                      final response = isAdding
-                          ? await _favouriteCubit.addFavourite(verseId: verse!.id)
-                          : await _favouriteCubit.removeFavourite(verseId: verse!.id);
-
-                      if (response == null || response?['status'] == 0) {
-                        coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
-                        return;
-                      }
-
-                      setState(() {
-                        isFavourite = isAdding;
-                      });
-                    } catch (e) {
-                      coreMessenger("Failed to ${isAdding ? 'add' : 'remove'} favourite");
-                    }
-                  },
-                  child: Icon(
-                    (isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
-                    color: CoreColors.brown,
-                    size: 24,
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(52, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ),
-                  onPressed: () {
-                    share(
-                      verse?.verseTranslation?.first.description ?? '',
-                      chapterNo: verse?.chapterNumber ?? 0,
-                      verseNo: verse?.verseNumber ?? 0,
-                      verseId: verse?.id,
-                      chapterId: verse?.chapterId,
-                    );
-                  },
-                  child: const Icon(
-                    Icons.share,
-                    color: CoreColors.brown,
-                    size: 24,
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(20, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                  ),
-                  onPressed: () {
-                    GoRouter.of(context).pushReplacementNamed(
-                      AppRoutes.verseExplanation.name,
-                      pathParameters: {
-                        "verseId": '${(widget.verseId ?? 0) + 1}',
-                      },
-                    );
-                  },
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text("Next Verse"),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.navigate_next_outlined,
-                        color: CoreColors.brown,
-                        size: 24,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-              ],
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -335,12 +352,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
           child: ElevatedButton(
             child: const Text('Read Next Verse'),
             onPressed: () {
-              GoRouter.of(context).pushReplacementNamed(
-                AppRoutes.verseExplanation.name,
-                pathParameters: {
-                  "verseId": '${(widget.verseId ?? 0) + 1}',
-                },
-              );
+              _checkStreakCelebration(navigateNext: true);
             },
           ),
         ),
@@ -474,7 +486,7 @@ https://links.gitasarathi.geekaid.in/verse/$verseId
 Hare Krishna! 🙏💛''';
 
     BlocProvider.of<UserCubit>(context).insertUserActivity(
-      activity: "Share",
+      activity: UserActivity.share,
       chapterId: chapterId,
       verseId: verseId,
     );

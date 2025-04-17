@@ -31,15 +31,21 @@ Future<void> rateUs(BuildContext context, {bool showError = false}) async {
       listener: (button) {
         switch (button) {
           case RateMyAppDialogButton.rate:
-            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate Now");
+            BlocProvider.of<UserCubit>(context).insertUserActivity(
+              activity: UserActivity.rateNow,
+            );
             rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
             break;
           case RateMyAppDialogButton.later:
-            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate Later");
+            BlocProvider.of<UserCubit>(context).insertUserActivity(
+              activity: UserActivity.rateLater,
+            );
             rateMyApp.callEvent(RateMyAppEventType.laterButtonPressed);
             break;
           case RateMyAppDialogButton.no:
-            BlocProvider.of<UserCubit>(context).insertUserActivity(activity: "Rate No");
+            BlocProvider.of<UserCubit>(context).insertUserActivity(
+              activity: UserActivity.rateNo,
+            );
             rateMyApp.callEvent(RateMyAppEventType.noButtonPressed);
             break;
         }

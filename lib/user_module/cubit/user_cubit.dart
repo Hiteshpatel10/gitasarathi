@@ -4,6 +4,7 @@ import 'package:chapter/user_module/model/user_model.dart';
 import 'package:chapter/utility/network/api_endpoints.dart';
 import 'package:chapter/utility/network/dio_request_template.dart';
 import 'package:chapter/utility/services/session_service.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
@@ -21,7 +22,7 @@ class UserCubit extends Cubit<UserState> {
 
       final model = UserModel.fromJson(response);
       emit(UserSuccessState(user: model));
-
+      FirebaseCrashlytics.instance.setUserIdentifier('${model.result?.id}');
       logger.d("UserCubit => getUser > Success");
     } catch (e) {
       emit(UserErrorState());
@@ -53,7 +54,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  insertUserActivity({
+  Future<void> insertUserActivity({
     num? chapterId,
     num? verseId,
     required String activity,
@@ -89,4 +90,9 @@ class UserCubit extends Cubit<UserState> {
 class UserActivity {
   static const chapterOpen = "Chapter Open";
   static const verseRead = "Verse Read";
+  static const appOpen = "App Open";
+  static const rateNow = "Rate Now";
+  static const rateLater = "Rate Later";
+  static const rateNo = "Rate No";
+  static const share = "Share";
 }

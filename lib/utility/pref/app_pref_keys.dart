@@ -12,4 +12,7 @@ class AppPrefKeys {
   static const languageId = "languageId";
   static const showVerseExplanationIntro = "showVerseExplanationIntro";
   static const sessionId = "sessionID";
+
+  static const lastReadVerseId = "lastReadVerseId";
+  static const showContinueReading = "showContinueReading";
 }

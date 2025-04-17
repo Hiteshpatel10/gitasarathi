@@ -12,6 +12,7 @@ class CoreColors {
   static const dawnPink = Color(0xFFF2E8E2);
   static const blackBean = Color(0xFF230007);
   static const fuelYellow = Color(0xFFF1A731);
+  static const fuelYellowLight = Color(0xFFFFDCA6);
   static const earlyDawn = Color(0xFFFFF8EC);
 
 

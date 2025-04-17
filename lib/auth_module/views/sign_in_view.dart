@@ -25,26 +25,26 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          if (state is AuthFailed) {
-            coreMessenger(
-              "Failed to authenticate.",
-              messageType: CoreScaffoldMessengerType.error,
-            );
-
-            return;
-          }
-
-          if (state is AuthSuccess) {
-            coreMessenger(
-              "Successfully signed in.",
-              messageType: CoreScaffoldMessengerType.success,
-            );
-            GoRouter.of(context).pushReplacementNamed(AppRoutes.languageAndAuthor.name);
-            return;
-          }
-        },
+      body: BlocBuilder<AuthCubit, AuthState>(
+        // listener: (context, state) {
+        //   if (state is AuthFailed) {
+        //     coreMessenger(
+        //       "Failed to authenticate.",
+        //       messageType: CoreScaffoldMessengerType.error,
+        //     );
+        //
+        //     return;
+        //   }
+        //
+        //   if (state is AuthSuccess) {
+        //     coreMessenger(
+        //       "Successfully signed in.",
+        //       messageType: CoreScaffoldMessengerType.success,
+        //     );
+        //     GoRouter.of(context).pushReplacementNamed(AppRoutes.languageAndAuthor.name);
+        //     return;
+        //   }
+        // },
         builder: (context, state) {
           return Center(
             child: Column(
@@ -65,13 +65,20 @@ class _SignInViewState extends State<SignInView> {
                   onPressed: () async {
                     final response = await _authCubit.signInUser();
 
-                    if (response == null || response?['status'] == 0) {
+                    if (response == null || response['status'] == 0 || response['token'] == null) {
                       coreMessenger(
-                        "Failed to authenticate user",
+                        "Failed to authenticate.",
                         messageType: CoreScaffoldMessengerType.error,
                       );
                       return;
                     }
+
+                    coreMessenger(
+                      "Successfully signed in.",
+                      messageType: CoreScaffoldMessengerType.success,
+                    );
+
+                    GoRouter.of(context).pushReplacementNamed(AppRoutes.home.name);
                   },
                   child: state is Authenticating
                       ? const Row(

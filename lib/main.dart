@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
         BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
-        BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()..getOnboarding()),
+        BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()),
         BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
         BlocProvider<ChaptersAndVerseCubit>(
             create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
@@ -160,11 +160,26 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
           ),
+          pageTransitionsTheme: const PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            },
+          ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          bottomSheetTheme: const BottomSheetThemeData(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
           ),

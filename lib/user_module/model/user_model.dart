@@ -49,7 +49,7 @@ class Result {
     updatedAt = json['updated_at'];
     displayName = json['display_name'];
     fcmToken = json['fcm_token'];
-    userActivity = UserActivity.fromJson(json['last_verse_read']);
+    lastVerseRead = UserActivity.fromJson(json['last_verse_read']);
     if (json['user_reads'] != null) {
       userReads = [];
       json['user_reads'].forEach((v) {
@@ -65,7 +65,7 @@ class Result {
   String? displayName;
   String? fcmToken;
   List<UserReads>? userReads;
-  UserActivity? userActivity;
+  UserActivity? lastVerseRead;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

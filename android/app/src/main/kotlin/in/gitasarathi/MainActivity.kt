@@ -1,4 +1,4 @@
-package com.mysiponline
+package `in`.gitasarathi
 
 import io.flutter.embedding.android.FlutterActivity
 

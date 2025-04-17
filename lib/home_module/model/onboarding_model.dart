@@ -2,6 +2,7 @@ class OnboardingModel {
   OnboardingModel({
     this.appUpdate,
     this.googleReview,
+    this.highlights,
     this.status,
   });
 
@@ -9,10 +10,17 @@ class OnboardingModel {
     appUpdate = json['app_update'] != null ? AppUpdate.fromJson(json['app_update']) : null;
     googleReview =
         json['google_review'] != null ? GoogleReview.fromJson(json['google_review']) : null;
+    if (json['highlights'] != null) {
+      highlights = [];
+      json['highlights'].forEach((v) {
+        highlights?.add(Highights.fromJson(v));
+      });
+    }
     status = json['status'];
   }
   AppUpdate? appUpdate;
   GoogleReview? googleReview;
+  List<Highights>? highlights;
   num? status;
 
   Map<String, dynamic> toJson() {
@@ -23,7 +31,43 @@ class OnboardingModel {
     if (googleReview != null) {
       map['google_review'] = googleReview?.toJson();
     }
+    if (highlights != null) {
+      map['highlights'] = highlights?.map((v) => v.toJson()).toList();
+    }
     map['status'] = status;
+    return map;
+  }
+}
+
+class Highights {
+  Highights({
+    this.bgColor,
+    this.image,
+    this.text,
+    this.textColor,
+    this.title,
+  });
+
+  Highights.fromJson(dynamic json) {
+    bgColor = json['bg_color'];
+    image = json['image'];
+    text = json['text'];
+    textColor = json['text_color'];
+    title = json['title'];
+  }
+  String? bgColor;
+  String? image;
+  String? text;
+  String? textColor;
+  String? title;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['bg_color'] = bgColor;
+    map['image'] = image;
+    map['text'] = text;
+    map['text_color'] = textColor;
+    map['title'] = title;
     return map;
   }
 }
@@ -31,13 +75,14 @@ class OnboardingModel {
 class GoogleReview {
   GoogleReview({
     this.buildNo,
+    this.inReview,
     this.token,
   });
 
   GoogleReview.fromJson(dynamic json) {
     buildNo = json['build_no'];
-    token = json['token'];
     inReview = json['in_review'];
+    token = json['token'];
   }
   num? buildNo;
   bool? inReview;
@@ -46,6 +91,7 @@ class GoogleReview {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['build_no'] = buildNo;
+    map['in_review'] = inReview;
     map['token'] = token;
     return map;
   }

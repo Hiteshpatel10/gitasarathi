@@ -1,6 +1,7 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/components/push_button.dart';
+import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
@@ -29,7 +30,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   late final ScrollController _scrollController;
 
   chapter_and_verse_model.Result? _selectedChapter;
-  final double _gapHeight = 60;
+  final double _gapHeight = 80;
 
   bool _isInteractionInserted = false;
 
@@ -38,19 +39,13 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
     super.initState();
     _chaptersAndVerseCubit = BlocProvider.of<ChaptersAndVerseCubit>(context);
     _scrollController = ScrollController();
-    _scrollController.addListener(() => setState(() {}));
-    _loadChapter().then((value) {
-      // WidgetsBinding.instance.addPostFrameCallback(
-      //   (timeStamp) {
-      //     _scrollController.animateTo(
-      //       (_selectedChapter?.versesCount ?? 0) * 80,
-      //       duration: const Duration(seconds: 2),
-      //       curve: Curves.easeIn,
-      //     );
-      //   },
-      // );
+    _scrollController.addListener(() {
+      setState(() {});
     });
+    _loadChapter();
   }
+
+  int _lastReadIndex = 0;
 
   Future<void> _loadChapter() async {
     final chapter = await _chaptersAndVerseCubit.searchChapter(
@@ -58,8 +53,24 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
     );
 
     _updateUserInteractions(chapterId: chapter?.id);
+
+    if (chapter != null) {
+      final lastReadVerseIndex = chapter.verses?.lastIndexWhere((v) => v.isRead == true) ?? 0;
+      _lastReadIndex = lastReadVerseIndex >= 0 ? lastReadVerseIndex : 0;
+    }
+
     if (mounted) {
       setState(() => _selectedChapter = chapter);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final targetOffset = _lastReadIndex * _gapHeight;
+
+        _scrollController.animateTo(
+          targetOffset,
+          duration: const Duration(seconds: 2),
+          curve: Curves.easeInOut,
+        );
+      });
     }
   }
 
@@ -77,7 +88,9 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Chapter ${widget.chapterNo}"),
+      ),
       body: BlocConsumer<ChaptersAndVerseCubit, ChaptersAndVerseState>(
         listener: (context, state) {
           if (state is ChapterAndVerseSuccessState) {
@@ -147,9 +160,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
             height: 50,
             buttonHeight: 10,
             width: 65,
-            backgroundColor: isRead == true
-                ? CoreColors.butterScotch
-                : CoreColors.lavenderBlush,
+            backgroundColor: isRead == true ? CoreColors.butterScotch : CoreColors.lavenderBlush,
             buttonType: LevelButtonTypes.oval,
             child: Text(
               (index + 1).toString(),

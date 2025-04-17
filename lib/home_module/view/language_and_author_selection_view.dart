@@ -10,9 +10,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class LanguageAndAuthorSelectionView extends StatefulWidget {
-  const LanguageAndAuthorSelectionView({super.key, required this.editMode});
+  const LanguageAndAuthorSelectionView({
+    super.key,
+    required this.editMode,
+    this.redirectPath,
+  });
 
   final bool editMode;
+  final String? redirectPath;
 
   @override
   State<LanguageAndAuthorSelectionView> createState() => _LanguageAndAuthorSelectionViewState();
@@ -70,7 +75,7 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Language & Author")),
+      appBar: AppBar(title: const Text("Select Language & Author")),
       body: BlocBuilder<LanguageAndAuthorCubit, LanguageAndAuthorState>(
         builder: (context, state) {
           if (state is LanguageAndAuthorSuccess) {
@@ -205,7 +210,11 @@ class _LanguageAndAuthorSelectionViewState extends State<LanguageAndAuthorSelect
                   prefs.setInt(AppPrefKeys.authorId, _selectedAuthor!.id!.toInt());
                   prefs.setInt(AppPrefKeys.languageId, _selectedAuthor!.languageId!.toInt());
 
-                  if(widget.editMode == true){
+                  if (widget.redirectPath != null && widget.redirectPath!.isNotEmpty) {
+                    GoRouter.of(context).pushReplacement(widget.redirectPath!);
+                    return;
+                  }
+                  if (widget.editMode == true) {
                     GoRouter.of(context).pop();
                     return;
                   }
