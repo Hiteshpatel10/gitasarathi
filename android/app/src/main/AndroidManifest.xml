@@ -24,9 +24,9 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -91,8 +91,6 @@
             android:resource="@color/colorAccent" />
 
 
-
-
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility?hl=en and
@@ -108,6 +106,6 @@
 </manifest>
 
 
-<!--    {-->
-<!--    "GCM": "{\"notification\": { \"body\": \"Sample message for Android endpoints\", \"title\":\"Hello world\" } }"-->
-<!--    }-->
+    <!--    {-->
+    <!--    "GCM": "{\"notification\": { \"body\": \"Sample message for Android endpoints\", \"title\":\"Hello world\" } }"-->
+    <!--    }-->

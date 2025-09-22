@@ -1,5 +1,6 @@
 import 'package:chapter/auth_module/views/sign_in_view.dart';
 import 'package:chapter/chapter_module/views/chapter_verse_list_view.dart';
+import 'package:chapter/home_module/view/challenge_celebration_view.dart';
 import 'package:chapter/home_module/view/home_view.dart';
 import 'package:chapter/home_module/view/language_and_author_selection_view.dart';
 import 'package:chapter/home_module/view/onboarding_view.dart';
@@ -83,6 +84,15 @@ final goRouter = GoRouter(
         final currentStreak = num.parse(state.pathParameters['currentStreak']!);
 
         return StreakCelebrationView(returnTo: returnTo, currentStreak: currentStreak);
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.challengeCelebration.path,
+      name: AppRoutes.challengeCelebration.name,
+      builder: (context, state) {
+        final returnTo = state.uri.queryParameters['returnTo'];
+
+        return ChallengeCelebrationView(returnTo: returnTo);
       },
     ),
   ],

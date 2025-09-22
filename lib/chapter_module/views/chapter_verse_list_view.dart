@@ -1,7 +1,6 @@
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/components/push_button.dart';
-import 'package:chapter/main.dart';
 import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
@@ -163,7 +162,7 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
             backgroundColor: isRead == true ? CoreColors.butterScotch : CoreColors.lavenderBlush,
             buttonType: LevelButtonTypes.oval,
             child: Text(
-              (index + 1).toString(),
+              (index).toString(),
               style: Theme.of(context).textTheme.labelMedium,
             ),
           ),
@@ -173,11 +172,3 @@ class _ChapterVerseListViewState extends State<ChapterVerseListView> {
   }
 }
 
-//
-//✔ Timed engagement for active users ensures they stay consistent.
-//✔ Weekly motivation for inactive users is a good balance between reminding and not annoying them.
-//✔ One-time re-engagement for 30+ days inactive users prevents notification fatigue.
-//
-//You can also track the response rate of the 30+ days group. If they don’t engage, consider email reminders or a special comeback offer (e.g., “Restart your Gita journey with a special reading challenge!”).
-//
-//Let me know if you need tweaks later! 🚀

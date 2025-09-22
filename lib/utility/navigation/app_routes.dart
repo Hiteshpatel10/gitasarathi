@@ -13,5 +13,12 @@ class AppRoutes {
   static const verseExplanation = AppRoute('verseExplanation', '/verse/:verseId');
   static const onBoarding = AppRoute('onBoarding', '/onBoarding');
   static const profile = AppRoute('profile', '/profile');
-  static const streakCelebration = AppRoute('streakCelebration', '/streakCelebration/:currentStreak');
+  static const streakCelebration = AppRoute(
+    'streakCelebration',
+    '/streakCelebration/:currentStreak',
+  );
+  static const challengeCelebration = AppRoute(
+    'challengeCelebration',
+    '/challengeCelebration',
+  );
 }

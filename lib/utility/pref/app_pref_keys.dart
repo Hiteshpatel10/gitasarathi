@@ -15,4 +15,6 @@ class AppPrefKeys {
 
   static const lastReadVerseId = "lastReadVerseId";
   static const showContinueReading = "showContinueReading";
+
+  static const lastReadDate = 'last_read_date';
 }

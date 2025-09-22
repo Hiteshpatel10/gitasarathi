@@ -1,3 +1,4 @@
+import 'package:chapter/challenges_module/bloc/user_challenge_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/components/app_error_widget.dart';
 import 'package:chapter/favourite_module/cubit/favourite_cubit.dart';
@@ -34,12 +35,14 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   late final UserCubit _userCubit;
   late final UserActivityCubit _userActivityCubit;
   late final ChaptersAndVerseCubit _chaptersAndVerseCubit;
+  late final UserChallengeCubit _userChallengeCubit;
 
   List<String> explanationTextSplit = [];
   List<String> commentaryTextSplit = [];
   verse_explanation_model.Result? verse;
   int totalPage = 1;
   num? streakChange;
+  bool? userChallengeChange;
 
   bool? isFavourite;
   verse_explanation_model.Favorites? fav;
@@ -54,6 +57,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     _userActivityCubit = context.read<UserActivityCubit>();
     _userCubit = context.read<UserCubit>();
     _chaptersAndVerseCubit = context.read<ChaptersAndVerseCubit>();
+    _userChallengeCubit = context.read<UserChallengeCubit>();
     getVerse();
   }
 
@@ -85,6 +89,8 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
   }
 
   void _updateUserInteractions({num? chapterNo, num? verseNo, num? chapterId, num? verseId}) async {
+    final now = DateTime.now();
+
     if (chapterNo != null && verseNo != null) {
       await BlocProvider.of<UserCubit>(context).insertUserRead(
         chapterNo: chapterNo,
@@ -101,12 +107,32 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       activity: UserActivity.verseRead,
     );
 
-    final now = DateTime.now();
+    final lastReadDate = DateTime.tryParse(prefs.getString(AppPrefKeys.lastReadDate) ?? '');
+    final isNewDay = lastReadDate == null ||
+        lastReadDate.year != now.year ||
+        lastReadDate.month != now.month ||
+        lastReadDate.day != now.day;
 
-    streakChange = await _userActivityCubit.checkStreakChange(
-      month: now.month,
-      year: now.year,
-    );
+    if (isNewDay) {
+      prefs.setString(AppPrefKeys.lastReadDate, now.toString());
+
+      await _userChallengeCubit.getUserChallengesAndChallenges();
+
+      if (_userChallengeCubit.state is UserChallengeSuccessState) {
+        final userChallengeState = _userChallengeCubit.state as UserChallengeSuccessState;
+
+        userChallengeState.challenges.userChallenges?.forEach((element) {
+          if (element.isTaskDoneNow == true) {
+            userChallengeChange = true;
+          }
+        });
+      }
+
+      streakChange = await _userActivityCubit.checkStreakChange(
+        month: now.month,
+        year: now.year,
+      );
+    }
   }
 
   void _showIntro(BuildContext context) {
@@ -133,7 +159,7 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
     final nextVerseRoute =
         "${AppRoutes.verseExplanation.path.split('/:').first}/${(widget.verseId ?? 0) + 1}";
 
-    if (streakChange == null) {
+    if (streakChange == null && userChallengeChange == null) {
       if (navigateNext == true) {
         GoRouter.of(context).pushReplacement(nextVerseRoute);
         return;
@@ -143,11 +169,25 @@ class _VerseExplanationViewState extends State<VerseExplanationView> {
       return;
     }
 
-    GoRouter.of(context).pushReplacementNamed(AppRoutes.streakCelebration.name, pathParameters: {
-      "currentStreak": '$streakChange',
-    }, queryParameters: {
-      if (navigateNext == true) "returnTo": nextVerseRoute,
-    });
+    if (userChallengeChange == true) {
+      GoRouter.of(context).pushReplacementNamed(
+        AppRoutes.challengeCelebration.name,
+        queryParameters: {
+          if (navigateNext == true) "returnTo": nextVerseRoute,
+        },
+      );
+      return;
+    }
+
+    GoRouter.of(context).pushReplacementNamed(
+      AppRoutes.streakCelebration.name,
+      pathParameters: {
+        "currentStreak": '$streakChange',
+      },
+      queryParameters: {
+        if (navigateNext == true) "returnTo": nextVerseRoute,
+      },
+    );
   }
 
   @override

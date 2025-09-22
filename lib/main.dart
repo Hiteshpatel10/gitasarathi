@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:chapter/auth_module/bloc/auth_cubit.dart';
+import 'package:chapter/challenges_module/bloc/user_challenge_cubit.dart';
 import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
 import 'package:chapter/favourite_module/cubit/favourite_cubit.dart';
 import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
@@ -10,6 +11,7 @@ import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/utility/navigation/go_config.dart';
 import 'package:chapter/utility/services/network_check_service.dart';
 import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
+import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -54,7 +56,17 @@ void main() async {
 
   globalNavigatorKey = GlobalKey<NavigatorState>();
   globalScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  runApp(const MyApp());
+
+  final config = ClarityConfig(
+    projectId: "t403aezcye",
+    logLevel: kDebugMode ? LogLevel.Verbose : LogLevel.None,
+  );
+
+  if (kReleaseMode) {
+    runApp(ClarityWidget(app: const MyApp(), clarityConfig: config));
+  } else {
+    runApp(const MyApp());
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -93,6 +105,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        BlocProvider<UserChallengeCubit>(create: (context) => UserChallengeCubit()),
         BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
         BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()),
         BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),

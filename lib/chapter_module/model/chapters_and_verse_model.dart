@@ -52,6 +52,7 @@ class Result {
     bannerImage = json['banner_image'];
     chapterSummaryHindi = json['chapter_summary_hindi'];
     imageName = json['image_name'];
+    coverImage = json['cover_image'];
     name = json['name'];
     nameMeaning = json['name_meaning'];
     nameTranslation = json['name_translation'];
@@ -71,6 +72,7 @@ class Result {
   String? bannerImage;
   String? chapterSummaryHindi;
   String? imageName;
+  String? coverImage;
   String? name;
   String? nameMeaning;
   String? nameTranslation;

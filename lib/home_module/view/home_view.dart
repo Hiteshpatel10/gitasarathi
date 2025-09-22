@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chapter/challenges_module/view/challenge_view.dart';
 import 'package:chapter/chapter_module/views/chapter_list_view.dart';
 import 'package:chapter/favourite_module/view/favourites_view.dart';
 import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
@@ -7,9 +8,9 @@ import 'package:chapter/theme/core_colors.dart';
 import 'package:chapter/user_module/cubit/user_cubit.dart';
 import 'package:chapter/user_module/view/user_activity_view.dart';
 import 'package:chapter/user_module/view/user_profile_view.dart';
-import 'package:chapter/utility/messengers/core_scaffold_messenger.dart';
 import 'package:chapter/utility/navigation/app_routes.dart';
 import 'package:chapter/utility/pref/app_pref_keys.dart';
+import 'package:chapter/utility/services/core_deep_link_service.dart';
 import 'package:chapter/utility/services/core_notification_service.dart';
 import 'package:chapter/utility/services/rate_my_app_service.dart';
 import 'package:chapter/utility/services/session_service.dart';
@@ -19,7 +20,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uni_links/uni_links.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -36,10 +36,10 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
 
-    _currentPageIndex = kDebugMode ? 1 : 0;
+    _currentPageIndex = kDebugMode ? 0 : 1;
     _pageController = PageController(initialPage: _currentPageIndex);
 
-    _initDeepLinks();
+    DeepLinkService.instance.initDeepLinks(context);
     _initNotificationServices();
     SessionService().init();
 
@@ -169,74 +169,6 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  StreamSubscription? _sub;
-
-  Future<void> _initDeepLinks() async {
-    try {
-      final String? link = await getInitialLink();
-      if (link != null) {
-        _navigateToDeepLink(link);
-      }
-    } catch (e) {
-      logger.e("DeepLink - $e");
-    }
-
-    _sub = linkStream.listen((String? link) {
-      if (link != null) {
-        _navigateToDeepLink(link);
-      }
-    });
-  }
-
-  void _navigateToDeepLink(String link) {
-    Uri uri = Uri.parse(link);
-
-    if (uri.pathSegments.isEmpty) {
-      coreMessenger("Invalid path");
-      return;
-    }
-
-    String firstSegment = uri.pathSegments.first;
-    String activity = "Deep Link Open";
-
-    switch (firstSegment) {
-      case "chapters":
-        int? chapterId = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
-        if (chapterId != null) {
-          GoRouter.of(context).push(uri.path);
-          BlocProvider.of<UserCubit>(context).insertUserActivity(
-            activity: activity,
-            chapterId: chapterId,
-          );
-        } else {
-          coreMessenger("Invalid chapter number");
-        }
-        break;
-      case "verse":
-        int? verseId = int.tryParse(uri.pathSegments.length > 1 ? uri.pathSegments[1] : "");
-        if (verseId != null) {
-          GoRouter.of(context).push(uri.path);
-          BlocProvider.of<UserCubit>(context).insertUserActivity(
-            activity: activity,
-            verseId: verseId,
-          );
-        } else {
-          coreMessenger("Invalid verse number");
-        }
-        break;
-      default:
-        BlocProvider.of<UserCubit>(context).insertUserActivity(activity: activity);
-        coreMessenger("Invalid path");
-        break;
-    }
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -249,6 +181,7 @@ class _HomeViewState extends State<HomeView> {
           });
         },
         children: const [
+          ChallengeView(),
           ChapterListView(),
           UserActivityView(),
           FavouritesView(),
@@ -269,15 +202,20 @@ class _HomeViewState extends State<HomeView> {
           currentIndex: _currentPageIndex,
           selectedItemColor: CoreColors.brown,
           unselectedItemColor: CoreColors.textGrey,
+          selectedFontSize: 12,
           type: BottomNavigationBarType.fixed,
           items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.golf_course_sharp),
+              label: "Challenges",
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: "Home",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.timeline),
-              label: "Activity",
+              icon: Icon(Icons.local_fire_department),
+              label: "Streak",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),

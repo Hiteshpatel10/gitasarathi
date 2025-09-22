@@ -113,10 +113,10 @@ class _StreakCelebrationViewState extends State<StreakCelebrationView>
                     value: streakValue,
                     duration: const Duration(milliseconds: 800),
                     curve: Curves.easeOutExpo,
-                    textStyle: Theme.of(context).textTheme.displayLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: CoreColors.brown,
-                        ),
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .displayLarge
+                        ?.copyWith(fontWeight: FontWeight.w700, color: CoreColors.brown),
                   ),
                   const SizedBox(height: 8),
                   AnimatedOpacity(

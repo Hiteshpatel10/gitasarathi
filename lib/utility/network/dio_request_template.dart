@@ -9,11 +9,13 @@ Future<dynamic> getRequest({
 
   Response? response;
   try {
-    debugPrint("^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest Start ^^^^^^^^^^^^^^^^^^");
+    debugPrint(
+        "^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest Start ^^^^^^^^^^^^^^^^^^");
 
     response = await client.get(apiEndPoint);
 
-    debugPrint("^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest End ^^^^^^^^^^^^^^^^^^");
+    debugPrint(
+        "^^^^^^^^^^^^^^^^^^ $apiEndPoint getRequest End ^^^^^^^^^^^^^^^^^^");
 
     if (response.statusCode != 200) {
       throw DioError(
@@ -22,7 +24,8 @@ Future<dynamic> getRequest({
       );
     }
   } on DioError catch (dioError) {
-    debugPrint("Error in getRequest: Failed to call api $apiEndPoint ${dioError.message}");
+    debugPrint(
+        "Error in getRequest: Failed to call api $apiEndPoint ${dioError.message}");
     rethrow;
   } catch (error) {
     debugPrint("Error in getRequest: $apiEndPoint $error");
@@ -45,13 +48,8 @@ Future<dynamic> postRequest({
 
     response = await client.post(apiEndPoint, data: postData);
 
-    if (response.statusCode != 200) {
-      throw DioError(
-        requestOptions: RequestOptions(path: apiEndPoint),
-      );
-    }
-
-    debugPrint("~~~~~~~~~~~~~~~~~~~~ $apiEndPoint postRequest End ~~~~~~~~~~~~~~~~~~~~ ");
+    debugPrint(
+        "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint postRequest End ~~~~~~~~~~~~~~~~~~~~ ");
   } on DioError catch (dioError) {
     debugPrint("Error in getRequest: Failed to call api ${dioError.message}");
     rethrow;
@@ -82,7 +80,8 @@ Future<dynamic> putRequest({
       );
     }
 
-    debugPrint("~~~~~~~~~~~~~~~~~~~~ $apiEndPoint putRequest End ~~~~~~~~~~~~~~~~~~~~ ");
+    debugPrint(
+        "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint putRequest End ~~~~~~~~~~~~~~~~~~~~ ");
   } on DioError catch (dioError) {
     debugPrint("Error in putRequest: Failed to call api ${dioError.message}");
     rethrow;
@@ -127,7 +126,8 @@ Future<dynamic> sendRequest({
     debugPrint(
         "~~~~~~~~~~~~~~~~~~~~ $apiEndPoint ${method.name} Request End ~~~~~~~~~~~~~~~~~~~~ ");
   } on DioError catch (dioError) {
-    debugPrint("Error in ${method.name} request: Failed to call API ${dioError.message}");
+    debugPrint(
+        "Error in ${method.name} request: Failed to call API ${dioError.message}");
     rethrow;
   } catch (error) {
     debugPrint("Error in ${method.name} request:");

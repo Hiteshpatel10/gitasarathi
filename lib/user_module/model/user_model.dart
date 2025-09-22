@@ -49,7 +49,7 @@ class Result {
     updatedAt = json['updated_at'];
     displayName = json['display_name'];
     fcmToken = json['fcm_token'];
-    lastVerseRead = UserActivity.fromJson(json['last_verse_read']);
+    lastVerseRead = json['user_reads'] != null ? UserActivity.fromJson(json['last_verse_read']) : null;
     if (json['user_reads'] != null) {
       userReads = [];
       json['user_reads'].forEach((v) {
