@@ -1,204 +1,122 @@
-import 'dart:async';
-import 'package:chapter/auth_module/bloc/auth_cubit.dart';
-import 'package:chapter/challenges_module/bloc/user_challenge_cubit.dart';
-import 'package:chapter/chapter_module/bloc/chapters_and_verse_cubit.dart';
-import 'package:chapter/favourite_module/cubit/favourite_cubit.dart';
-import 'package:chapter/home_module/cubit/language_and_author_cubit.dart';
-import 'package:chapter/home_module/cubit/onboarding_cubit.dart';
-import 'package:chapter/theme/core_colors.dart';
-import 'package:chapter/user_module/cubit/user_activity_cubit.dart';
-import 'package:chapter/user_module/cubit/user_cubit.dart';
-import 'package:chapter/utility/navigation/go_config.dart';
-import 'package:chapter/utility/services/network_check_service.dart';
-import 'package:chapter/verse_module/cubit/verse_explanation_cubit.dart';
-import 'package:clarity_flutter/clarity_flutter.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-late final SharedPreferences prefs;
-late Logger logger;
-late final GlobalKey<NavigatorState> globalNavigatorKey;
-late final GlobalKey<ScaffoldMessengerState> globalScaffoldMessengerKey;
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+void main() {
+  runApp(const MyApp());
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  prefs = await SharedPreferences.getInstance();
-  await Firebase.initializeApp();
-  logger = Logger();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  if (kDebugMode) {
-    FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false);
-  }
-
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-
-  globalNavigatorKey = GlobalKey<NavigatorState>();
-  globalScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-
-  final config = ClarityConfig(
-    projectId: "t403aezcye",
-    logLevel: kDebugMode ? LogLevel.Verbose : LogLevel.None,
-  );
-
-  if (kReleaseMode) {
-    runApp(ClarityWidget(app: const MyApp(), clarityConfig: config));
-  } else {
-    runApp(const MyApp());
-  }
-}
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  bool? show;
-  late final CoreConnectionCheckService _connectivityService;
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
+
   @override
-  void initState() {
-    super.initState();
-    _connectivityService = CoreConnectionCheckService();
-    _connectivityService.startListening(
-      AppLifecycleState.resumed,
-      onConnected: () {
-        if (show == true) {
-          setState(() {
-            show = false;
-          });
-        }
-      },
-      onDisconnected: () {
-        setState(() {
-          show = true;
-        });
-      },
-    );
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
-        BlocProvider<UserChallengeCubit>(create: (context) => UserChallengeCubit()),
-        BlocProvider<UserActivityCubit>(create: (context) => UserActivityCubit()),
-        BlocProvider<OnboardingCubit>(create: (context) => OnboardingCubit()),
-        BlocProvider<LanguageAndAuthorCubit>(create: (context) => LanguageAndAuthorCubit()),
-        BlocProvider<ChaptersAndVerseCubit>(
-            create: (context) => ChaptersAndVerseCubit()..getChaptersAndVerse()),
-        BlocProvider<VerseExplanationCubit>(create: (context) => VerseExplanationCubit()),
-        BlocProvider<UserCubit>(create: (context) => UserCubit()),
-        BlocProvider<FavouriteCubit>(create: (context) => FavouriteCubit()),
-      ],
-      child: MaterialApp.router(
-        title: 'Gita Sarathi',
-        scaffoldMessengerKey: globalScaffoldMessengerKey,
-        builder: (context, child) {
-          final boldText = MediaQuery.boldTextOf(context);
-
-          final newMediaQueryData = MediaQuery.of(context).copyWith(
-            boldText: boldText,
-            textScaler: const TextScaler.linear(1.0),
-          );
-
-          return MediaQuery(
-            data: newMediaQueryData,
-            child: Stack(
-              children: [
-                child ?? const SizedBox(),
-                Positioned(
-                  bottom: kBottomNavigationBarHeight + 20,
-                  child: AnimatedCrossFade(
-                    duration: Durations.long2,
-                    crossFadeState:
-                        show == true ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                    firstChild: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: CoreColors.whiteFrost,
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.wifi_off),
-                          const SizedBox(width: 12),
-                          Text(
-                            "No Internet Connection",
-                            style: Theme.of(context).textTheme.titleSmall,
-                          )
-                        ],
-                      ),
-                    ),
-                    secondChild: SizedBox(width: MediaQuery.of(context).size.width, height: 0),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: CoreColors.yellowishOrange),
-          useMaterial3: true,
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-            },
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 54),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          bottomSheetTheme: const BottomSheetThemeData(
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
-            ),
-          ),
-        ),
-        routerConfig: goRouter,
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
       ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('You have pushed the button this many times:'),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
