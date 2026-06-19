@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:app/core/constants/app_assets.dart';
 import 'package:app/core/theme/app_colors.dart';
+import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen>
       backgroundColor: colors.systemBackground,
       body: Column(
         children: [
-          // ── Top Area (replaces the Positioned background block) ──
+          // ── Top Area ──────────────────────────────────────────────────
           Expanded(
             child: ColoredBox(
               color: colors.systemBackground,
@@ -64,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
 
-          // ── Bottom Sheet (fixed initial size, draggable upward) ──
+          // ── Bottom Sheet (slides up on load) ──────────────────────────
           AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
@@ -98,7 +102,7 @@ class _TopContent extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: const AssetImage('assets/images/yantra_bg.png'),
+            image: const AssetImage(AppAssets.yantraBg),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.grey.withValues(alpha: isDark ? 0.12 : 0.08),
@@ -143,13 +147,32 @@ class _TopContent extends StatelessWidget {
 }
 
 // ── Bottom sheet widget ─────────────────────────────────────────────────────
-class _BottomSheet extends StatelessWidget {
+// Uses ConsumerWidget so it can watch AuthController state for the loading indicator.
+class _BottomSheet extends ConsumerWidget {
   const _BottomSheet({required this.colors});
 
   final AppThemeColors colors;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
+
+    // Show auth errors via SnackBar
+    ref.listen(authControllerProvider, (_, next) {
+      if (next.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              next.error?.toString() ?? 'Authentication failed',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+    });
+
     return Container(
       decoration: BoxDecoration(
         color: colors.secondarySystemBackground,
@@ -193,7 +216,11 @@ class _BottomSheet extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: isLoading
+                    ? null
+                    : () => ref
+                        .read(authControllerProvider.notifier)
+                        .loginWithGoogle(),
                 style: OutlinedButton.styleFrom(
                   backgroundColor: colors.tertiarySystemBackground,
                   side: BorderSide(
@@ -205,24 +232,36 @@ class _BottomSheet extends StatelessWidget {
                   ),
                   foregroundColor: colors.label,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/google_logo.png',
-                      height: 20,
-                      width: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Continue with Google',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: colors.label,
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colors.saffron,
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            AppAssets.googleLogo,
+                            height: 20,
+                            width: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Continue with Google',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: colors.label,
+                                ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
             const SizedBox(height: 48),

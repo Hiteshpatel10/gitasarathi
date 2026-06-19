@@ -166,7 +166,7 @@ return expenses.when(
 
 ## Forbidden
 
-- `print` — use `core/utils/logger.dart`.
+- `print` — use `ref.read(loggerProvider).d('message')` from `core/services/logger_service.dart`.
 - `dynamic` outside of explicit deserialization boundaries.
 - `late` for values that could legitimately be null. Use `?` instead.
 - `as` casts where a typed API exists.

@@ -1,4 +1,4 @@
-package com.gitasarathi.app
+package com.gitasarathi
 
 import io.flutter.embedding.android.FlutterActivity
 
