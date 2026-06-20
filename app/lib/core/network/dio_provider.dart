@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,14 +22,23 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) {
+        options.headers['device'] = Platform.isAndroid ? 'Android' : 'IOS';
+        
         final token = prefs.getString(PrefKeys.userToken);
         if (token != null && token.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $token';
+          options.headers['Authorization'] = token; // Old app does not use "Bearer "
         }
         return handler.next(options);
       },
     ),
   );
+
+  dio.interceptors.add(LogInterceptor(
+    request: true,
+    requestBody: true,
+    responseBody: true,
+    error: true,
+  ));
 
   return dio;
 });
