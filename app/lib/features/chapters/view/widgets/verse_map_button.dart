@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/widgets/push_button.dart';
 
 enum VerseState {
   completed,
@@ -108,33 +109,21 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
         break;
     }
 
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [topColor, bottomColor],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: border,
-            boxShadow: shadows,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            '${widget.verseNumber}',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+    return LevelAnimatedButton(
+      width: 60,
+      height: 60,
+      buttonHeight: 8,
+      buttonType: ButtonTypes.circle,
+      buttonColor: topColor,
+      backgroundColor: bottomColor,
+      onPressed: widget.state != VerseState.locked ? widget.onTap : null,
+      child: Center(
+        child: Text(
+          '${widget.verseNumber}',
+          style: TextStyle(
+            color: textColor,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

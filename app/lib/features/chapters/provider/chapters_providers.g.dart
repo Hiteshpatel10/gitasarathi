@@ -9,17 +9,11 @@ part of 'chapters_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(chaptersList)
+@ProviderFor(ChaptersList)
 const chaptersListProvider = ChaptersListProvider._();
 
 final class ChaptersListProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<Chapter>?>,
-          List<Chapter>?,
-          FutureOr<List<Chapter>?>
-        >
-    with $FutureModifier<List<Chapter>?>, $FutureProvider<List<Chapter>?> {
+    extends $AsyncNotifierProvider<ChaptersList, List<Chapter>?> {
   const ChaptersListProvider._()
     : super(
         from: null,
@@ -36,17 +30,29 @@ final class ChaptersListProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Chapter>?> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<Chapter>?> create(Ref ref) {
-    return chaptersList(ref);
-  }
+  ChaptersList create() => ChaptersList();
 }
 
-String _$chaptersListHash() => r'6fd19d298d8769a8cebe85caecee669b7562881a';
+String _$chaptersListHash() => r'aa86984c548bd1b3c217cbdb53646ef179ce51ee';
+
+abstract class _$ChaptersList extends $AsyncNotifier<List<Chapter>?> {
+  FutureOr<List<Chapter>?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<List<Chapter>?>, List<Chapter>?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Chapter>?>, List<Chapter>?>,
+              AsyncValue<List<Chapter>?>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
 
 @ProviderFor(chapterVerses)
 const chapterVersesProvider = ChapterVersesFamily._();

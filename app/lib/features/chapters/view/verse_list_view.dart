@@ -112,6 +112,7 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
                 isFirst: index == 0,
                 isLast: index == verses.length - 1,
                 state: state,
+                scrollController: _scrollController,
                 onTap: () {
                   // Navigate to verse explanation
                 },

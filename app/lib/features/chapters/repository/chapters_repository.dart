@@ -78,11 +78,11 @@ class ChaptersRepository {
     return null;
   }
 
-  Future<Map<String, dynamic>?> getProgress() async {
+  Future<UserProgressData?> getProgress() async {
     try {
       final response = await _dio.get(ApiEndpoints.progress);
       if (response.data['status'] == 1 && response.data['result'] != null) {
-        return response.data['result'] as Map<String, dynamic>;
+        return UserProgressData.fromJson(response.data['result'] as Map<String, dynamic>);
       }
       return null;
     } catch (e) {

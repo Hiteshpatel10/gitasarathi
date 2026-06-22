@@ -89,3 +89,34 @@ class VerseMetadata {
     );
   }
 }
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UserProgressData {
+  UserProgressData({
+    required this.reads,
+    required this.listens,
+  });
+
+  @JsonKey(defaultValue: [])
+  final List<ChapterProgress> reads;
+  
+  @JsonKey(defaultValue: [])
+  final List<ChapterProgress> listens;
+
+  factory UserProgressData.fromJson(Map<String, dynamic> json) => _$UserProgressDataFromJson(json);
+  Map<String, dynamic> toJson() => _$UserProgressDataToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class ChapterProgress {
+  ChapterProgress({
+    required this.chapter,
+    required this.progress,
+  });
+
+  final int chapter;
+  final double progress;
+
+  factory ChapterProgress.fromJson(Map<String, dynamic> json) => _$ChapterProgressFromJson(json);
+  Map<String, dynamic> toJson() => _$ChapterProgressToJson(this);
+}
