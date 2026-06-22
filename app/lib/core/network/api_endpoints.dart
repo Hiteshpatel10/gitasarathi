@@ -1,7 +1,11 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseURL = "https://gitasarathi.hiteshbuilds.com/";
+  // Use http://172.23.16.170:3000/ for physical device on the same Wi-Fi network
+  static const String baseURL = "http://172.23.16.170:3000/";
   
   static const String authentication = "authentication";
+  static const String lastActivity = "last-activity";
+  static const String streakSummary = "streak-summary";
+  static const String verseOfTheDay = "verse-of-the-day";
 }

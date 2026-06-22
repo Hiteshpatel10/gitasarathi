@@ -23,10 +23,10 @@ final dioProvider = Provider<Dio>((ref) {
     InterceptorsWrapper(
       onRequest: (options, handler) {
         options.headers['device'] = Platform.isAndroid ? 'Android' : 'IOS';
-        
+
         final token = prefs.getString(PrefKeys.userToken);
         if (token != null && token.isNotEmpty) {
-          options.headers['Authorization'] = token; // Old app does not use "Bearer "
+          options.headers['Authorization'] = token;
         }
         return handler.next(options);
       },
@@ -36,7 +36,7 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(LogInterceptor(
     request: true,
     requestBody: true,
-    responseBody: true,
+    responseBody: false,
     error: true,
   ));
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
 import 'package:app/core/constants/app_assets.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/router/route_destinations.dart';
 import '../controller/auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -170,6 +173,10 @@ class _BottomSheet extends ConsumerWidget {
             backgroundColor: Colors.red.shade700,
           ),
         );
+      } else if (!next.isLoading && !next.hasError) {
+        // Since authControllerProvider builds a FutureOr<void>, 
+        // a transition to non-loading with no error means it succeeded.
+        context.goNamed(HomeDestination.instance.name);
       }
     });
 

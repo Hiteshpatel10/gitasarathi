@@ -29,8 +29,6 @@ class AuthController extends _$AuthController {
 
         final prefs = ref.read(prefServiceProvider);
         await prefs.setString(PrefKeys.userToken, backendToken);
-        
-        // TODO: Navigation to Home will happen here or in the UI layer
       }
     });
   }

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/core/theme/app_theme.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/features/auth/repository/auth_repository.dart';
-import 'package:app/features/auth/view/login_screen.dart';
+import 'package:app/core/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,17 +25,19 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(appRouterProvider);
+
+    return MaterialApp.router(
       title: 'GitaSarathi',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const LoginScreen(),
+      routerConfig: goRouter,
     );
   }
 }
