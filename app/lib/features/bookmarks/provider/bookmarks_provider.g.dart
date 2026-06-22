@@ -1,0 +1,55 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'bookmarks_provider.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(BookmarksNotifier)
+const bookmarksProvider = BookmarksNotifierProvider._();
+
+final class BookmarksNotifierProvider
+    extends $AsyncNotifierProvider<BookmarksNotifier, Set<int>> {
+  const BookmarksNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bookmarksProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$bookmarksNotifierHash();
+
+  @$internal
+  @override
+  BookmarksNotifier create() => BookmarksNotifier();
+}
+
+String _$bookmarksNotifierHash() => r'7d638941a57ecc313071f2122735b6aa204e9a7b';
+
+abstract class _$BookmarksNotifier extends $AsyncNotifier<Set<int>> {
+  FutureOr<Set<int>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<Set<int>>, Set<int>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Set<int>>, Set<int>>,
+              AsyncValue<Set<int>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

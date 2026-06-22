@@ -1,3 +1,7 @@
 ssh -i /Users/hitesh/local/keys/aws/geek_lab_key_pair.pem \
 -L 3307:hitesh-builds-db.cveyswwwy81i.ap-south-1.rds.amazonaws.com:3306 \
 ubuntu@ec2-13-232-176-172.ap-south-1.compute.amazonaws.com -N
+
+ssh -i /home/hitesh-patel/Dev/keys/aws/geek_lab_key_pair.pem \
+-L 3307:hitesh-builds-db.cveyswwwy81i.ap-south-1.rds.amazonaws.com:3306 \
+ubuntu@ec2-13-232-176-172.ap-south-1.compute.amazonaws.com -N   

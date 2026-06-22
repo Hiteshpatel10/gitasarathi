@@ -1,8 +1,8 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // Use http://172.23.16.170:3000/ for physical device on the same Wi-Fi network
-  static const String baseURL = "http://172.23.16.170:3000/";
+  // Use http://10.155.14.61:3000/ for physical device on the same Wi-Fi network
+  static const String baseURL = "http://10.155.14.61:3000/";
   
   static const String authentication = "authentication";
   static const String user = "user";
@@ -13,4 +13,7 @@ class ApiEndpoints {
   static const String chaptersAndVerses = "chaptersAndVerses";
   static const String verseExplanation = "verseExplanation";
   static const String progress = "progress";
+  static const String favoriteList = "favorite/list";
+  static const String favoriteAdd = "favorite/add";
+  static const String favoriteRemove = "favorite/remove";
 }
