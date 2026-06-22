@@ -46,11 +46,16 @@ class ChaptersList extends _$ChaptersList {
       final listenMap = {
         for (var l in listens) l.chapter: l.progress
       };
+      final versesMap = {
+        for (var r in reads) 
+          r.chapter: (r.verses?.split(',').where((s) => s.isNotEmpty).map((s) => int.tryParse(s.trim()) ?? 0).where((i) => i > 0).toList() ?? <int>[])
+      };
 
       final newChapters = chapters.map((chapter) {
         return chapter.copyWith(
           progress: readMap[chapter.chapterNumber] ?? chapter.progress,
           listenProgress: listenMap[chapter.chapterNumber] ?? chapter.listenProgress,
+          readVerses: versesMap[chapter.chapterNumber] ?? chapter.readVerses,
         );
       }).toList();
 

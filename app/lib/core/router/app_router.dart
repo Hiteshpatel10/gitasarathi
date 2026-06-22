@@ -68,6 +68,7 @@ GoRouter appRouter(Ref ref) {
                 builder: (context, state) => ChaptersDestination.instance.build(context),
                 routes: [
                   GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
                     name: AppRoutes.verseList.name,
                     path: AppRoutes.verseList.path,
                     builder: (context, state) {

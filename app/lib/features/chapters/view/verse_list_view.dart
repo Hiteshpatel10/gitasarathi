@@ -53,21 +53,6 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
 
     return Scaffold(
       backgroundColor: colors.systemBackground,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Chapter ${widget.chapterId}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body: versesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
@@ -83,41 +68,126 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
           );
 
           final progressPct = chapter.progress ?? 0.0;
-          final completedCount = ((progressPct / 100) * verses.length).floor();
+          final completedCount = chapter.readVerses?.length ?? 0;
           
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _scrollToCurrent(completedCount);
           });
 
-          return ListView.builder(
-            controller: _scrollController,
-            reverse: true,
-            padding: const EdgeInsets.symmetric(vertical: 100),
-            itemCount: verses.length,
-            itemBuilder: (context, index) {
-              final verse = verses[index];
-              
-              VerseState state;
-              if (index < completedCount) {
-                state = VerseState.completed;
-              } else if (index == completedCount) {
-                state = VerseState.current;
-              } else {
-                state = VerseState.locked;
-              }
+          return Column(
+            children: [
+              // Custom Header
+              SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                            onPressed: () => context.pop(),
+                          ),
+                          Expanded(
+                            child: Text(
+                              '${chapter.nameTranslation} - Chapter ${chapter.chapterNumber}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Serif', // Use a serif font to match image
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.share_outlined, color: Colors.white, size: 22),
+                            onPressed: () {
+                              // Share functionality
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '$completedCount OF ${verses.length} VERSES COMPLETED',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: LinearProgressIndicator(
+                          value: progressPct / 100,
+                          backgroundColor: Colors.white.withValues(alpha: 0.1),
+                          valueColor: AlwaysStoppedAnimation<Color>(colors.saffron),
+                          minHeight: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // List View area
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Central vertical line
+                    Center(
+                      child: Container(
+                        width: 1,
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    // Verse Nodes
+                    ListView.builder(
+                      controller: _scrollController,
+                      reverse: true,
+                      padding: const EdgeInsets.symmetric(vertical: 100),
+                      itemCount: verses.length,
+                      itemBuilder: (context, index) {
+                        final verse = verses[index];
+                        
+                        final isRead = chapter.readVerses?.contains(verse.verseNumber) ?? false;
+                        
+                        VerseState state;
+                        if (isRead) {
+                          state = VerseState.completed;
+                        } else {
+                          // The first unread verse is the "current" one
+                          final firstUnreadIndex = verses.indexWhere(
+                            (v) => !(chapter.readVerses?.contains(v.verseNumber) ?? false)
+                          );
+                          if (index == firstUnreadIndex) {
+                            state = VerseState.current;
+                          } else {
+                            state = VerseState.locked;
+                          }
+                        }
 
-              return VerseMapNode(
-                index: index,
-                verseNumber: verse.verseNumber,
-                isFirst: index == 0,
-                isLast: index == verses.length - 1,
-                state: state,
-                scrollController: _scrollController,
-                onTap: () {
-                  // Navigate to verse explanation
-                },
-              );
-            },
+                        return VerseMapNode(
+                          index: index,
+                          verseNumber: verse.verseNumber,
+                          isFirst: index == 0,
+                          isLast: index == verses.length - 1,
+                          state: state,
+                          scrollController: _scrollController,
+                          onTap: () {
+                            // Navigate to verse explanation
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
         },
       ),

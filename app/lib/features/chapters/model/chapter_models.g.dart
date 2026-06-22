@@ -20,6 +20,9 @@ Chapter _$ChapterFromJson(Map<String, dynamic> json) => Chapter(
   versesCount: (json['verses_count'] as num).toInt(),
   progress: (json['progress'] as num?)?.toDouble(),
   listenProgress: (json['listen_progress'] as num?)?.toDouble(),
+  readVerses: (json['read_verses'] as List<dynamic>?)
+      ?.map((e) => (e as num).toInt())
+      .toList(),
 );
 
 Map<String, dynamic> _$ChapterToJson(Chapter instance) => <String, dynamic>{
@@ -36,6 +39,7 @@ Map<String, dynamic> _$ChapterToJson(Chapter instance) => <String, dynamic>{
   'verses_count': instance.versesCount,
   'progress': instance.progress,
   'listen_progress': instance.listenProgress,
+  'read_verses': instance.readVerses,
 };
 
 UserProgressData _$UserProgressDataFromJson(Map<String, dynamic> json) =>
@@ -59,10 +63,12 @@ ChapterProgress _$ChapterProgressFromJson(Map<String, dynamic> json) =>
     ChapterProgress(
       chapter: (json['chapter'] as num).toInt(),
       progress: (json['progress'] as num).toDouble(),
+      verses: json['verses'] as String?,
     );
 
 Map<String, dynamic> _$ChapterProgressToJson(ChapterProgress instance) =>
     <String, dynamic>{
       'chapter': instance.chapter,
       'progress': instance.progress,
+      'verses': instance.verses,
     };

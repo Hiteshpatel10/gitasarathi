@@ -19,6 +19,7 @@ class LevelAnimatedButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final EdgeInsetsGeometry? padding;
   final InteractiveInkFeatureFactory? splashFactory;
+  final BorderSide? side;
 
   const LevelAnimatedButton({
     Key? key,
@@ -38,6 +39,7 @@ class LevelAnimatedButton extends StatefulWidget {
     this.disabledBackgroundColor,
     this.splashFactory = NoSplash.splashFactory,
     this.buttonType = ButtonTypes.roundedRectangle,
+    this.side,
     required this.child,
   }) : super(key: key);
 
@@ -75,6 +77,7 @@ class _LevelAnimatedButtonState extends State<LevelAnimatedButton>
         disabledBackgroundColor: widget.disabledBackgroundColor,
         splashFactory: widget.splashFactory,
         buttonType: widget.buttonType,
+        side: widget.side,
         child: widget.child,
       ),
     );
@@ -133,6 +136,7 @@ class LevelButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final EdgeInsetsGeometry? padding;
   final InteractiveInkFeatureFactory? splashFactory;
+  final BorderSide? side;
 
   const LevelButton({
     Key? key,
@@ -153,6 +157,7 @@ class LevelButton extends StatelessWidget {
     this.disabledBackgroundColor,
     this.splashFactory = NoSplash.splashFactory,
     this.buttonType = ButtonTypes.roundedRectangle,
+    this.side,
     required this.child,
   })  : _buttonPosition = buttonPosition,
         super(key: key);
@@ -210,6 +215,89 @@ class LevelButton extends StatelessWidget {
         ),
       ),
     );
+    final bottomColor = buttonColor ??
+        (backgroundColor != null
+            ? shadeColor(backgroundColor ?? Colors.black, 0.4)
+            : isDisabled
+            ? null
+            : shadeColor(Theme.of(context).colorScheme.primary, 0.4));
+
+    if (buttonType == ButtonTypes.circle) {
+      return Container(
+        width: levelWidth,
+        height: (isPressed || isDisabled) ? height : height + buttonHeight,
+        child: Stack(
+          children: [
+            if (!isDisabled)
+              Positioned(
+                top: (isPressed || isDisabled) ? 0 : buttonHeight,
+                left: 0,
+                right: 0,
+                height: height,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: bottomColor,
+                    shape: BoxShape.circle,
+                    border: side == null ? null : Border.fromBorderSide(side!),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: (isPressed || isDisabled) ? buttonHeight : 0,
+              left: 0,
+              right: 0,
+              height: height,
+              child: Theme.of(context).useMaterial3 == true
+                  ? FilledButton(
+                      onPressed: onPressed,
+                      style: FilledButton.styleFrom(
+                        shape: const CircleBorder(),
+                        minimumSize: minimumSize,
+                        maximumSize: maximumSize,
+                        splashFactory: splashFactory,
+                        foregroundColor: foregroundColor,
+                        backgroundColor: backgroundColor,
+                        disabledForegroundColor: disabledForegroundColor,
+                        disabledBackgroundColor: disabledBackgroundColor,
+                        side: side,
+                        padding: (padding != null)
+                            ? const EdgeInsets.all(0).add(padding!)
+                            : const EdgeInsets.all(0),
+                      ).copyWith(
+                          elevation: WidgetStateProperty.all(0),
+                          overlayColor: WidgetStateProperty.all(
+                              splashFactory == NoSplash.splashFactory
+                                  ? Colors.transparent
+                                  : Theme.of(context).splashColor)),
+                      child: child)
+                  : ElevatedButton(
+                      onPressed: onPressed,
+                      style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              minimumSize: minimumSize,
+                              maximumSize: maximumSize,
+                              splashFactory: splashFactory,
+                              foregroundColor: foregroundColor,
+                              backgroundColor: backgroundColor,
+                              disabledForegroundColor: disabledForegroundColor,
+                              disabledBackgroundColor: disabledBackgroundColor,
+                              side: side,
+                              padding: (padding != null)
+                                  ? const EdgeInsets.all(0).add(padding!)
+                                  : const EdgeInsets.all(0))
+                          .copyWith(
+                              elevation: WidgetStateProperty.all(0),
+                              overlayColor: WidgetStateProperty.all(
+                                  splashFactory == NoSplash.splashFactory
+                                      ? Colors.transparent
+                                      : Theme.of(context).splashColor)),
+                      child: child),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
         width: levelWidth,
         height: (isPressed || isDisabled) ? height : height + buttonHeight,
@@ -221,12 +309,7 @@ class LevelButton extends StatelessWidget {
           isPressed || isDisabled ? 0 : buttonHeight,
         ),
         decoration: BoxDecoration(
-            color: buttonColor ??
-                (backgroundColor != null
-                    ? shadeColor(backgroundColor ?? Colors.black, 0.4)
-                    : isDisabled
-                    ? null
-                    : shadeColor(Theme.of(context).colorScheme.primary, 0.4)),
+            color: bottomColor,
             borderRadius: (_buttonPosition == null)
                 ? buttonType == ButtonTypes.oval
                 ? BorderRadius.all(Radius.elliptical(levelWidth, height))
@@ -240,7 +323,8 @@ class LevelButton extends StatelessWidget {
                 : buttonType == ButtonTypes.oval
                 ? BorderRadius.horizontal(
                 right: Radius.elliptical(levelWidth * 2, height))
-                : BorderRadius.horizontal(right: Radius.circular(levelBorderRadius))),
+                : BorderRadius.horizontal(right: Radius.circular(levelBorderRadius)),
+            border: side == null ? null : Border.fromBorderSide(side!)),
         child: Theme.of(context).useMaterial3 == true
             ? FilledButton(
             onPressed: onPressed,
@@ -253,6 +337,7 @@ class LevelButton extends StatelessWidget {
               backgroundColor: backgroundColor,
               disabledForegroundColor: disabledForegroundColor,
               disabledBackgroundColor: disabledBackgroundColor,
+              side: side,
               padding: (padding != null)
                   ? const EdgeInsets.all(0).add(padding!)
                   : const EdgeInsets.all(0),
@@ -273,6 +358,7 @@ class LevelButton extends StatelessWidget {
                 backgroundColor: backgroundColor,
                 disabledForegroundColor: disabledForegroundColor,
                 disabledBackgroundColor: disabledBackgroundColor,
+                side: side,
                 padding: (padding != null)
                     ? const EdgeInsets.all(0).add(padding!)
                     : const EdgeInsets.all(0))

@@ -18,6 +18,7 @@ class Chapter {
     required this.versesCount,
     this.progress,
     this.listenProgress,
+    this.readVerses,
   });
 
   final int id;
@@ -33,6 +34,7 @@ class Chapter {
   final int versesCount;
   final double? progress;
   final double? listenProgress;
+  final List<int>? readVerses;
 
   Chapter copyWith({
     int? id,
@@ -48,6 +50,7 @@ class Chapter {
     int? versesCount,
     double? progress,
     double? listenProgress,
+    List<int>? readVerses,
   }) {
     return Chapter(
       id: id ?? this.id,
@@ -63,6 +66,7 @@ class Chapter {
       versesCount: versesCount ?? this.versesCount,
       progress: progress ?? this.progress,
       listenProgress: listenProgress ?? this.listenProgress,
+      readVerses: readVerses ?? this.readVerses,
     );
   }
 
@@ -112,11 +116,19 @@ class ChapterProgress {
   ChapterProgress({
     required this.chapter,
     required this.progress,
+    this.verses,
   });
 
   final int chapter;
   final double progress;
+  final String? verses;
 
-  factory ChapterProgress.fromJson(Map<String, dynamic> json) => _$ChapterProgressFromJson(json);
+  factory ChapterProgress.fromJson(Map<String, dynamic> json) {
+    return ChapterProgress(
+      chapter: json['chapter'] as int,
+      progress: (json['progress'] as num).toDouble(),
+      verses: json['verses'] as String?,
+    );
+  }
   Map<String, dynamic> toJson() => _$ChapterProgressToJson(this);
 }

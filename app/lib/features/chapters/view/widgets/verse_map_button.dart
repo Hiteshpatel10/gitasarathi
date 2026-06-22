@@ -70,52 +70,48 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
     final colors = context.colors;
     
     Color topColor;
-    Color bottomColor;
+    Color? bottomColor;
     Color textColor;
-    BoxBorder? border;
+    BorderSide? borderSide;
     List<BoxShadow> shadows = [];
+    double buttonDepth = 0;
 
     switch (widget.state) {
       case VerseState.completed:
         topColor = colors.saffron;
-        bottomColor = colors.saffron.withValues(alpha: 0.7);
+        bottomColor = const Color(0xFFC07628); // Darker orange for 3D depth
         textColor = Colors.white;
-        shadows = [
-          BoxShadow(
-            color: colors.saffron.withValues(alpha: 0.4),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          )
-        ];
+        buttonDepth = 6;
         break;
       case VerseState.current:
         topColor = colors.systemBackground;
-        bottomColor = colors.systemBackground.withValues(alpha: 0.8);
         textColor = colors.saffron;
-        border = Border.all(color: colors.saffron, width: 2);
+        borderSide = BorderSide(color: colors.saffron, width: 2);
+        buttonDepth = 0; // Flat
         shadows = [
           BoxShadow(
-            color: colors.saffron.withValues(alpha: 0.6),
-            blurRadius: 12,
-            spreadRadius: 2,
+            color: colors.saffron.withValues(alpha: 0.15),
+            blurRadius: 20,
+            spreadRadius: 8,
           )
         ];
         break;
       case VerseState.locked:
-        topColor = Colors.white.withValues(alpha: 0.1);
-        bottomColor = Colors.white.withValues(alpha: 0.05);
+        topColor = colors.systemBackground;
         textColor = Colors.white.withValues(alpha: 0.4);
-        border = Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1);
+        borderSide = BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1);
+        buttonDepth = 0; // Flat
         break;
     }
 
-    return LevelAnimatedButton(
+    Widget button = LevelAnimatedButton(
       width: 60,
       height: 60,
-      buttonHeight: 8,
+      buttonHeight: buttonDepth,
       buttonType: ButtonTypes.circle,
       buttonColor: topColor,
       backgroundColor: bottomColor,
+      side: borderSide,
       onPressed: widget.state != VerseState.locked ? widget.onTap : null,
       child: Center(
         child: Text(
@@ -128,5 +124,46 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
         ),
       ),
     );
+
+    if (widget.state == VerseState.current) {
+      return Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          // Aura Glow
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: shadows,
+            ),
+          ),
+          button,
+          // START Badge
+          Positioned(
+            top: -12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: colors.systemBackground,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: colors.saffron, width: 1),
+              ),
+              child: Text(
+                'START',
+                style: TextStyle(
+                  color: colors.saffron,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return button;
   }
 }
