@@ -9,19 +9,11 @@ import {
 import { GitaService } from './gita.service';
 import { VerseExplanationDto } from './dto/verse-explanation.dto';
 import { Claims } from 'src/auth/entity/claims.interface';
-import { UserService } from 'src/user/user.service';
-import {
-  applyUserListenProgress,
-  applyUserReadProgress,
-} from 'src/user/util/read-progress';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller()
 export class GitaController {
-  constructor(
-    private readonly gitaService: GitaService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly gitaService: GitaService) {}
 
   @Get('chapters')
   async getChapters() {
@@ -33,37 +25,16 @@ export class GitaController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('chaptersAndVerses')
-  async getChaptersAndVerses(@Request() req: Request & { user?: Claims }) {
+  async getChaptersAndVerses() {
     const chaptersAndVerse = await this.gitaService.getChapters({
       includeRelations: true,
     });
 
-    const userId = req.user?.user_id;
-
-    if (userId == null) {
-      return {
-        userId: userId ?? '--',
-        status: 1,
-        message: 'success',
-        result: chaptersAndVerse,
-      };
-    }
-    // Fetch both userReads and userListens in parallel
-    const [userReads, userListens] = await Promise.all([
-      this.userService.userReads(userId),
-      this.userService.userListens(userId),
-    ]);
-
-    applyUserReadProgress(chaptersAndVerse, userReads);
-    applyUserListenProgress(chaptersAndVerse, userListens);
-
     return {
       status: 1,
-      message: 'skfhksfks',
+      message: 'success',
       result: chaptersAndVerse,
-      listen: userListens,
     };
   }
 

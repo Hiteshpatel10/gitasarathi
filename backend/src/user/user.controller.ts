@@ -42,6 +42,35 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('progress')
+  async getUserProgress(@Request() req: Request & { user: Claims }) {
+    try {
+      const userId = req.user.user_id;
+
+      const [userReads, userListens] = await Promise.all([
+        this.userService.userReads(userId),
+        this.userService.userListens(userId),
+      ]);
+
+      return {
+        result: {
+          reads: userReads,
+          listens: userListens,
+        },
+        status: 1,
+        message: 'success',
+      };
+    } catch (error) {
+      return {
+        result: null,
+        message: 'failed to get progress',
+        error: error.message,
+        status: 0,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put('updateFcmToken')
   async updateFCMToken(
     @Request() req: Request & { user: Claims },

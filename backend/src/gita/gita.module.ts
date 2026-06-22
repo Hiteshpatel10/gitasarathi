@@ -8,7 +8,7 @@ import { VerseCommentaryEntity } from './entities/verse-commentary.entity';
 import { VerseTranslationEntity } from './entities/verse-translation.entity';
 import { LanguageEntity } from './entities/language.entity';
 import { AuthorEntity } from './entities/author.entity';
-import { UserModule } from 'src/user/user.module';
+
 
 @Module({
   imports: [
@@ -20,7 +20,6 @@ import { UserModule } from 'src/user/user.module';
       LanguageEntity,
       AuthorEntity,
     ]),
-    UserModule,
   ],
   providers: [GitaService],
   controllers: [GitaController],
