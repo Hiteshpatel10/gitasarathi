@@ -127,7 +127,7 @@ export class UserService {
 
   async getUserLastActivity(userId: number): Promise<UserActivityEntity | null> {
     const lastActivity = await this.userActivityRepository.findOne({
-      where: { userId },
+      where: { userId, activity: 'Verse Read' },
       order: { createdAt: 'DESC' },
     });
     return lastActivity;

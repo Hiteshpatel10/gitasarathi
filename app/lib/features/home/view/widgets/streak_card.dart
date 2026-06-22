@@ -87,46 +87,6 @@ class StreakCard extends ConsumerWidget {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
-              Text(
-                '3 days to Karma Yogi 🏅',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: context.colors.label,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Stack(
-                children: [
-                  Container(
-                    height: 4,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: context.colors.separator,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  FractionallySizedBox(
-                    widthFactor: 0.7, // Hardcoded for now
-                    child: Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.colors.gold,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('SEEKER', style: TextStyle(fontSize: 10, color: context.colors.secondaryLabel)),
-                  Text('KARMA YOGI', style: TextStyle(fontSize: 10, color: context.colors.secondaryLabel)),
-                ],
-              ),
             ],
           );
         },

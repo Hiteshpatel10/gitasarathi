@@ -9,8 +9,6 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO: Read user profile from provider
-    const userName = 'Raviraj';
-
     return Column(
       children: [
         Row(
@@ -37,18 +35,6 @@ class HomeHeader extends ConsumerWidget {
               ],
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            'Good morning, $userName',
-            style: GoogleFonts.lora(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: context.colors.label,
-            ),
-          ),
         ),
       ],
     );

@@ -23,6 +23,7 @@ class ContinueReadingCard extends ConsumerWidget {
             return const Text('Start your reading journey today!');
           }
           return Stack(
+            clipBehavior: Clip.none,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
