@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../repository/home_repository.dart';
+import 'package:app/core/services/cache_service.dart';
 import '../model/home_models.dart';
 
 part 'home_providers.g.dart';
@@ -43,9 +44,20 @@ Future<StreakSummary?> streakSummary(Ref ref) async {
 @riverpod
 Future<VerseOfTheDay?> verseOfTheDay(Ref ref) async {
   final repository = ref.watch(homeRepositoryProvider);
-  // serverVerseVersion=-1 skips version check on first load.
-  // Will be wired to profile API's cache_config.verse_version in a future iteration.
-  return repository.getVerseOfTheDay();
+  
+  // Return the cached verse immediately (if any) to prevent loader UI
+  final verse = await repository.getVerseOfTheDay();
+
+  // Run the validator in the background
+  repository.syncUserCache().then((invalidatedKeys) {
+    if (invalidatedKeys.contains(CacheService.verseOfTheDay())) {
+      // If the validator cleared our cache, force this provider to re-run
+      // which will now hit the API because the cache is gone!
+      ref.invalidateSelf();
+    }
+  });
+
+  return verse;
 }
 
 /// Derived provider: filters the cached verse by the currently selected authors.

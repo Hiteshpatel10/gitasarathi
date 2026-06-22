@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,12 +35,20 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  dio.interceptors.add(LogInterceptor(
-    request: true,
-    requestBody: true,
-    responseBody: true,
-    error: true,
-  ));
+dio.interceptors.add(InterceptorsWrapper(
+  onRequest: (options, handler) {
+    debugPrint('[→] ${options.method} ${options.uri}');
+    return handler.next(options);
+  },
+  onResponse: (response, handler) {
+    debugPrint('[←] ${response.statusCode} ${response.requestOptions.uri}');
+    return handler.next(response);
+  },
+  onError: (error, handler) {
+    debugPrint('[✗] ${error.response?.statusCode} ${error.requestOptions.uri} — ${error.message}');
+    return handler.next(error);
+  },
+));
 
   return dio;
 });

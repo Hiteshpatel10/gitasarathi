@@ -36,6 +36,24 @@ class HomeRepository {
     }
   }
 
+  /// Syncs cache config from the user profile endpoint and returns a list of
+  /// cache keys that were invalidated.
+  Future<List<String>> syncUserCache() async {
+    try {
+      final response = await _dio.get(ApiEndpoints.user);
+      if (response.data['status'] == 1 && response.data['cache_validators'] != null) {
+        final validatorsList = (response.data['cache_validators'] as List)
+            .map((e) => CacheValidator.fromJson(e as Map<String, dynamic>))
+            .toList();
+        
+        return await _cache.runCacheValidatorList(validatorsList);
+      }
+    } catch (e) {
+      // Silently fail if we can't sync cache config
+    }
+    return [];
+  }
+
   /// Fetches verse-of-the-day with full cache support.
   ///
   /// The cache freshness is now managed globally by CacheService.runCacheValidatorList()
@@ -46,7 +64,12 @@ class HomeRepository {
     // 1. Try cache first (if it exists, it is valid because the validator didn't clear it)
     final cached = await _cache.get(cacheKey);
     if (cached != null) {
-      return VerseOfTheDay.fromJson(cached);
+      try {
+        return VerseOfTheDay.fromJson(cached);
+      } catch (e, st) {
+        print('Error parsing cached verse of the day: $e');
+        await _cache.invalidate(cacheKey);
+      }
     }
 
     // 2. Cache miss / stale — fetch all authors from backend
@@ -60,16 +83,21 @@ class HomeRepository {
       );
 
       if (response.data['status'] == 1 && response.data['result'] != null) {
-        final verseJson = response.data['result'] as Map<String, dynamic>;
-        final verseVersion = response.data['verse_version'] as int? ?? 0;
+        final resultData = response.data['result'] as Map<String, dynamic>;
+        final verseJson = resultData['verse'] as Map<String, dynamic>?;
+        final verseVersion = resultData['verseVersion'] as int? ?? 0;
+
+        if (verseJson == null) return null;
 
         // Store full verse with all translations in cache, along with its version
         await _cache.put(cacheKey, verseJson, version: verseVersion);
 
         return VerseOfTheDay.fromJson(verseJson);
       }
+      print('Failed to get verse, status: ${response.data['status']}');
       return null;
-    } catch (e) {
+    } catch (e, st) {
+      print('Error fetching verse from backend: $e');
       return null;
     }
   }
