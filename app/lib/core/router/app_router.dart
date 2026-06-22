@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:app/features/auth/view/login_screen.dart';
 import 'package:app/features/home/view/home_screen.dart';
+import 'package:app/features/chapters/view/verse_list_view.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
 
@@ -65,6 +66,16 @@ GoRouter appRouter(Ref ref) {
                 name: AppRoutes.chapters.name,
                 path: AppRoutes.chapters.path,
                 builder: (context, state) => ChaptersDestination.instance.build(context),
+                routes: [
+                  GoRoute(
+                    name: AppRoutes.verseList.name,
+                    path: AppRoutes.verseList.path,
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['chapterId']!);
+                      return VerseListView(chapterId: id);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

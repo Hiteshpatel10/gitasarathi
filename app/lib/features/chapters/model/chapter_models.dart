@@ -69,3 +69,23 @@ class Chapter {
   factory Chapter.fromJson(Map<String, dynamic> json) => _$ChapterFromJson(json);
   Map<String, dynamic> toJson() => _$ChapterToJson(this);
 }
+
+class VerseMetadata {
+  VerseMetadata({
+    required this.id,
+    required this.chapterId,
+    required this.verseNumber,
+  });
+
+  final int id;
+  final int chapterId;
+  final int verseNumber;
+
+  factory VerseMetadata.fromJson(Map<String, dynamic> json) {
+    return VerseMetadata(
+      id: json['id'] as int,
+      chapterId: json['chapter_id'] as int,
+      verseNumber: json['verse_number'] as int,
+    );
+  }
+}

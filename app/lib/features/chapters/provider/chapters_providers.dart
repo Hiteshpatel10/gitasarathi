@@ -45,3 +45,13 @@ Future<List<Chapter>?> chaptersList(Ref ref) async {
     );
   }).toList();
 }
+
+@riverpod
+Future<List<VerseMetadata>?> chapterVerses(Ref ref, int chapterId) async {
+  // Ensure we wait for the main list to load first, 
+  // as it populates the cache with the raw JSON we need to extract verses.
+  await ref.watch(chaptersListProvider.future);
+  
+  final repository = ref.watch(chaptersRepositoryProvider);
+  return repository.getVerses(chapterId);
+}

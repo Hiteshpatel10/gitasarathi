@@ -10,5 +10,6 @@ class ApiEndpoints {
   static const String streakSummary = "streak-summary";
   static const String verseOfTheDay = "verse-of-the-day";
   static const String chapters = "chapters";
+  static const String chaptersAndVerses = "chaptersAndVerses";
   static const String progress = "progress";
 }

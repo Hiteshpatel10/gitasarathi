@@ -7,7 +7,10 @@ enum AppRoutes {
   profile(path: '/profile'),
 
   // Auth routes
-  login(path: '/login');
+  login(path: '/login'),
+
+  // Nested routes
+  verseList(path: 'verse-list/:chapterId');
 
   const AppRoutes({required this.path});
   final String path;

@@ -105,7 +105,7 @@ class ChapterCard extends StatelessWidget {
                         foreground: Paint()
                           ..style = PaintingStyle.stroke
                           ..strokeWidth = 1.5
-                          ..color = Colors.black.withValues(alpha: 0.8),
+                          ..color = Colors.white,
                       ),
                     ),
                     // Solid text

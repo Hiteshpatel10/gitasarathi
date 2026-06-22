@@ -63,3 +63,15 @@ class LoginDestination extends AppDestination {
 
   static const instance = LoginDestination();
 }
+
+class VerseListDestination extends AppDestination {
+  const VerseListDestination({required this.chapterId});
+  
+  final int chapterId;
+  
+  @override
+  String get name => AppRoutes.verseList.name;
+
+  @override
+  Map<String, String> get pathParameters => {'chapterId': chapterId.toString()};
+}

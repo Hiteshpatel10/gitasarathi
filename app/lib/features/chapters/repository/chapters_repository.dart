@@ -31,7 +31,7 @@ class ChaptersRepository {
 
     // 2. Fetch from backend
     try {
-      final response = await _dio.get(ApiEndpoints.chapters);
+      final response = await _dio.get(ApiEndpoints.chaptersAndVerses);
 
       if (response.data['status'] == 1 && response.data['result'] != null) {
         final resultList = response.data['result'] as List;
@@ -50,6 +50,32 @@ class ChaptersRepository {
       print('Error fetching chapters from backend: $e');
       return null;
     }
+  }
+
+  Future<List<VerseMetadata>?> getVerses(int chapterId) async {
+    final cacheKey = CacheService.chapterList();
+    
+    // Since we fetch chaptersAndVerses, the raw JSON is stored in cache
+    final cached = await _cache.get(cacheKey);
+    if (cached != null && cached['chapters'] != null) {
+      try {
+        final list = cached['chapters'] as List;
+        final chapterData = list.firstWhere(
+          (e) => e['chapter_number'] == chapterId || e['id'] == chapterId,
+          orElse: () => null,
+        );
+
+        if (chapterData != null && chapterData['verses'] != null) {
+          final versesList = chapterData['verses'] as List;
+          return versesList
+              .map((e) => VerseMetadata.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+      } catch (e) {
+        print('Error extracting verses: $e');
+      }
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>?> getProgress() async {

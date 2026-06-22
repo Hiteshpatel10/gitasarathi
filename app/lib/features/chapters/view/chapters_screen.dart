@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/router/app_routes.dart';
+import 'package:app/core/router/route_destinations.dart';
 import '../provider/chapters_providers.dart';
 import 'widgets/chapter_card.dart';
 
@@ -74,8 +77,11 @@ class _ChaptersScreenState extends ConsumerState<ChaptersScreen> {
                     return ChapterCard(
                       chapter: chapter,
                       onTap: () {
-                        // TODO: Navigate to Chapter Detail / Verse List
-                        print('Tapped on chapter ${chapter.chapterNumber}');
+                        final destination = VerseListDestination(chapterId: chapter.chapterNumber);
+                        context.goNamed(
+                          destination.name,
+                          pathParameters: destination.pathParameters,
+                        );
                       },
                     );
                   },
