@@ -87,6 +87,43 @@ export class GitaService {
     return verse;
   }
 
+  async getVerseOfTheDay({
+    commentaryAuthorID,
+    translationAuthorID,
+    userID,
+  }: {
+    commentaryAuthorID: number;
+    translationAuthorID: number;
+    userID?: number;
+  }): Promise<VerseEntity | null> {
+    const totalVerses = await this.verseRepository.count();
+    if (totalVerses === 0) return null;
+
+    const now = new Date();
+    const epoch = new Date(1970, 0, 1);
+    const daysSinceEpoch = Math.floor(
+      (now.getTime() - epoch.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    const offset = daysSinceEpoch % totalVerses;
+
+    const verseIdObjs = await this.verseRepository.find({
+      select: ['id'],
+      order: { id: 'ASC' },
+      skip: offset,
+      take: 1,
+    });
+
+    if (verseIdObjs.length === 0) return null;
+    const verseIdObj = verseIdObjs[0];
+
+    return this.getVerseExplanation({
+      verseId: verseIdObj.id,
+      commentaryAuthorID,
+      translationAuthorID,
+      userID,
+    });
+  }
+
   async getLanguageAndAuthors(options?: {
     includeRelations?: boolean;
   }): Promise<LanguageEntity[]> {

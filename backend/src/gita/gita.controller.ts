@@ -39,6 +39,25 @@ export class GitaController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('verse-of-the-day')
+  async getVerseOfTheDay(
+    @Body() verseExplanationDto: VerseExplanationDto,
+    @Request() req: Request & { user?: Claims },
+  ) {
+    const verse = await this.gitaService.getVerseOfTheDay({
+      commentaryAuthorID: verseExplanationDto.commentaryAuthorId,
+      translationAuthorID: verseExplanationDto.translationAuthorId,
+      userID: req.user?.user_id,
+    });
+
+    return {
+      status: 1,
+      message: 'success',
+      result: verse,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('verseExplanation')
   async verseExplanation(
     @Body() verseExplanationDto: VerseExplanationDto,

@@ -97,6 +97,46 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('last-activity')
+  async getLastActivity(@Request() req: Request & { user: Claims }) {
+    try {
+      const userId = req.user.user_id;
+      const lastActivity = await this.userService.getUserLastActivity(userId);
+
+      return {
+        status: 1,
+        message: 'success',
+        result: lastActivity,
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+        status: 0,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('streak-summary')
+  async getStreakSummary(@Request() req: Request & { user: Claims }) {
+    try {
+      const userId = req.user.user_id;
+      const summary = await this.userService.getUserStreakSummary(userId);
+
+      return {
+        status: 1,
+        message: 'success',
+        result: summary,
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+        status: 0,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('insertUserActivity')
   async insertUserActivity(
     @Body() userActivityDto: UserActivityDto,

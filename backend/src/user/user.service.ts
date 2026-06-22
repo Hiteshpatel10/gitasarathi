@@ -125,6 +125,77 @@ export class UserService {
     return userActivity;
   }
 
+  async getUserLastActivity(userId: number): Promise<UserActivityEntity | null> {
+    const lastActivity = await this.userActivityRepository.findOne({
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+    return lastActivity;
+  }
+
+  async getUserStreakSummary(userId: number) {
+    const activities = await this.userActivityRepository
+      .createQueryBuilder('activity')
+      .where('activity.user_id = :userId', { userId })
+      .andWhere('activity.activity = :activityType', {
+        activityType: 'Verse Read',
+      })
+      .orderBy('activity.created_at', 'ASC')
+      .getMany();
+
+    const readDays = new Set<string>();
+    for (const a of activities) {
+      readDays.add(a.createdAt.toISOString().split('T')[0]);
+    }
+    const dates = Array.from(readDays).sort();
+
+    let currentStreak = 0;
+    let lastReadDate: Date | null = null;
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const yesterdayStr = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0];
+
+    for (const day of dates) {
+      const date = new Date(day);
+      if (lastReadDate) {
+        const diffDays = Math.round(
+          (date.getTime() - lastReadDate.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diffDays === 1) {
+          currentStreak += 1;
+        } else if (diffDays > 1) {
+          currentStreak = 1;
+        }
+      } else {
+        currentStreak = 1;
+      }
+      lastReadDate = date;
+    }
+
+    if (!readDays.has(todayStr) && !readDays.has(yesterdayStr)) {
+      currentStreak = 0;
+    }
+
+    const last7Days: Array<{ day: string; date: string; read: boolean }> = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dayStr = d.toISOString().split('T')[0];
+      const dayOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'][d.getUTCDay()];
+      last7Days.push({
+        day: dayOfWeek,
+        date: dayStr,
+        read: readDays.has(dayStr),
+      });
+    }
+
+    return {
+      currentStreak,
+      last7Days,
+    };
+  }
+
   async insertUserRead(userId: number, chapterNo: number, verseNo: number) {
     const existing = await this.userReadsRepository.findOne({
       where: { userId, chapter: chapterNo },
