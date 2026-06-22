@@ -58,7 +58,55 @@ class StreakSummary {
   Map<String, dynamic> toJson() => _$StreakSummaryToJson(this);
 }
 
-// Backend returns snake_case for most fields but verse_translation for list
+// Verse translation from backend (snake_case keys)
+@JsonSerializable(fieldRename: FieldRename.snake)
+class VerseTranslation {
+  VerseTranslation({
+    required this.id,
+    required this.description,
+    required this.authorId,
+    required this.authorName,
+    this.lang,
+    this.languageId,
+  });
+
+  final int id;
+  final String description;
+  final int authorId;
+  final String authorName;
+  final String? lang;
+  final int? languageId;
+
+  factory VerseTranslation.fromJson(Map<String, dynamic> json) =>
+      _$VerseTranslationFromJson(json);
+  Map<String, dynamic> toJson() => _$VerseTranslationToJson(this);
+}
+
+// Verse commentary from backend (snake_case keys)
+@JsonSerializable(fieldRename: FieldRename.snake)
+class VerseCommentary {
+  VerseCommentary({
+    required this.id,
+    required this.description,
+    required this.authorId,
+    required this.authorName,
+    this.lang,
+    this.languageId,
+  });
+
+  final int id;
+  final String description;
+  final int authorId;
+  final String authorName;
+  final String? lang;
+  final int? languageId;
+
+  factory VerseCommentary.fromJson(Map<String, dynamic> json) =>
+      _$VerseCommentaryFromJson(json);
+  Map<String, dynamic> toJson() => _$VerseCommentaryToJson(this);
+}
+
+// Full verse response — when all_authors=true, contains ALL translations & commentaries
 @JsonSerializable(fieldRename: FieldRename.snake)
 class VerseOfTheDay {
   VerseOfTheDay({
@@ -68,7 +116,8 @@ class VerseOfTheDay {
     required this.text,
     required this.transliteration,
     required this.wordMeanings,
-    this.translations,
+    this.verseTranslation,
+    this.verseCommentary,
   });
 
   final int id;
@@ -79,29 +128,14 @@ class VerseOfTheDay {
   final String wordMeanings;
 
   @JsonKey(name: 'verse_translation')
-  final List<VerseTranslation>? translations;
+  final List<VerseTranslation>? verseTranslation;
+
+  @JsonKey(name: 'commentaries')
+  final List<VerseCommentary>? verseCommentary;
 
   factory VerseOfTheDay.fromJson(Map<String, dynamic> json) =>
       _$VerseOfTheDayFromJson(json);
   Map<String, dynamic> toJson() => _$VerseOfTheDayToJson(this);
 }
 
-@JsonSerializable(fieldRename: FieldRename.snake)
-class VerseTranslation {
-  VerseTranslation({
-    required this.id,
-    required this.description,
-    required this.authorId,
-    this.languageId,
-  });
-
-  final int id;
-  final String description;
-  final int authorId;
-  final int? languageId;
-
-  factory VerseTranslation.fromJson(Map<String, dynamic> json) =>
-      _$VerseTranslationFromJson(json);
-  Map<String, dynamic> toJson() => _$VerseTranslationToJson(this);
-}
 

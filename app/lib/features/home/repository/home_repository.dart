@@ -2,13 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:app/core/network/dio_provider.dart';
 import 'package:app/core/network/api_endpoints.dart';
+import 'package:app/core/services/cache_service.dart';
 import '../model/home_models.dart';
 
 part 'home_repository.g.dart';
 
 class HomeRepository {
-  HomeRepository(this._dio);
+  HomeRepository(this._dio, this._cache);
   final Dio _dio;
+  final CacheService _cache;
 
   Future<LastActivity?> getLastActivity() async {
     try {
@@ -34,21 +36,37 @@ class HomeRepository {
     }
   }
 
-  Future<VerseOfTheDay?> getVerseOfTheDay({
-    int commentaryAuthorId = 1,
-    int translationAuthorId = 1,
-  }) async {
+  /// Fetches verse-of-the-day with full cache support.
+  ///
+  /// The cache freshness is now managed globally by CacheService.runCacheValidatorList()
+  /// based on the cache_validators returned by the backend.
+  Future<VerseOfTheDay?> getVerseOfTheDay() async {
+    final cacheKey = CacheService.verseOfTheDay();
+
+    // 1. Try cache first (if it exists, it is valid because the validator didn't clear it)
+    final cached = await _cache.get(cacheKey);
+    if (cached != null) {
+      return VerseOfTheDay.fromJson(cached);
+    }
+
+    // 2. Cache miss / stale — fetch all authors from backend
     try {
       final response = await _dio.post(
         ApiEndpoints.verseOfTheDay,
         data: {
-          'verse_id': 1, // required by DTO validation; actual verse is computed server-side
-          'commentary_author_id': commentaryAuthorId,
-          'translation_author_id': translationAuthorId,
+          'verse_id': 1, // required by DTO; actual verse is computed server-side
+          'all_authors': true,
         },
       );
+
       if (response.data['status'] == 1 && response.data['result'] != null) {
-        return VerseOfTheDay.fromJson(response.data['result']);
+        final verseJson = response.data['result'] as Map<String, dynamic>;
+        final verseVersion = response.data['verse_version'] as int? ?? 0;
+
+        // Store full verse with all translations in cache, along with its version
+        await _cache.put(cacheKey, verseJson, version: verseVersion);
+
+        return VerseOfTheDay.fromJson(verseJson);
       }
       return null;
     } catch (e) {
@@ -60,5 +78,6 @@ class HomeRepository {
 @riverpod
 HomeRepository homeRepository(Ref ref) {
   final dio = ref.watch(dioProvider);
-  return HomeRepository(dio);
+  final cache = ref.watch(cacheServiceProvider);
+  return HomeRepository(dio, cache);
 }

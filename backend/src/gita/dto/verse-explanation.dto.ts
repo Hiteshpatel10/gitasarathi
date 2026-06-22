@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsBoolean } from 'class-validator';
 import { Expose, Type } from 'class-transformer';
 
 export class VerseExplanationDto {
@@ -8,15 +8,20 @@ export class VerseExplanationDto {
   @Expose({ name: 'verse_id' })
   verseId: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   @Expose({ name: 'translation_author_id' })
-  translationAuthorId: number;
+  translationAuthorId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   @Expose({ name: 'commentary_author_id' })
-  commentaryAuthorId: number;
+  commentaryAuthorId?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  @Expose({ name: 'all_authors' })
+  allAuthors?: boolean;
 }

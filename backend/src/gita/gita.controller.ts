@@ -48,6 +48,7 @@ export class GitaController {
       commentaryAuthorID: verseExplanationDto.commentaryAuthorId,
       translationAuthorID: verseExplanationDto.translationAuthorId,
       userID: req.user?.user_id,
+      allAuthors: verseExplanationDto.allAuthors,
     });
 
     return {
@@ -68,6 +69,7 @@ export class GitaController {
       translationAuthorID: verseExplanationDto.translationAuthorId,
       verseId: verseExplanationDto.verseId,
       userID: req.user?.user_id,
+      allAuthors: verseExplanationDto.allAuthors,
     });
 
     return {

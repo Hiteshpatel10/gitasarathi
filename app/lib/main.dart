@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:app/core/theme/app_theme.dart';
 import 'package:app/core/services/pref_service.dart';
+import 'package:app/core/services/cache_service.dart';
 import 'package:app/features/auth/repository/auth_repository.dart';
 import 'package:app/core/router/app_router.dart';
 
@@ -19,6 +20,7 @@ void main() async {
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        cacheServiceProvider.overrideWithValue(CacheService(prefs)),
       ],
       child: const MyApp(),
     ),

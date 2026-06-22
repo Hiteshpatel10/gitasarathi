@@ -35,11 +35,13 @@ export class GitaService {
     commentaryAuthorID,
     translationAuthorID,
     userID,
+    allAuthors = false,
   }: {
     verseId: number;
-    commentaryAuthorID: number;
-    translationAuthorID: number;
+    commentaryAuthorID?: number;
+    translationAuthorID?: number;
     userID?: number;
+    allAuthors?: boolean;
   }): Promise<VerseEntity | null> {
     // Build the base query with relations
     const queryBuilder = this.verseRepository
@@ -64,24 +66,27 @@ export class GitaService {
       return null;
     }
 
-    // Filter to get the preferred commentary
-    if (verse.commentaries?.length > 0) {
-      const preferredCommentary =
-        verse.commentaries.find(
-          (commentary) => commentary.authorId === commentaryAuthorID,
-        ) || verse.commentaries[0];
+    // When allAuthors is true, return everything — client will filter locally
+    if (!allAuthors) {
+      // Filter to get the preferred commentary
+      if (verse.commentaries?.length > 0) {
+        const preferredCommentary =
+          verse.commentaries.find(
+            (commentary) => commentary.authorId === commentaryAuthorID,
+          ) || verse.commentaries[0];
 
-      verse.commentaries = [preferredCommentary];
-    }
+        verse.commentaries = [preferredCommentary];
+      }
 
-    // Filter to get the preferred translation
-    if (verse.translations?.length > 0) {
-      const preferredTranslation =
-        verse.translations.find(
-          (translation) => translation.authorId === translationAuthorID,
-        ) || verse.translations[0];
+      // Filter to get the preferred translation
+      if (verse.translations?.length > 0) {
+        const preferredTranslation =
+          verse.translations.find(
+            (translation) => translation.authorId === translationAuthorID,
+          ) || verse.translations[0];
 
-      verse.translations = [preferredTranslation];
+        verse.translations = [preferredTranslation];
+      }
     }
 
     return verse;
@@ -91,19 +96,23 @@ export class GitaService {
     commentaryAuthorID,
     translationAuthorID,
     userID,
+    allAuthors = false,
   }: {
-    commentaryAuthorID: number;
-    translationAuthorID: number;
+    commentaryAuthorID?: number;
+    translationAuthorID?: number;
     userID?: number;
-  }): Promise<VerseEntity | null> {
+    allAuthors?: boolean;
+  }): Promise<{ verse: VerseEntity | null; verseVersion: number }> {
     const totalVerses = await this.verseRepository.count();
-    if (totalVerses === 0) return null;
 
     const now = new Date();
     const epoch = new Date(1970, 0, 1);
     const daysSinceEpoch = Math.floor(
       (now.getTime() - epoch.getTime()) / (1000 * 60 * 60 * 24),
     );
+
+    if (totalVerses === 0) return { verse: null, verseVersion: daysSinceEpoch };
+
     const offset = daysSinceEpoch % totalVerses;
 
     const verseIdObjs = await this.verseRepository.find({
@@ -113,16 +122,20 @@ export class GitaService {
       take: 1,
     });
 
-    if (verseIdObjs.length === 0) return null;
+    if (verseIdObjs.length === 0) return { verse: null, verseVersion: daysSinceEpoch };
     const verseIdObj = verseIdObjs[0];
 
-    return this.getVerseExplanation({
+    const verse = await this.getVerseExplanation({
       verseId: verseIdObj.id,
       commentaryAuthorID,
       translationAuthorID,
       userID,
+      allAuthors,
     });
+
+    return { verse, verseVersion: daysSinceEpoch };
   }
+
 
   async getLanguageAndAuthors(options?: {
     includeRelations?: boolean;

@@ -18,7 +18,7 @@ import { calculateReadCalendar } from './util/user-activity.util';
 
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('user')
@@ -27,9 +27,15 @@ export class UserController {
       const userId = req.user.user_id;
 
       const user = await this.userService.getUserById(userId);
+
       return {
         result: user,
         status: 1,
+        cache_validators: [
+          { key: 'cache:verse_of_the_day', version: 1, auto_clear_freq: 86400000 },
+          { key: 'cache:chapter_list', version: 1, auto_clear_freq: 604800000 },
+          { key: 'cache:author_catalog', version: 1, auto_clear_freq: 604800000 },
+        ],
       };
     } catch (error) {
       return {
@@ -231,7 +237,7 @@ export class UserController {
   @Post('insertUserListen')
   async insertUserListen(
     @Body() ChapterAndVerseDto: ChapterAndVerseDto,
-    @Request() req: Request & { user: Claims},
+    @Request() req: Request & { user: Claims },
   ) {
     try {
       const userId = req.user.user_id;

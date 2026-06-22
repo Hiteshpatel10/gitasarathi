@@ -8,6 +8,131 @@ part of 'home_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Currently selected translation author ID.
+/// Changing this instantly rebuilds filteredVerseProvider with zero network calls.
+
+@ProviderFor(SelectedTranslationAuthorId)
+const selectedTranslationAuthorIdProvider =
+    SelectedTranslationAuthorIdProvider._();
+
+/// Currently selected translation author ID.
+/// Changing this instantly rebuilds filteredVerseProvider with zero network calls.
+final class SelectedTranslationAuthorIdProvider
+    extends $NotifierProvider<SelectedTranslationAuthorId, int> {
+  /// Currently selected translation author ID.
+  /// Changing this instantly rebuilds filteredVerseProvider with zero network calls.
+  const SelectedTranslationAuthorIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedTranslationAuthorIdProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedTranslationAuthorIdHash();
+
+  @$internal
+  @override
+  SelectedTranslationAuthorId create() => SelectedTranslationAuthorId();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$selectedTranslationAuthorIdHash() =>
+    r'67f643df5ea355f34744d01308efff29aeecc94d';
+
+/// Currently selected translation author ID.
+/// Changing this instantly rebuilds filteredVerseProvider with zero network calls.
+
+abstract class _$SelectedTranslationAuthorId extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+/// Currently selected commentary author ID.
+
+@ProviderFor(SelectedCommentaryAuthorId)
+const selectedCommentaryAuthorIdProvider =
+    SelectedCommentaryAuthorIdProvider._();
+
+/// Currently selected commentary author ID.
+final class SelectedCommentaryAuthorIdProvider
+    extends $NotifierProvider<SelectedCommentaryAuthorId, int> {
+  /// Currently selected commentary author ID.
+  const SelectedCommentaryAuthorIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedCommentaryAuthorIdProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedCommentaryAuthorIdHash();
+
+  @$internal
+  @override
+  SelectedCommentaryAuthorId create() => SelectedCommentaryAuthorId();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
+String _$selectedCommentaryAuthorIdHash() =>
+    r'782ea887912361ff79e6374d921aaf60428925b6';
+
+/// Currently selected commentary author ID.
+
+abstract class _$SelectedCommentaryAuthorId extends $Notifier<int> {
+  int build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
 
 @ProviderFor(lastActivity)
 const lastActivityProvider = LastActivityProvider._();
@@ -87,8 +212,12 @@ final class StreakSummaryProvider
 
 String _$streakSummaryHash() => r'e69a255b40777d216fda9f0d43da7a1f7e2465b6';
 
+/// Fetches (or loads from cache) the full verse with ALL translations and commentaries.
+
 @ProviderFor(verseOfTheDay)
 const verseOfTheDayProvider = VerseOfTheDayProvider._();
+
+/// Fetches (or loads from cache) the full verse with ALL translations and commentaries.
 
 final class VerseOfTheDayProvider
     extends
@@ -98,6 +227,7 @@ final class VerseOfTheDayProvider
           FutureOr<VerseOfTheDay?>
         >
     with $FutureModifier<VerseOfTheDay?>, $FutureProvider<VerseOfTheDay?> {
+  /// Fetches (or loads from cache) the full verse with ALL translations and commentaries.
   const VerseOfTheDayProvider._()
     : super(
         from: null,
@@ -124,4 +254,53 @@ final class VerseOfTheDayProvider
   }
 }
 
-String _$verseOfTheDayHash() => r'e45ee72810a31d4787c536be4e20593f418eb94a';
+String _$verseOfTheDayHash() => r'6342a3198bca14dc1756f43eb61a5dd5e5c1826f';
+
+/// Derived provider: filters the cached verse by the currently selected authors.
+/// This rebuilds instantly on author change — zero network calls.
+
+@ProviderFor(filteredVerse)
+const filteredVerseProvider = FilteredVerseProvider._();
+
+/// Derived provider: filters the cached verse by the currently selected authors.
+/// This rebuilds instantly on author change — zero network calls.
+
+final class FilteredVerseProvider
+    extends $FunctionalProvider<VerseOfTheDay?, VerseOfTheDay?, VerseOfTheDay?>
+    with $Provider<VerseOfTheDay?> {
+  /// Derived provider: filters the cached verse by the currently selected authors.
+  /// This rebuilds instantly on author change — zero network calls.
+  const FilteredVerseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'filteredVerseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$filteredVerseHash();
+
+  @$internal
+  @override
+  $ProviderElement<VerseOfTheDay?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  VerseOfTheDay? create(Ref ref) {
+    return filteredVerse(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(VerseOfTheDay? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VerseOfTheDay?>(value),
+    );
+  }
+}
+
+String _$filteredVerseHash() => r'22787d3ca15051f1d7b5ed10a1e16cc1e486761d';

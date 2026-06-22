@@ -51,6 +51,46 @@ Map<String, dynamic> _$StreakSummaryToJson(StreakSummary instance) =>
       'last7Days': instance.last7Days,
     };
 
+VerseTranslation _$VerseTranslationFromJson(Map<String, dynamic> json) =>
+    VerseTranslation(
+      id: (json['id'] as num).toInt(),
+      description: json['description'] as String,
+      authorId: (json['author_id'] as num).toInt(),
+      authorName: json['author_name'] as String,
+      lang: json['lang'] as String?,
+      languageId: (json['language_id'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$VerseTranslationToJson(VerseTranslation instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'description': instance.description,
+      'author_id': instance.authorId,
+      'author_name': instance.authorName,
+      'lang': instance.lang,
+      'language_id': instance.languageId,
+    };
+
+VerseCommentary _$VerseCommentaryFromJson(Map<String, dynamic> json) =>
+    VerseCommentary(
+      id: (json['id'] as num).toInt(),
+      description: json['description'] as String,
+      authorId: (json['author_id'] as num).toInt(),
+      authorName: json['author_name'] as String,
+      lang: json['lang'] as String?,
+      languageId: (json['language_id'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$VerseCommentaryToJson(VerseCommentary instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'description': instance.description,
+      'author_id': instance.authorId,
+      'author_name': instance.authorName,
+      'lang': instance.lang,
+      'language_id': instance.languageId,
+    };
+
 VerseOfTheDay _$VerseOfTheDayFromJson(Map<String, dynamic> json) =>
     VerseOfTheDay(
       id: (json['id'] as num).toInt(),
@@ -59,8 +99,11 @@ VerseOfTheDay _$VerseOfTheDayFromJson(Map<String, dynamic> json) =>
       text: json['text'] as String,
       transliteration: json['transliteration'] as String,
       wordMeanings: json['word_meanings'] as String,
-      translations: (json['verse_translation'] as List<dynamic>?)
+      verseTranslation: (json['verse_translation'] as List<dynamic>?)
           ?.map((e) => VerseTranslation.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      verseCommentary: (json['commentaries'] as List<dynamic>?)
+          ?.map((e) => VerseCommentary.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -72,21 +115,6 @@ Map<String, dynamic> _$VerseOfTheDayToJson(VerseOfTheDay instance) =>
       'text': instance.text,
       'transliteration': instance.transliteration,
       'word_meanings': instance.wordMeanings,
-      'verse_translation': instance.translations,
-    };
-
-VerseTranslation _$VerseTranslationFromJson(Map<String, dynamic> json) =>
-    VerseTranslation(
-      id: (json['id'] as num).toInt(),
-      description: json['description'] as String,
-      authorId: (json['author_id'] as num).toInt(),
-      languageId: (json['language_id'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$VerseTranslationToJson(VerseTranslation instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'description': instance.description,
-      'author_id': instance.authorId,
-      'language_id': instance.languageId,
+      'verse_translation': instance.verseTranslation,
+      'commentaries': instance.verseCommentary,
     };
