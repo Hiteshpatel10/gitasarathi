@@ -145,7 +145,9 @@ export class UserService {
 
     const readDays = new Set<string>();
     for (const a of activities) {
-      readDays.add(a.createdAt.toISOString().split('T')[0]);
+      if (a.createdAt) {
+        readDays.add(a.createdAt.toISOString().split('T')[0]);
+      }
     }
     const dates = Array.from(readDays).sort();
 

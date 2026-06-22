@@ -25,7 +25,7 @@ class LastActivity {
   Map<String, dynamic> toJson() => _$LastActivityToJson(this);
 }
 
-@JsonSerializable(fieldRename: FieldRename.snake)
+@JsonSerializable()
 class StreakDay {
   StreakDay({
     required this.day,
@@ -42,7 +42,8 @@ class StreakDay {
   Map<String, dynamic> toJson() => _$StreakDayToJson(this);
 }
 
-@JsonSerializable(fieldRename: FieldRename.snake)
+// Backend returns camelCase keys: currentStreak, last7Days
+@JsonSerializable()
 class StreakSummary {
   StreakSummary({
     required this.currentStreak,
@@ -57,6 +58,7 @@ class StreakSummary {
   Map<String, dynamic> toJson() => _$StreakSummaryToJson(this);
 }
 
+// Backend returns snake_case for most fields but verse_translation for list
 @JsonSerializable(fieldRename: FieldRename.snake)
 class VerseOfTheDay {
   VerseOfTheDay({
@@ -75,6 +77,8 @@ class VerseOfTheDay {
   final String text;
   final String transliteration;
   final String wordMeanings;
+
+  @JsonKey(name: 'verse_translation')
   final List<VerseTranslation>? translations;
 
   factory VerseOfTheDay.fromJson(Map<String, dynamic> json) =>
@@ -88,15 +92,16 @@ class VerseTranslation {
     required this.id,
     required this.description,
     required this.authorId,
-    required this.languageId,
+    this.languageId,
   });
 
   final int id;
   final String description;
   final int authorId;
-  final int languageId;
+  final int? languageId;
 
   factory VerseTranslation.fromJson(Map<String, dynamic> json) =>
       _$VerseTranslationFromJson(json);
   Map<String, dynamic> toJson() => _$VerseTranslationToJson(this);
 }
+

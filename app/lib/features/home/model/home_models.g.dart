@@ -39,16 +39,16 @@ Map<String, dynamic> _$StreakDayToJson(StreakDay instance) => <String, dynamic>{
 
 StreakSummary _$StreakSummaryFromJson(Map<String, dynamic> json) =>
     StreakSummary(
-      currentStreak: (json['current_streak'] as num).toInt(),
-      last7Days: (json['last7_days'] as List<dynamic>)
+      currentStreak: (json['currentStreak'] as num).toInt(),
+      last7Days: (json['last7Days'] as List<dynamic>)
           .map((e) => StreakDay.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$StreakSummaryToJson(StreakSummary instance) =>
     <String, dynamic>{
-      'current_streak': instance.currentStreak,
-      'last7_days': instance.last7Days,
+      'currentStreak': instance.currentStreak,
+      'last7Days': instance.last7Days,
     };
 
 VerseOfTheDay _$VerseOfTheDayFromJson(Map<String, dynamic> json) =>
@@ -59,7 +59,7 @@ VerseOfTheDay _$VerseOfTheDayFromJson(Map<String, dynamic> json) =>
       text: json['text'] as String,
       transliteration: json['transliteration'] as String,
       wordMeanings: json['word_meanings'] as String,
-      translations: (json['translations'] as List<dynamic>?)
+      translations: (json['verse_translation'] as List<dynamic>?)
           ?.map((e) => VerseTranslation.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -72,7 +72,7 @@ Map<String, dynamic> _$VerseOfTheDayToJson(VerseOfTheDay instance) =>
       'text': instance.text,
       'transliteration': instance.transliteration,
       'word_meanings': instance.wordMeanings,
-      'translations': instance.translations,
+      'verse_translation': instance.translations,
     };
 
 VerseTranslation _$VerseTranslationFromJson(Map<String, dynamic> json) =>
@@ -80,7 +80,7 @@ VerseTranslation _$VerseTranslationFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       description: json['description'] as String,
       authorId: (json['author_id'] as num).toInt(),
-      languageId: (json['language_id'] as num).toInt(),
+      languageId: (json['language_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$VerseTranslationToJson(VerseTranslation instance) =>

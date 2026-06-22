@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api_endpoints.dart';
-import '../services/pref_service.dart';
 import '../constants/pref_keys.dart';
 
 /// Provider for a configured Dio client
 final dioProvider = Provider<Dio>((ref) {
-  final prefs = ref.watch(prefServiceProvider);
-
   final dio = Dio(
     BaseOptions(
       baseUrl: ApiEndpoints.baseURL,
@@ -18,15 +16,18 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  // Add interceptor for attaching auth token if available
+  // Add interceptor for attaching auth token if available.
+  // We read SharedPreferences fresh on every request so that a token
+  // written right after login is always picked up (avoids stale snapshot).
   dio.interceptors.add(
     InterceptorsWrapper(
-      onRequest: (options, handler) {
+      onRequest: (options, handler) async {
         options.headers['device'] = Platform.isAndroid ? 'Android' : 'IOS';
 
+        final prefs = await SharedPreferences.getInstance();
         final token = prefs.getString(PrefKeys.userToken);
         if (token != null && token.isNotEmpty) {
-          options.headers['Authorization'] = token;
+          options.headers['Authorization'] = 'Bearer $token';
         }
         return handler.next(options);
       },
@@ -36,7 +37,7 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(LogInterceptor(
     request: true,
     requestBody: true,
-    responseBody: false,
+    responseBody: true,
     error: true,
   ));
 

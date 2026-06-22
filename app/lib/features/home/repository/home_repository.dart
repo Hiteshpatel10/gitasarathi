@@ -42,8 +42,9 @@ class HomeRepository {
       final response = await _dio.post(
         ApiEndpoints.verseOfTheDay,
         data: {
-          'commentaryAuthorId': commentaryAuthorId,
-          'translationAuthorId': translationAuthorId,
+          'verse_id': 1, // required by DTO validation; actual verse is computed server-side
+          'commentary_author_id': commentaryAuthorId,
+          'translation_author_id': translationAuthorId,
         },
       );
       if (response.data['status'] == 1 && response.data['result'] != null) {
