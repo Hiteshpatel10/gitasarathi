@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/chapter_models.dart';
+import '../model/verse_models.dart';
 import '../repository/chapters_repository.dart';
 import 'package:app/core/services/cache_service.dart';
 import 'package:app/core/services/cache_events.dart';
@@ -74,4 +75,10 @@ Future<List<VerseMetadata>?> chapterVerses(Ref ref, int chapterId) async {
   
   final repository = ref.watch(chaptersRepositoryProvider);
   return repository.getVerses(chapterId);
+}
+
+@riverpod
+Future<VerseDetails?> verseExplanation(Ref ref, int verseId) async {
+  final repository = ref.watch(chaptersRepositoryProvider);
+  return repository.getVerseExplanation(verseId);
 }

@@ -10,7 +10,8 @@ enum AppRoutes {
   login(path: '/login'),
 
   // Nested routes
-  verseList(path: 'verse-list/:chapterId');
+  verseList(path: 'verse-list/:chapterId'),
+  verseExplanation(path: 'verse-explanation/:verseId');
 
   const AppRoutes({required this.path});
   final String path;

@@ -41,6 +41,7 @@ class CacheService {
   static String verse(int id) => '${_prefix}verse:$id';
   static String chapterList() => '${_prefix}chapter_list';
   static String verseList(int chapterId) => '${_prefix}verses:$chapterId';
+  static String verseExplanation(int verseId) => '${_prefix}verseExplanation:$verseId';
   static String authorCatalog() => '${_prefix}author_catalog';
 
   // ── Write ─────────────────────────────────────────────────────────────────

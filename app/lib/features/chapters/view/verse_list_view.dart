@@ -71,8 +71,14 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
           final progressPct = chapter.progress ?? 0.0;
           final completedCount = chapter.readVerses?.length ?? 0;
           
+          // Find the first unread verse index
+          int firstUnreadIndex = verses.indexWhere(
+            (v) => !(chapter.readVerses?.contains(v.verseNumber) ?? false)
+          );
+          if (firstUnreadIndex == -1) firstUnreadIndex = verses.length - 1;
+
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _scrollToCurrent(completedCount);
+            _scrollToCurrent(firstUnreadIndex);
           });
 
           return NestedScrollView(
@@ -166,7 +172,14 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
                   isLast: index == verses.length - 1,
                   state: state,
                   onTap: () {
-                    // Navigate to verse explanation
+                    final dest = VerseExplanationDestination(
+                      chapterId: chapter.chapterNumber,
+                      verseId: verse.id,
+                    );
+                    context.goNamed(
+                      dest.name,
+                      pathParameters: dest.pathParameters,
+                    );
                   },
                 );
               },

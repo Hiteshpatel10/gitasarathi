@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:app/features/auth/view/login_screen.dart';
 import 'package:app/features/home/view/home_screen.dart';
 import 'package:app/features/chapters/view/verse_list_view.dart';
+import 'package:app/features/chapters/view/verse_explanation_view.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
 
@@ -75,6 +76,17 @@ GoRouter appRouter(Ref ref) {
                       final id = int.parse(state.pathParameters['chapterId']!);
                       return VerseListView(chapterId: id);
                     },
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootNavigatorKey,
+                        name: AppRoutes.verseExplanation.name,
+                        path: AppRoutes.verseExplanation.path,
+                        builder: (context, state) {
+                          final verseId = int.parse(state.pathParameters['verseId']!);
+                          return VerseExplanationView(verseId: verseId);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

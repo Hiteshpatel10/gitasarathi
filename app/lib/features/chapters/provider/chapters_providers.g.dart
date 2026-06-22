@@ -130,3 +130,78 @@ final class ChapterVersesFamily extends $Family
   @override
   String toString() => r'chapterVersesProvider';
 }
+
+@ProviderFor(verseExplanation)
+const verseExplanationProvider = VerseExplanationFamily._();
+
+final class VerseExplanationProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<VerseDetails?>,
+          VerseDetails?,
+          FutureOr<VerseDetails?>
+        >
+    with $FutureModifier<VerseDetails?>, $FutureProvider<VerseDetails?> {
+  const VerseExplanationProvider._({
+    required VerseExplanationFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'verseExplanationProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$verseExplanationHash();
+
+  @override
+  String toString() {
+    return r'verseExplanationProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<VerseDetails?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<VerseDetails?> create(Ref ref) {
+    final argument = this.argument as int;
+    return verseExplanation(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is VerseExplanationProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$verseExplanationHash() => r'f1932a54c93dcba5223d73f47de21ca2132522db';
+
+final class VerseExplanationFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<VerseDetails?>, int> {
+  const VerseExplanationFamily._()
+    : super(
+        retry: null,
+        name: r'verseExplanationProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  VerseExplanationProvider call(int verseId) =>
+      VerseExplanationProvider._(argument: verseId, from: this);
+
+  @override
+  String toString() => r'verseExplanationProvider';
+}

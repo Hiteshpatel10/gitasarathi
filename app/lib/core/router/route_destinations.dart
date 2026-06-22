@@ -75,3 +75,22 @@ class VerseListDestination extends AppDestination {
   @override
   Map<String, String> get pathParameters => {'chapterId': chapterId.toString()};
 }
+
+class VerseExplanationDestination extends AppDestination {
+  const VerseExplanationDestination({
+    required this.chapterId,
+    required this.verseId,
+  });
+  
+  final int chapterId;
+  final int verseId;
+  
+  @override
+  String get name => AppRoutes.verseExplanation.name;
+
+  @override
+  Map<String, String> get pathParameters => {
+    'chapterId': chapterId.toString(),
+    'verseId': verseId.toString(),
+  };
+}

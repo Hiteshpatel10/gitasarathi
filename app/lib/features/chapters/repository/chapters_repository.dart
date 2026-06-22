@@ -4,6 +4,7 @@ import 'package:app/core/network/dio_provider.dart';
 import 'package:app/core/network/api_endpoints.dart';
 import 'package:app/core/services/cache_service.dart';
 import '../model/chapter_models.dart';
+import '../model/verse_models.dart';
 
 part 'chapters_repository.g.dart';
 
@@ -87,6 +88,46 @@ class ChaptersRepository {
       return null;
     } catch (e) {
       print('Error fetching progress from backend: $e');
+      return null;
+    }
+  }
+
+  Future<VerseDetails?> getVerseExplanation(int verseId) async {
+    final cacheKey = CacheService.verseExplanation(verseId);
+    
+    final cached = await _cache.get(cacheKey);
+    if (cached != null && cached['verse'] != null) {
+      try {
+        return VerseDetails.fromJson(cached['verse'] as Map<String, dynamic>);
+      } catch (e) {
+        print('Error parsing cached verse details: $e');
+        await _cache.invalidate(cacheKey);
+      }
+    }
+
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.verseExplanation,
+        data: {
+          'verse_id': verseId,
+          'all_authors': true,
+        },
+      );
+
+      if (response.data['status'] == 1 && response.data['result'] != null) {
+        // backend result might be { verse: {...}, verseVersion: ... } according to gita.service.ts
+        // Let's check if the result itself has 'verse' key
+        final result = response.data['result'];
+        final verseMap = result['verse'] != null ? result['verse'] : result;
+        
+        final verseDetails = VerseDetails.fromJson(verseMap as Map<String, dynamic>);
+        
+        await _cache.put(cacheKey, {'verse': verseMap}, version: 0);
+        return verseDetails;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching verse details from backend: $e');
       return null;
     }
   }
