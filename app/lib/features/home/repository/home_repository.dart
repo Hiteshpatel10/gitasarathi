@@ -3,14 +3,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:app/core/network/dio_provider.dart';
 import 'package:app/core/network/api_endpoints.dart';
 import 'package:app/core/services/cache_service.dart';
+import 'package:app/core/services/cache_events.dart';
 import '../model/home_models.dart';
 
 part 'home_repository.g.dart';
 
 class HomeRepository {
-  HomeRepository(this._dio, this._cache);
+  HomeRepository(this._dio, this._cache, this._ref);
   final Dio _dio;
   final CacheService _cache;
+  final Ref _ref;
 
   Future<LastActivity?> getLastActivity() async {
     try {
@@ -46,7 +48,11 @@ class HomeRepository {
             .map((e) => CacheValidator.fromJson(e as Map<String, dynamic>))
             .toList();
         
-        return await _cache.runCacheValidatorList(validatorsList);
+        final invalidatedKeys = await _cache.runCacheValidatorList(validatorsList);
+        if (invalidatedKeys.isNotEmpty) {
+          _ref.read(cacheInvalidationEventProvider.notifier).notify(invalidatedKeys);
+        }
+        return invalidatedKeys;
       }
     } catch (e) {
       // Silently fail if we can't sync cache config
@@ -107,5 +113,5 @@ class HomeRepository {
 HomeRepository homeRepository(Ref ref) {
   final dio = ref.watch(dioProvider);
   final cache = ref.watch(cacheServiceProvider);
-  return HomeRepository(dio, cache);
+  return HomeRepository(dio, cache, ref);
 }

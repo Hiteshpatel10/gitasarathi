@@ -8,6 +8,7 @@ import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
 
 import 'app_routes.dart';
+import 'route_destinations.dart';
 import 'scaffold_with_nav_bar.dart';
 
 part 'app_router.g.dart';
@@ -63,7 +64,7 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 name: AppRoutes.chapters.name,
                 path: AppRoutes.chapters.path,
-                builder: (context, state) => const _PlaceholderScreen('Chapters'),
+                builder: (context, state) => ChaptersDestination.instance.build(context),
               ),
             ],
           ),

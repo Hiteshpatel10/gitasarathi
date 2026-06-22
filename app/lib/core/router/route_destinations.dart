@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import '../../features/chapters/view/chapters_screen.dart';
 import 'app_routes.dart';
 
 abstract class AppDestination {
@@ -19,8 +21,13 @@ class HomeDestination extends AppDestination {
 
 class ChaptersDestination extends AppDestination {
   const ChaptersDestination();
+
   @override
   String get name => AppRoutes.chapters.name;
+
+  Widget build(BuildContext context) {
+    return const ChaptersScreen();
+  }
 
   static const instance = ChaptersDestination();
 }

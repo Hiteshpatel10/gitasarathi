@@ -1,6 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../repository/home_repository.dart';
 import 'package:app/core/services/cache_service.dart';
+import 'package:app/core/services/cache_events.dart';
 import '../model/home_models.dart';
 
 part 'home_providers.g.dart';
@@ -45,17 +47,17 @@ Future<StreakSummary?> streakSummary(Ref ref) async {
 Future<VerseOfTheDay?> verseOfTheDay(Ref ref) async {
   final repository = ref.watch(homeRepositoryProvider);
   
+  // Use .select to ONLY rebuild if OUR specific key was invalidated.
+  ref.watch(cacheInvalidationEventProvider.select(
+    (keys) => keys.contains(CacheService.verseOfTheDay())
+  ));
+
   // Return the cached verse immediately (if any) to prevent loader UI
   final verse = await repository.getVerseOfTheDay();
 
-  // Run the validator in the background
-  repository.syncUserCache().then((invalidatedKeys) {
-    if (invalidatedKeys.contains(CacheService.verseOfTheDay())) {
-      // If the validator cleared our cache, force this provider to re-run
-      // which will now hit the API because the cache is gone!
-      ref.invalidateSelf();
-    }
-  });
+  // Run the validator in the background. It will update the CacheInvalidationEventProvider
+  // which this provider now watches, so it will automatically rebuild if needed!
+  repository.syncUserCache();
 
   return verse;
 }

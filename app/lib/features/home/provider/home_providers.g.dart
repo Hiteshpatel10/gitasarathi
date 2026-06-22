@@ -254,7 +254,7 @@ final class VerseOfTheDayProvider
   }
 }
 
-String _$verseOfTheDayHash() => r'cc86af218fdd6890aed5c36d912541f267e0d5ec';
+String _$verseOfTheDayHash() => r'a8832cd66f2fd96c1a9ebb88ea55cbb399547491';
 
 /// Derived provider: filters the cached verse by the currently selected authors.
 /// This rebuilds instantly on author change — zero network calls.

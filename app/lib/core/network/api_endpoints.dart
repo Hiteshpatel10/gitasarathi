@@ -9,4 +9,6 @@ class ApiEndpoints {
   static const String lastActivity = "last-activity";
   static const String streakSummary = "streak-summary";
   static const String verseOfTheDay = "verse-of-the-day";
+  static const String chapters = "chapters";
+  static const String progress = "progress";
 }

@@ -8,7 +8,6 @@ class HomeHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Read user profile from provider
     return Column(
       children: [
         Row(
