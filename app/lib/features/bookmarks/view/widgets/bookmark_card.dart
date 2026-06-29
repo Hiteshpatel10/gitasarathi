@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/router/route_destinations.dart';
 import 'package:app/features/bookmarks/model/bookmark_models.dart';
 import 'package:app/features/bookmarks/provider/bookmarks_provider.dart';
 
@@ -51,15 +52,22 @@ class BookmarkCard extends ConsumerWidget {
       onDismissed: (direction) {
         ref.read(bookmarksProvider.notifier).toggleBookmark(verse.id);
       },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.colors.secondarySystemBackground,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: context.colors.separator),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: GestureDetector(
+        onTap: () {
+          context.pushDestination(VerseExplanationDestination(
+            chapterId: verse.chapterNumber,
+            verseId: verse.id,
+          ));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.colors.secondarySystemBackground,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.colors.separator),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,6 +140,7 @@ class BookmarkCard extends ConsumerWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

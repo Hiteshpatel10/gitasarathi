@@ -97,6 +97,11 @@ class ListenScreen extends ConsumerWidget {
               );
             },
           ),
+          IconButton(
+            icon: Icon(Icons.tune, color: colors.label),
+            tooltip: 'Playback Settings',
+            onPressed: () => _showPlaybackSettings(context, ref),
+          ),
         ],
       ),
       body: SafeArea(
@@ -359,5 +364,182 @@ class ListenScreen extends ConsumerWidget {
     
     translation ??= verse.translations.first;
     return translation.description;
+  }
+
+  void _showPlaybackSettings(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colors.secondarySystemBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final settings = ref.watch(verseSettingsProvider);
+            final settingsNotifier = ref.read(verseSettingsProvider.notifier);
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Playback Settings',
+                          style: TextStyle(
+                            color: colors.label,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: colors.label),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Playback Mode Section
+                    Text(
+                      'PLAYBACK MODE',
+                      style: TextStyle(
+                        color: colors.secondaryLabel,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildChoiceChip(
+                          context,
+                          label: 'Sloka & Translation',
+                          selected: settings.playbackMode == PlaybackMode.both,
+                          onSelected: (_) => settingsNotifier.setPlaybackMode(PlaybackMode.both),
+                        ),
+                        _buildChoiceChip(
+                          context,
+                          label: 'Sloka Only',
+                          selected: settings.playbackMode == PlaybackMode.slokaOnly,
+                          onSelected: (_) => settingsNotifier.setPlaybackMode(PlaybackMode.slokaOnly),
+                        ),
+                        _buildChoiceChip(
+                          context,
+                          label: 'Translation Only',
+                          selected: settings.playbackMode == PlaybackMode.translationOnly,
+                          onSelected: (_) => settingsNotifier.setPlaybackMode(PlaybackMode.translationOnly),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Language Section
+                    Text(
+                      'TRANSLATION LANGUAGE',
+                      style: TextStyle(
+                        color: colors.secondaryLabel,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildChoiceChip(
+                          context,
+                          label: 'English',
+                          selected: settings.selectedLanguage.toLowerCase() == 'english',
+                          onSelected: (_) => settingsNotifier.setLanguage('english'),
+                        ),
+                        _buildChoiceChip(
+                          context,
+                          label: 'Hindi',
+                          selected: settings.selectedLanguage.toLowerCase() == 'hindi',
+                          onSelected: (_) => settingsNotifier.setLanguage('hindi'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Sloka Voice Section
+                    Text(
+                      'SLOKA VOICE',
+                      style: TextStyle(
+                        color: colors.secondaryLabel,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildChoiceChip(
+                          context,
+                          label: 'Male',
+                          selected: settings.selectedAudioVoice == 'male',
+                          onSelected: (_) => settingsNotifier.setAudioVoice('male'),
+                        ),
+                        _buildChoiceChip(
+                          context,
+                          label: 'Female',
+                          selected: settings.selectedAudioVoice == 'female',
+                          onSelected: (_) => settingsNotifier.setAudioVoice('female'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildChoiceChip(
+    BuildContext context, {
+    required String label,
+    required bool selected,
+    required ValueChanged<bool> onSelected,
+  }) {
+    final colors = context.colors;
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          color: selected ? Colors.white : colors.label,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      selectedColor: colors.saffron,
+      backgroundColor: colors.secondarySystemBackground,
+      side: BorderSide(
+        color: selected ? colors.saffron : colors.label.withValues(alpha: 0.1),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      showCheckmark: false,
+    );
   }
 }

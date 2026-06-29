@@ -9,31 +9,15 @@ class HomeHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'GitaSarathi',
-              style: GoogleFonts.lora(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: context.colors.label,
-              ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.search, color: context.colors.label, size: 24),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  icon: Icon(Icons.notifications_none, color: context.colors.label, size: 24),
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ],
+        Text(
+          'GitaSarathi',
+          style: GoogleFonts.lora(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: context.colors.label,
+          ),
         ),
       ],
     );

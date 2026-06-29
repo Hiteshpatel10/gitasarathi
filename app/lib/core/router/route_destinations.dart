@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../features/chapters/view/chapters_screen.dart';
 import 'app_routes.dart';
 
@@ -93,4 +94,24 @@ class VerseExplanationDestination extends AppDestination {
     'chapterId': chapterId.toString(),
     'verseId': verseId.toString(),
   };
+}
+
+extension AppDestinationNavigation on BuildContext {
+  void goDestination(AppDestination destination) {
+    goNamed(
+      destination.name,
+      pathParameters: destination.pathParameters,
+      queryParameters: destination.queryParameters,
+      extra: destination.extra,
+    );
+  }
+
+  void pushDestination(AppDestination destination) {
+    pushNamed(
+      destination.name,
+      pathParameters: destination.pathParameters,
+      queryParameters: destination.queryParameters,
+      extra: destination.extra,
+    );
+  }
 }

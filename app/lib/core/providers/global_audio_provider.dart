@@ -181,10 +181,15 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     
     ref.read(prefServiceProvider).setInt(PrefKeys.lastPlayedVerseId, verse.id);
     
+    final settings = ref.read(verseSettingsProvider);
+    final initialPhase = settings.playbackMode == PlaybackMode.translationOnly
+        ? AudioPhase.translation
+        : AudioPhase.mool;
+
     state = state.copyWith(
       currentVerse: verse,
       currentChapter: chapter,
-      currentPhase: AudioPhase.mool,
+      currentPhase: initialPhase,
       position: Duration.zero,
       duration: Duration.zero,
       isInitializing: false,
@@ -206,7 +211,11 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
       // If track finished or never started, restart from mool
       if (state.duration == Duration.zero ||
           (state.position >= state.duration && state.duration > Duration.zero)) {
-        state = state.copyWith(currentPhase: AudioPhase.mool, position: Duration.zero, duration: Duration.zero);
+        final settings = ref.read(verseSettingsProvider);
+        final initialPhase = settings.playbackMode == PlaybackMode.translationOnly
+            ? AudioPhase.translation
+            : AudioPhase.mool;
+        state = state.copyWith(currentPhase: initialPhase, position: Duration.zero, duration: Duration.zero);
         await _playCurrentPhase();
       } else {
         await _player.resume();
@@ -240,28 +249,27 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     if (_isAdvancing) return;
     _isAdvancing = true;
 
-    // Determine next action synchronously, then release the lock BEFORE
-    // any async playback call. This prevents a re-entrant deadlock where
-    // _playCurrentPhase's error handler calls _handlePhaseComplete() but
-    // finds _isAdvancing=true and silently returns.
     try {
+      final settings = ref.read(verseSettingsProvider);
       if (state.currentPhase == AudioPhase.mool) {
-        final translationUrl = _getUrlForPhase(AudioPhase.translation);
-        if (translationUrl != null && translationUrl.isNotEmpty) {
-          state = state.copyWith(
-            currentPhase: AudioPhase.translation,
-            position: Duration.zero,
-            duration: Duration.zero,
-          );
-          _isAdvancing = false; // Release before async playback
-          await _playCurrentPhase();
-        } else {
-          _isAdvancing = false;
-          if (state.autoAdvance) {
-            await _advanceToNextVerse();
-          } else {
-            _resetStopped();
+        if (settings.playbackMode == PlaybackMode.both) {
+          final translationUrl = _getUrlForPhase(AudioPhase.translation);
+          if (translationUrl != null && translationUrl.isNotEmpty) {
+            state = state.copyWith(
+              currentPhase: AudioPhase.translation,
+              position: Duration.zero,
+              duration: Duration.zero,
+            );
+            _isAdvancing = false; // Release before async playback
+            await _playCurrentPhase();
+            return;
           }
+        }
+        _isAdvancing = false;
+        if (state.autoAdvance) {
+          await _advanceToNextVerse();
+        } else {
+          _resetStopped();
         }
       } else {
         // Translation phase done — go to next verse
@@ -282,10 +290,15 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     if (next != null) {
       ref.read(prefServiceProvider).setInt(PrefKeys.lastPlayedVerseId, next.$1.id);
       
+      final settings = ref.read(verseSettingsProvider);
+      final initialPhase = settings.playbackMode == PlaybackMode.translationOnly
+          ? AudioPhase.translation
+          : AudioPhase.mool;
+
       state = state.copyWith(
         currentVerse: next.$1,
         currentChapter: next.$2,
-        currentPhase: AudioPhase.mool,
+        currentPhase: initialPhase,
         position: Duration.zero,
         duration: Duration.zero,
       );

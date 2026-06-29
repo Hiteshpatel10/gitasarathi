@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:go_router/go_router.dart';
 import 'package:app/core/theme/app_colors.dart';
-import 'package:app/core/router/app_routes.dart';
 import 'package:app/core/router/route_destinations.dart';
 import 'package:app/core/providers/global_audio_provider.dart';
 import 'package:app/features/chapters/provider/chapters_providers.dart';
@@ -134,14 +132,10 @@ class TodaysVerseCard extends ConsumerWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          final dest = VerseExplanationDestination(
+                          context.pushDestination(VerseExplanationDestination(
                             chapterId: verse.chapterId,
                             verseId: verse.id,
-                          );
-                          context.pushNamed(
-                            dest.name,
-                            pathParameters: dest.pathParameters,
-                          );
+                          ));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -169,7 +163,7 @@ class TodaysVerseCard extends ConsumerWidget {
                             if (fullVerse != null) {
                               await ref.read(globalAudioProvider.notifier).playVerse(fullVerse, chapter);
                               if (context.mounted) {
-                                context.pushNamed(AppRoutes.listen.name);
+                                context.pushDestination(ListenDestination.instance);
                               }
                             }
                           }

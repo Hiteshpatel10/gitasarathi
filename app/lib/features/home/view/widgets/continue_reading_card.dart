@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app/core/theme/app_colors.dart';
-import 'package:go_router/go_router.dart';
-import 'package:app/core/router/app_routes.dart';
 import 'package:app/core/router/route_destinations.dart';
 import 'package:app/core/providers/global_audio_provider.dart';
 import 'package:app/features/chapters/provider/chapters_providers.dart';
@@ -67,14 +65,10 @@ class ContinueReadingCard extends ConsumerWidget {
                           final vId = activity.verseId;
                           final cId = activity.chapterId ?? 1;
                           if (vId != null) {
-                            final dest = VerseExplanationDestination(
+                            context.pushDestination(VerseExplanationDestination(
                               chapterId: cId,
                               verseId: vId,
-                            );
-                            context.pushNamed(
-                              dest.name,
-                              pathParameters: dest.pathParameters,
-                            );
+                            ));
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -105,7 +99,7 @@ class ContinueReadingCard extends ConsumerWidget {
                             if (fullVerse != null) {
                               await ref.read(globalAudioProvider.notifier).playVerse(fullVerse, chapter);
                               if (context.mounted) {
-                                context.pushNamed(AppRoutes.listen.name);
+                                context.pushDestination(ListenDestination.instance);
                               }
                             }
                           }

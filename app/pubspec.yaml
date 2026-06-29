@@ -31,6 +31,7 @@ dependencies:
   logger: ^2.7.0
   google_sign_in: ^7.2.0
   cached_network_image: ^3.4.1
+  share_plus: ^12.0.2
 
 dev_dependencies:
   flutter_test:

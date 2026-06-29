@@ -9,6 +9,7 @@ import '../provider/verse_settings_provider.dart';
 import '../model/verse_models.dart';
 import 'package:app/core/providers/global_audio_provider.dart';
 import 'package:app/core/router/app_routes.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VerseExplanationView extends ConsumerStatefulWidget {
   const VerseExplanationView({
@@ -55,7 +56,25 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Colors.orange, size: 24),
             onPressed: () {
-              // TODO: Share
+              final verse = verseAsync.value;
+              if (verse != null) {
+                final settings = ref.read(verseSettingsProvider);
+                final translation = _getTranslation(verse, settings)?.description ?? '';
+                final message = '''Radhey Radhey! 🌸✨
+
+I just read a profound shloka from the Bhagavad Gita that resonated with me:
+
+"$translation"  
+(Bhagavad Gita ${verse.chapterNumber}.${verse.verseNumber})
+
+Would you like to explore more? Read more on **Gita Sarathi**:  
+
+📖 Read more:  
+https://links.gitasarathi.geekaid.in/verse/${verse.id}
+
+Hare Krishna! 🙏💛''';
+                Share.share(message);
+              }
             },
           ),
           Consumer(
