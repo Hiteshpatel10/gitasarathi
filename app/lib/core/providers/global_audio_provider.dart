@@ -193,9 +193,9 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
   }
 
   Future<void> playNextVerse() async {
-    final nextVerse = await _getNextVerse();
-    if (nextVerse != null && state.currentChapter != null) {
-      await playVerse(nextVerse, state.currentChapter!);
+    final next = await _getNextVerseAndChapter();
+    if (next != null) {
+      await playVerse(next.$1, next.$2);
     }
   }
 
@@ -206,11 +206,32 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
       final verses = await ref.read(chapterVersesProvider(state.currentChapter!.id).future);
       if (verses == null || verses.isEmpty) return;
 
-      final currentIndex = verses.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
+      // Sort ascending so index math always goes in the right direction
+      final sorted = [...verses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+      final currentIndex = sorted.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
+
       if (currentIndex > 0) {
-        final prevMeta = verses[currentIndex - 1];
+        // Previous verse in the same chapter
+        final prevMeta = sorted[currentIndex - 1];
         final prevVerse = await ref.read(verseExplanationProvider(prevMeta.id).future);
         if (prevVerse != null) await playVerse(prevVerse, state.currentChapter!);
+      } else if (currentIndex == 0) {
+        // First verse of this chapter — go to last verse of previous chapter
+        final chapters = await ref.read(chaptersListProvider.future);
+        if (chapters == null || chapters.isEmpty) return;
+
+        final sortedChapters = [...chapters]..sort((a, b) => a.chapterNumber.compareTo(b.chapterNumber));
+        final chapterIdx = sortedChapters.indexWhere((c) => c.id == state.currentChapter!.id);
+        if (chapterIdx > 0) {
+          final prevChapter = sortedChapters[chapterIdx - 1];
+          final prevChapterVerses = await ref.read(chapterVersesProvider(prevChapter.id).future);
+          if (prevChapterVerses == null || prevChapterVerses.isEmpty) return;
+
+          final sortedPrevVerses = [...prevChapterVerses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+          final lastVerseMeta = sortedPrevVerses.last;
+          final lastVerse = await ref.read(verseExplanationProvider(lastVerseMeta.id).future);
+          if (lastVerse != null) await playVerse(lastVerse, prevChapter);
+        }
       }
     } finally {
       state = state.copyWith(isLoadingNext: false);
@@ -223,9 +244,12 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     if (_isAdvancing) return;
     _isAdvancing = true;
 
+    // Determine next action synchronously, then release the lock BEFORE
+    // any async playback call. This prevents a re-entrant deadlock where
+    // _playCurrentPhase's error handler calls _handlePhaseComplete() but
+    // finds _isAdvancing=true and silently returns.
     try {
       if (state.currentPhase == AudioPhase.mool) {
-        // Advance to translation
         final translationUrl = _getUrlForPhase(AudioPhase.translation);
         if (translationUrl != null && translationUrl.isNotEmpty) {
           state = state.copyWith(
@@ -233,9 +257,10 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
             position: Duration.zero,
             duration: Duration.zero,
           );
+          _isAdvancing = false; // Release before async playback
           await _playCurrentPhase();
         } else {
-          // No translation — if autoAdvance, go to next verse
+          _isAdvancing = false;
           if (state.autoAdvance) {
             await _advanceToNextVerse();
           } else {
@@ -243,30 +268,32 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
           }
         }
       } else {
-        // Translation done — advance to next verse if enabled
+        // Translation phase done — go to next verse
+        _isAdvancing = false;
         if (state.autoAdvance) {
           await _advanceToNextVerse();
         } else {
           _resetStopped();
         }
       }
-    } finally {
+    } catch (_) {
       _isAdvancing = false;
     }
   }
 
   Future<void> _advanceToNextVerse() async {
-    final nextVerse = await _getNextVerse();
-    if (nextVerse != null && state.currentChapter != null) {
+    final next = await _getNextVerseAndChapter();
+    if (next != null) {
       state = state.copyWith(
-        currentVerse: nextVerse,
+        currentVerse: next.$1,
+        currentChapter: next.$2,
         currentPhase: AudioPhase.mool,
         position: Duration.zero,
         duration: Duration.zero,
       );
       await _playCurrentPhase();
     } else {
-      // End of chapter
+      // End of all chapters
       _resetStopped();
     }
   }
@@ -327,11 +354,11 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
 
   Future<void> _prefetchNextVerseMool() async {
     try {
-      final nextVerse = await _getNextVerse();
-      if (nextVerse == null) return;
+      final next = await _getNextVerseAndChapter();
+      if (next == null) return;
       final settings = ref.read(verseSettingsProvider);
       final isMale = settings.selectedAudioVoice == 'male';
-      final url = isMale ? nextVerse.audioLinks?.moolMale : nextVerse.audioLinks?.moolFemale;
+      final url = isMale ? next.$1.audioLinks?.moolMale : next.$1.audioLinks?.moolFemale;
       _cache.prefetch(url);
     } catch (_) {}
   }
@@ -355,14 +382,40 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     }
   }
 
-  Future<VerseDetails?> _getNextVerse() async {
+  /// Returns the next (verse, chapter) pair across chapter boundaries.
+  /// Returns null only at the very end of the last chapter.
+  Future<(VerseDetails, Chapter)?> _getNextVerseAndChapter() async {
     if (state.currentVerse == null || state.currentChapter == null) return null;
     try {
       final verses = await ref.read(chapterVersesProvider(state.currentChapter!.id).future);
       if (verses == null) return null;
-      final idx = verses.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
-      if (idx != -1 && idx < verses.length - 1) {
-        return await ref.read(verseExplanationProvider(verses[idx + 1].id).future);
+
+      // Sort ascending so idx+1 is always the next verse in order
+      final sorted = [...verses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+      final idx = sorted.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
+
+      if (idx != -1 && idx < sorted.length - 1) {
+        // Next verse in the same chapter
+        final nextMeta = sorted[idx + 1];
+        final nextVerse = await ref.read(verseExplanationProvider(nextMeta.id).future);
+        if (nextVerse != null) return (nextVerse, state.currentChapter!);
+      } else if (idx == sorted.length - 1) {
+        // Last verse of this chapter — try to move to next chapter
+        final chapters = await ref.read(chaptersListProvider.future);
+        if (chapters == null || chapters.isEmpty) return null;
+
+        final sortedChapters = [...chapters]..sort((a, b) => a.chapterNumber.compareTo(b.chapterNumber));
+        final chapterIdx = sortedChapters.indexWhere((c) => c.id == state.currentChapter!.id);
+        if (chapterIdx != -1 && chapterIdx < sortedChapters.length - 1) {
+          final nextChapter = sortedChapters[chapterIdx + 1];
+          final nextChapterVerses = await ref.read(chapterVersesProvider(nextChapter.id).future);
+          if (nextChapterVerses == null || nextChapterVerses.isEmpty) return null;
+
+          final sortedNextVerses = [...nextChapterVerses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+          final firstVerseMeta = sortedNextVerses.first;
+          final firstVerse = await ref.read(verseExplanationProvider(firstVerseMeta.id).future);
+          if (firstVerse != null) return (firstVerse, nextChapter);
+        }
       }
     } catch (_) {}
     return null;
