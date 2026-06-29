@@ -98,8 +98,8 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
         break;
       case VerseState.locked:
         topColor = colors.systemBackground;
-        textColor = Colors.white.withValues(alpha: 0.4);
-        borderSide = BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1);
+        textColor = colors.label.withValues(alpha: 0.4);
+        borderSide = BorderSide(color: colors.label.withValues(alpha: 0.2), width: 1);
         buttonDepth = 0; // Flat
         break;
     }

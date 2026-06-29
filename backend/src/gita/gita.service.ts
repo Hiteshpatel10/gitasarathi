@@ -25,6 +25,14 @@ export class GitaService {
       relations: options?.includeRelations ? ['verses'] : [],
     });
 
+    if (options?.includeRelations) {
+      chapters.forEach(chapter => {
+        if (chapter.verses) {
+          chapter.verses.forEach(verse => this.attachAudioLinks(verse));
+        }
+      });
+    }
+
     return chapters;
 
     
@@ -85,9 +93,10 @@ export class GitaService {
             (translation) => translation.authorId === translationAuthorID,
           ) || verse.translations[0];
 
-        verse.translations = [preferredTranslation];
       }
     }
+
+    this.attachAudioLinks(verse);
 
     return verse;
   }
@@ -146,5 +155,21 @@ export class GitaService {
     });
 
     return languageAndAuthors;
+  }
+
+  private attachAudioLinks(verse: VerseEntity) {
+    if (!verse || !verse.chapterNumber || !verse.verseNumber) return;
+
+    const paddedChapter = String(verse.chapterNumber).padStart(2, '0');
+    const paddedVerse = String(verse.verseNumber).padStart(2, '0');
+    
+    const baseUrl = `${constants.S3Url}audos/slokas/chapter_${paddedChapter}/verse_${paddedVerse}`;
+
+    verse.audioLinks = {
+      mool_female: `${baseUrl}/mool_female.mp3`,
+      mool_male: `${baseUrl}/mool_male.mp3`,
+      english_female_translation: `${baseUrl}/english_female_translation.mp3`,
+      hindi_female_translation: `${baseUrl}/hindi_female_translation.mp3`,
+    };
   }
 }

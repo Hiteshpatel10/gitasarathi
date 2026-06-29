@@ -61,6 +61,9 @@ export class VerseEntity {
   @Expose({ name: 'is_listen' })
   isListen?: boolean;
 
+  @Expose({ name: 'audio_links' })
+  audioLinks?: Record<string, string>;
+
   // Relations
   @ManyToOne(() => ChapterEntity, (chapter) => chapter.verses)
   @JoinColumn({ name: 'chapter_id' })

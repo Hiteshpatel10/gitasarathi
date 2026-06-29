@@ -7,6 +7,7 @@ import '../../bookmarks/provider/bookmarks_provider.dart';
 import '../provider/chapters_providers.dart';
 import '../provider/verse_settings_provider.dart';
 import '../model/verse_models.dart';
+import 'widgets/verse_audio_player.dart';
 
 class VerseExplanationView extends ConsumerStatefulWidget {
   const VerseExplanationView({
@@ -36,13 +37,13 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
         backgroundColor: colors.systemBackground,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: colors.label, size: 20),
           onPressed: () => context.pop(),
         ),
         title: Text(
           verseAsync.value?.title ?? 'Loading...',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: colors.label,
             fontSize: 18,
             fontWeight: FontWeight.bold,
             fontFamily: 'Serif',
@@ -96,12 +97,12 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
       body: verseAsync.when(
         data: (verse) {
           if (verse == null) {
-            return const Center(child: Text('Verse not found', style: TextStyle(color: Colors.white)));
+            return Center(child: Text('Verse not found', style: TextStyle(color: colors.label)));
           }
           return _buildBody(context, colors, verse, ref.watch(verseSettingsProvider));
         },
         loading: () => const Center(child: CircularProgressIndicator(color: Colors.orange)),
-        error: (error, stack) => Center(child: Text('Error: $error', style: const TextStyle(color: Colors.white))),
+        error: (error, stack) => Center(child: Text('Error: $error', style: TextStyle(color: colors.label))),
       ),
     );
   }
@@ -170,15 +171,15 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
       decoration: BoxDecoration(
         color: colors.secondarySystemBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: colors.label.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
           Text(
             verse.text,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: colors.label,
               fontSize: 22,
               height: 1.8,
               fontFamily: 'Serif', // Devanagari often looks good in Serif
@@ -195,12 +196,14 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
             verse.transliteration,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: colors.secondaryLabel,
               fontSize: 16,
               height: 1.6,
               fontStyle: FontStyle.italic,
             ),
           ),
+          if (verse.audioLinks != null)
+            VerseAudioPlayer(audioLinks: verse.audioLinks),
         ],
       ),
     );
@@ -216,7 +219,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
         Text(
           'WORD BY WORD',
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.5),
+            color: colors.tertiaryLabel,
             fontSize: 12,
             letterSpacing: 1.5,
             fontWeight: FontWeight.bold,
@@ -259,7 +262,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: colors.secondaryLabel,
                         fontSize: 12,
                       ),
                     ),
@@ -324,7 +327,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                   child: Text(
                     translation.description,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: colors.label,
                       fontSize: 15,
                       height: 1.6,
                     ),
@@ -380,7 +383,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
               Text(
                 commentary.description,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
+                  color: colors.label,
                   fontSize: 14,
                   height: 1.6,
                 ),
@@ -414,7 +417,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: colors.secondarySystemBackground,
-            border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
+            border: Border(top: BorderSide(color: colors.separator)),
           ),
           child: SafeArea(
             top: false,
@@ -464,7 +467,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                   children: [
                     Text(
                       'Chapter ${verse.chapterNumber}',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: colors.label, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Container(
@@ -524,9 +527,10 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
   }
 
   void _showSettingsBottomSheet(BuildContext context, VerseDetails verse) {
+    final colors = context.colors;
     showModalBottomSheet(
       context: context,
-      backgroundColor: context.colors.secondarySystemBackground,
+      backgroundColor: colors.secondarySystemBackground,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -563,10 +567,10 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'Preferences',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colors.label,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -576,7 +580,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                     // Language Selection
                     Text(
                       'Language',
-                      style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+                      style: TextStyle(color: colors.secondaryLabel, fontSize: 12),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -587,9 +591,9 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                           label: Text(lang[0].toUpperCase() + lang.substring(1)),
                           selected: isSelected,
                           selectedColor: Colors.orange,
-                          backgroundColor: Colors.white.withValues(alpha: 0.1),
+                          backgroundColor: colors.tertiarySystemBackground,
                           labelStyle: TextStyle(
-                            color: isSelected ? Colors.black : Colors.white,
+                            color: isSelected ? Colors.black : colors.label,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
                           onSelected: (selected) {
@@ -606,14 +610,14 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                     if (availableTranslators.isNotEmpty) ...[
                       Text(
                         'Translation by',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+                        style: TextStyle(color: colors.secondaryLabel, fontSize: 12),
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<int>(
                         value: availableTranslators.any((t) => t.authorId == settings.selectedTranslatorId) ? settings.selectedTranslatorId : null,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.white.withValues(alpha: 0.05),
+                          fillColor: colors.tertiarySystemBackground,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -621,13 +625,13 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                         dropdownColor: context.colors.secondarySystemBackground,
-                        style: const TextStyle(color: Colors.white),
-                        icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                        hint: const Text('Select a translator', style: TextStyle(color: Colors.white54)),
+                        style: TextStyle(color: colors.label),
+                        icon: Icon(Icons.arrow_drop_down, color: colors.label),
+                        hint: Text('Select a translator', style: TextStyle(color: colors.secondaryLabel)),
                         items: availableTranslators.map((t) {
                           return DropdownMenuItem<int>(
                             value: t.authorId,
-                            child: Text(t.authorName),
+                            child: Text(t.authorName, overflow: TextOverflow.ellipsis),
                           );
                         }).toList(),
                         onChanged: (val) {
@@ -641,14 +645,14 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                     if (availableCommentators.isNotEmpty) ...[
                       Text(
                         'Commentary by',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+                        style: TextStyle(color: colors.secondaryLabel, fontSize: 12),
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<int>(
                         value: availableCommentators.any((c) => c.authorId == settings.selectedCommentatorId) ? settings.selectedCommentatorId : null,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.white.withValues(alpha: 0.05),
+                          fillColor: colors.tertiarySystemBackground,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -656,9 +660,9 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                         dropdownColor: context.colors.secondarySystemBackground,
-                        style: const TextStyle(color: Colors.white),
-                        icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                        hint: const Text('Select a commentator', style: TextStyle(color: Colors.white54)),
+                        style: TextStyle(color: colors.label),
+                        icon: Icon(Icons.arrow_drop_down, color: colors.label),
+                        hint: Text('Select a commentator', style: TextStyle(color: colors.secondaryLabel)),
                         items: availableCommentators.map((c) {
                           return DropdownMenuItem<int>(
                             value: c.authorId,

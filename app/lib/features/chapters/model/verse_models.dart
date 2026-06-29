@@ -17,6 +17,7 @@ class VerseDetails {
     required this.wordMeanings,
     this.translations = const [],
     this.commentaries = const [],
+    this.audioLinks,
   });
 
   final int id;
@@ -35,6 +36,9 @@ class VerseDetails {
 
   @JsonKey(name: 'verse_commentary', defaultValue: [])
   final List<VerseCommentary> commentaries;
+
+  @JsonKey(name: 'audio_links')
+  final AudioLinks? audioLinks;
 
   factory VerseDetails.fromJson(Map<String, dynamic> json) => _$VerseDetailsFromJson(json);
   Map<String, dynamic> toJson() => _$VerseDetailsToJson(this);
@@ -112,4 +116,22 @@ class VerseCommentary {
 
   factory VerseCommentary.fromJson(Map<String, dynamic> json) => _$VerseCommentaryFromJson(json);
   Map<String, dynamic> toJson() => _$VerseCommentaryToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake)
+class AudioLinks {
+  AudioLinks({
+    this.moolFemale,
+    this.moolMale,
+    this.englishFemaleTranslation,
+    this.hindiFemaleTranslation,
+  });
+
+  final String? moolFemale;
+  final String? moolMale;
+  final String? englishFemaleTranslation;
+  final String? hindiFemaleTranslation;
+
+  factory AudioLinks.fromJson(Map<String, dynamic> json) => _$AudioLinksFromJson(json);
+  Map<String, dynamic> toJson() => _$AudioLinksToJson(this);
 }

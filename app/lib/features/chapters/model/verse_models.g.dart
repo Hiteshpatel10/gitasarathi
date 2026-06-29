@@ -27,6 +27,9 @@ VerseDetails _$VerseDetailsFromJson(Map<String, dynamic> json) => VerseDetails(
           ?.map((e) => VerseCommentary.fromJson(e as Map<String, dynamic>))
           .toList() ??
       [],
+  audioLinks: json['audio_links'] == null
+      ? null
+      : AudioLinks.fromJson(json['audio_links'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$VerseDetailsToJson(VerseDetails instance) =>
@@ -43,6 +46,7 @@ Map<String, dynamic> _$VerseDetailsToJson(VerseDetails instance) =>
       'word_meanings': instance.wordMeanings,
       'verse_translation': instance.translations,
       'verse_commentary': instance.commentaries,
+      'audio_links': instance.audioLinks,
     };
 
 VerseTranslation _$VerseTranslationFromJson(Map<String, dynamic> json) =>
@@ -83,4 +87,19 @@ Map<String, dynamic> _$VerseCommentaryToJson(VerseCommentary instance) =>
       'description': instance.description,
       'lang': instance.lang,
       'language_id': instance.languageId,
+    };
+
+AudioLinks _$AudioLinksFromJson(Map<String, dynamic> json) => AudioLinks(
+  moolFemale: json['mool_female'] as String?,
+  moolMale: json['mool_male'] as String?,
+  englishFemaleTranslation: json['english_female_translation'] as String?,
+  hindiFemaleTranslation: json['hindi_female_translation'] as String?,
+);
+
+Map<String, dynamic> _$AudioLinksToJson(AudioLinks instance) =>
+    <String, dynamic>{
+      'mool_female': instance.moolFemale,
+      'mool_male': instance.moolMale,
+      'english_female_translation': instance.englishFemaleTranslation,
+      'hindi_female_translation': instance.hindiFemaleTranslation,
     };

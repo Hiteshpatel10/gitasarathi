@@ -92,14 +92,14 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
                   backgroundColor: colors.systemBackground.withValues(alpha: 0.95),
                   expandedHeight: 120, // Height for progress bar + title
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                    icon: Icon(Icons.arrow_back_ios_new, color: colors.label, size: 20),
                     onPressed: () => context.pop(),
                   ),
                   title: Text(
                     '${chapter.nameTranslation} - Chapter ${chapter.chapterNumber}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: colors.label,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Serif',
@@ -117,7 +117,7 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
                             Text(
                               '$completedCount OF ${verses.length} VERSES COMPLETED',
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.5),
+                                color: colors.secondaryLabel,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.2,
@@ -128,7 +128,7 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
                               borderRadius: BorderRadius.circular(2),
                               child: LinearProgressIndicator(
                                 value: progressPct / 100,
-                                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                                backgroundColor: colors.label.withValues(alpha: 0.1),
                                 valueColor: AlwaysStoppedAnimation<Color>(colors.saffron),
                                 minHeight: 2,
                               ),

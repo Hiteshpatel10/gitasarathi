@@ -8,21 +8,25 @@ class VerseSettings {
     this.selectedLanguage = 'english',
     this.selectedTranslatorId,
     this.selectedCommentatorId,
+    this.selectedAudioVoice = 'male',
   });
 
   final String selectedLanguage;
   final int? selectedTranslatorId;
   final int? selectedCommentatorId;
+  final String selectedAudioVoice;
 
   VerseSettings copyWith({
     String? selectedLanguage,
     int? selectedTranslatorId,
     int? selectedCommentatorId,
+    String? selectedAudioVoice,
   }) {
     return VerseSettings(
       selectedLanguage: selectedLanguage ?? this.selectedLanguage,
       selectedTranslatorId: selectedTranslatorId ?? this.selectedTranslatorId,
       selectedCommentatorId: selectedCommentatorId ?? this.selectedCommentatorId,
+      selectedAudioVoice: selectedAudioVoice ?? this.selectedAudioVoice,
     );
   }
 }
@@ -36,6 +40,7 @@ class VerseSettingsNotifier extends _$VerseSettingsNotifier {
       selectedLanguage: prefs.getString('pref_verse_language') ?? 'english',
       selectedTranslatorId: prefs.getInt('pref_verse_translator_id'),
       selectedCommentatorId: prefs.getInt('pref_verse_commentator_id'),
+      selectedAudioVoice: prefs.getString('pref_verse_audio_voice') ?? 'male',
     );
   }
 
@@ -60,5 +65,11 @@ class VerseSettingsNotifier extends _$VerseSettingsNotifier {
     final prefs = ref.read(sharedPreferencesProvider);
     prefs.setInt('pref_verse_commentator_id', commentatorId);
     state = state.copyWith(selectedCommentatorId: commentatorId);
+  }
+
+  void setAudioVoice(String voice) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    prefs.setString('pref_verse_audio_voice', voice);
+    state = state.copyWith(selectedAudioVoice: voice);
   }
 }
