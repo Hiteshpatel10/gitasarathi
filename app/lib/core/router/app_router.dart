@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:app/features/auth/view/login_screen.dart';
 import 'package:app/features/home/view/home_screen.dart';
+import 'package:app/features/bookmarks/view/bookmarks_screen.dart';
 import 'package:app/features/chapters/view/verse_list_view.dart';
 import 'package:app/features/chapters/view/verse_explanation_view.dart';
 import 'package:app/core/services/pref_service.dart';
@@ -108,7 +109,7 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 name: AppRoutes.bookmarks.name,
                 path: AppRoutes.bookmarks.path,
-                builder: (context, state) => const _PlaceholderScreen('Bookmarks'),
+                builder: (context, state) => const BookmarksScreen(),
               ),
             ],
           ),

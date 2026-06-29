@@ -53,3 +53,44 @@ abstract class _$BookmarksNotifier extends $AsyncNotifier<Set<int>> {
     element.handleValue(ref, created);
   }
 }
+
+@ProviderFor(favoriteVerses)
+const favoriteVersesProvider = FavoriteVersesProvider._();
+
+final class FavoriteVersesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<BookmarkItem>>,
+          List<BookmarkItem>,
+          FutureOr<List<BookmarkItem>>
+        >
+    with
+        $FutureModifier<List<BookmarkItem>>,
+        $FutureProvider<List<BookmarkItem>> {
+  const FavoriteVersesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'favoriteVersesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$favoriteVersesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<BookmarkItem>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<BookmarkItem>> create(Ref ref) {
+    return favoriteVerses(ref);
+  }
+}
+
+String _$favoriteVersesHash() => r'a3a4418afbe5ab09add9b84abf1766b6161be9f9';

@@ -18,7 +18,7 @@ export class FavouriteService {
     try {
       const favorites = await this.favRepository.find({
         where: { userId },
-        relations: ['verse'],
+        relations: ['verse', 'verse.translations'],
       });
 
       return favorites;

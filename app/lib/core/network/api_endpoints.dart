@@ -1,8 +1,8 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // Use http://10.155.14.61:3000/ for physical device on the same Wi-Fi network
-  static const String baseURL = "http://10.155.14.61:3000/";
+  // Use http://172.23.16.170:3000/ for physical device on the same Wi-Fi network
+  static const String baseURL = "http://172.23.16.170:3000/";
   
   static const String authentication = "authentication";
   static const String user = "user";

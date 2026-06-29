@@ -1,5 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { LoggingInterceptor } from './logging.interceptor';
 import { CallHandler, ClassSerializerInterceptor, ExecutionContext, Injectable, NestInterceptor, ValidationPipe } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import snakecaseKeys from 'snakecase-keys';
@@ -8,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new LoggingInterceptor());
   // app.useGlobalInterceptors(new SnakeCaseInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({

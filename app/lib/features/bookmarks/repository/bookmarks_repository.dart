@@ -28,6 +28,18 @@ class BookmarksRepository {
     }
   }
 
+  Future<List<dynamic>> getFavoriteDetails() async {
+    try {
+      final response = await _dio.get(ApiEndpoints.favoriteList);
+      if (response.statusCode == 200 && response.data['status'] == 1) {
+        return response.data['favorites'] as List;
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<bool> addFavorite(int verseId) async {
     try {
       final response = await _dio.post(ApiEndpoints.favoriteAdd, data: {
