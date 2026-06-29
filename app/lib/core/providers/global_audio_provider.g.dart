@@ -42,7 +42,7 @@ final class GlobalAudioNotifierProvider
 }
 
 String _$globalAudioNotifierHash() =>
-    r'4e15c0cb0257d10be047d7346fb7c7eb4d62124a';
+    r'f633132efaef2d050258950c81d253eb55393ff9';
 
 abstract class _$GlobalAudioNotifier extends $Notifier<GlobalAudioState> {
   GlobalAudioState build();

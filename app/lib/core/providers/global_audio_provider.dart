@@ -193,50 +193,20 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
   }
 
   Future<void> playNextVerse() async {
-    final next = await _getNextVerseAndChapter();
-    if (next != null) {
-      await playVerse(next.$1, next.$2);
-    }
+    final next = await _getAdjacentVerse(1);
+    if (next != null) await playVerse(next.$1, next.$2);
   }
 
   Future<void> playPreviousVerse() async {
-    if (state.currentVerse == null || state.currentChapter == null) return;
     state = state.copyWith(isLoadingNext: true);
     try {
-      final verses = await ref.read(chapterVersesProvider(state.currentChapter!.id).future);
-      if (verses == null || verses.isEmpty) return;
-
-      // Sort ascending so index math always goes in the right direction
-      final sorted = [...verses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
-      final currentIndex = sorted.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
-
-      if (currentIndex > 0) {
-        // Previous verse in the same chapter
-        final prevMeta = sorted[currentIndex - 1];
-        final prevVerse = await ref.read(verseExplanationProvider(prevMeta.id).future);
-        if (prevVerse != null) await playVerse(prevVerse, state.currentChapter!);
-      } else if (currentIndex == 0) {
-        // First verse of this chapter — go to last verse of previous chapter
-        final chapters = await ref.read(chaptersListProvider.future);
-        if (chapters == null || chapters.isEmpty) return;
-
-        final sortedChapters = [...chapters]..sort((a, b) => a.chapterNumber.compareTo(b.chapterNumber));
-        final chapterIdx = sortedChapters.indexWhere((c) => c.id == state.currentChapter!.id);
-        if (chapterIdx > 0) {
-          final prevChapter = sortedChapters[chapterIdx - 1];
-          final prevChapterVerses = await ref.read(chapterVersesProvider(prevChapter.id).future);
-          if (prevChapterVerses == null || prevChapterVerses.isEmpty) return;
-
-          final sortedPrevVerses = [...prevChapterVerses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
-          final lastVerseMeta = sortedPrevVerses.last;
-          final lastVerse = await ref.read(verseExplanationProvider(lastVerseMeta.id).future);
-          if (lastVerse != null) await playVerse(lastVerse, prevChapter);
-        }
-      }
+      final prev = await _getAdjacentVerse(-1);
+      if (prev != null) await playVerse(prev.$1, prev.$2);
     } finally {
       state = state.copyWith(isLoadingNext: false);
     }
   }
+
 
   // ─── Phase Advancement ────────────────────────────────────────────────────
 
@@ -282,7 +252,7 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
   }
 
   Future<void> _advanceToNextVerse() async {
-    final next = await _getNextVerseAndChapter();
+    final next = await _getAdjacentVerse(1);
     if (next != null) {
       state = state.copyWith(
         currentVerse: next.$1,
@@ -354,7 +324,7 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
 
   Future<void> _prefetchNextVerseMool() async {
     try {
-      final next = await _getNextVerseAndChapter();
+      final next = await _getAdjacentVerse(1);
       if (next == null) return;
       final settings = ref.read(verseSettingsProvider);
       final isMale = settings.selectedAudioVoice == 'male';
@@ -382,41 +352,34 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     }
   }
 
-  /// Returns the next (verse, chapter) pair across chapter boundaries.
-  /// Returns null only at the very end of the last chapter.
-  Future<(VerseDetails, Chapter)?> _getNextVerseAndChapter() async {
-    if (state.currentVerse == null || state.currentChapter == null) return null;
+  /// Returns the (verse, chapter) adjacent to the current one.
+  /// Uses a flat globally-sorted verse list — just idx ± 1, no chapter-boundary logic needed.
+  /// [direction]: 1 = next, -1 = previous.
+  Future<(VerseDetails, Chapter)?> _getAdjacentVerse(int direction) async {
+    if (state.currentVerse == null) return null;
     try {
-      final verses = await ref.read(chapterVersesProvider(state.currentChapter!.id).future);
-      if (verses == null) return null;
+      final allVerses = await ref.read(allVersesProvider.future);
+      if (allVerses.isEmpty) return null;
 
-      // Sort ascending so idx+1 is always the next verse in order
-      final sorted = [...verses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
-      final idx = sorted.indexWhere((v) => v.verseNumber == state.currentVerse!.verseNumber);
+      final idx = allVerses.indexWhere((v) => v.id == state.currentVerse!.id);
+      if (idx == -1) return null;
 
-      if (idx != -1 && idx < sorted.length - 1) {
-        // Next verse in the same chapter
-        final nextMeta = sorted[idx + 1];
-        final nextVerse = await ref.read(verseExplanationProvider(nextMeta.id).future);
-        if (nextVerse != null) return (nextVerse, state.currentChapter!);
-      } else if (idx == sorted.length - 1) {
-        // Last verse of this chapter — try to move to next chapter
-        final chapters = await ref.read(chaptersListProvider.future);
-        if (chapters == null || chapters.isEmpty) return null;
+      final targetIdx = idx + direction;
+      if (targetIdx < 0 || targetIdx >= allVerses.length) return null;
 
-        final sortedChapters = [...chapters]..sort((a, b) => a.chapterNumber.compareTo(b.chapterNumber));
-        final chapterIdx = sortedChapters.indexWhere((c) => c.id == state.currentChapter!.id);
-        if (chapterIdx != -1 && chapterIdx < sortedChapters.length - 1) {
-          final nextChapter = sortedChapters[chapterIdx + 1];
-          final nextChapterVerses = await ref.read(chapterVersesProvider(nextChapter.id).future);
-          if (nextChapterVerses == null || nextChapterVerses.isEmpty) return null;
+      final targetMeta = allVerses[targetIdx];
+      final verse = await ref.read(verseExplanationProvider(targetMeta.id).future);
+      if (verse == null) return null;
 
-          final sortedNextVerses = [...nextChapterVerses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
-          final firstVerseMeta = sortedNextVerses.first;
-          final firstVerse = await ref.read(verseExplanationProvider(firstVerseMeta.id).future);
-          if (firstVerse != null) return (firstVerse, nextChapter);
-        }
-      }
+      // Find the Chapter object for the target verse (from cached list)
+      final chapters = await ref.read(chaptersListProvider.future);
+      if (chapters == null) return null;
+      final chapter = chapters.firstWhere(
+        (c) => c.id == targetMeta.chapterId,
+        orElse: () => chapters.first,
+      );
+
+      return (verse, chapter);
     } catch (_) {}
     return null;
   }

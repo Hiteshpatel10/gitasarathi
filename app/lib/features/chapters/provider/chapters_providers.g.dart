@@ -205,3 +205,55 @@ final class VerseExplanationFamily extends $Family
   @override
   String toString() => r'verseExplanationProvider';
 }
+
+/// Flat sorted list of every verse across all chapters.
+/// Sorted by (chapterNumber asc, verseNumber asc).
+/// All data comes from the already-cached chaptersAndVerses response — no extra network calls.
+
+@ProviderFor(allVerses)
+const allVersesProvider = AllVersesProvider._();
+
+/// Flat sorted list of every verse across all chapters.
+/// Sorted by (chapterNumber asc, verseNumber asc).
+/// All data comes from the already-cached chaptersAndVerses response — no extra network calls.
+
+final class AllVersesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<VerseMetadata>>,
+          List<VerseMetadata>,
+          FutureOr<List<VerseMetadata>>
+        >
+    with
+        $FutureModifier<List<VerseMetadata>>,
+        $FutureProvider<List<VerseMetadata>> {
+  /// Flat sorted list of every verse across all chapters.
+  /// Sorted by (chapterNumber asc, verseNumber asc).
+  /// All data comes from the already-cached chaptersAndVerses response — no extra network calls.
+  const AllVersesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'allVersesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$allVersesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<VerseMetadata>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<VerseMetadata>> create(Ref ref) {
+    return allVerses(ref);
+  }
+}
+
+String _$allVersesHash() => r'd225cb82b274681a0b56d833a168bfde1f9ffb95';

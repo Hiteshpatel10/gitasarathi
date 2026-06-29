@@ -82,3 +82,23 @@ Future<VerseDetails?> verseExplanation(Ref ref, int verseId) async {
   final repository = ref.watch(chaptersRepositoryProvider);
   return repository.getVerseExplanation(verseId);
 }
+
+/// Flat sorted list of every verse across all chapters.
+/// Sorted by (chapterNumber asc, verseNumber asc).
+/// All data comes from the already-cached chaptersAndVerses response — no extra network calls.
+@riverpod
+Future<List<VerseMetadata>> allVerses(Ref ref) async {
+  final chapters = await ref.watch(chaptersListProvider.future);
+  if (chapters == null || chapters.isEmpty) return [];
+
+  final sortedChapters = [...chapters]..sort((a, b) => a.chapterNumber.compareTo(b.chapterNumber));
+
+  final result = <VerseMetadata>[];
+  for (final chapter in sortedChapters) {
+    final verses = await ref.read(chapterVersesProvider(chapter.id).future);
+    if (verses == null) continue;
+    final sorted = [...verses]..sort((a, b) => a.verseNumber.compareTo(b.verseNumber));
+    result.addAll(sorted);
+  }
+  return result;
+}
