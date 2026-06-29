@@ -135,7 +135,7 @@ class _VerseAudioPlayerState extends ConsumerState<VerseAudioPlayer> {
     final settings = ref.watch(verseSettingsProvider);
 
     return Container(
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: colors.tertiarySystemBackground,

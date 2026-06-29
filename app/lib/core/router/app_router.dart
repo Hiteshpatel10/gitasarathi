@@ -5,8 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:app/features/auth/view/login_screen.dart';
 import 'package:app/features/home/view/home_screen.dart';
 import 'package:app/features/bookmarks/view/bookmarks_screen.dart';
-import 'package:app/features/chapters/view/verse_list_view.dart';
-import 'package:app/features/chapters/view/verse_explanation_view.dart';
+import '../../features/chapters/view/verse_list_view.dart';
+import '../../features/chapters/view/verse_explanation_view.dart';
+import '../../features/listen/view/listen_screen.dart';
 import 'package:app/features/profile/view/profile_screen.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
@@ -20,7 +21,6 @@ part 'app_router.g.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _homeNavKey = GlobalKey<NavigatorState>(debugLabel: 'tab_home');
 final _chaptersNavKey = GlobalKey<NavigatorState>(debugLabel: 'tab_chapters');
-final _listenNavKey = GlobalKey<NavigatorState>(debugLabel: 'tab_listen');
 final _bookmarksNavKey = GlobalKey<NavigatorState>(debugLabel: 'tab_bookmarks');
 final _profileNavKey = GlobalKey<NavigatorState>(debugLabel: 'tab_profile');
 
@@ -94,16 +94,7 @@ GoRouter appRouter(Ref ref) {
               ),
             ],
           ),
-          StatefulShellBranch(
-            navigatorKey: _listenNavKey,
-            routes: [
-              GoRoute(
-                name: AppRoutes.listen.name,
-                path: AppRoutes.listen.path,
-                builder: (context, state) => const _PlaceholderScreen('Listen'),
-              ),
-            ],
-          ),
+
           StatefulShellBranch(
             navigatorKey: _bookmarksNavKey,
             routes: [
@@ -132,19 +123,12 @@ GoRouter appRouter(Ref ref) {
         path: AppRoutes.login.path,
         builder: (context, state) => const LoginScreen(),
       ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: AppRoutes.listen.name,
+        path: AppRoutes.listen.path,
+        builder: (context, state) => const ListenScreen(),
+      ),
     ],
   );
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen(this.title);
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text(title)),
-    );
-  }
 }

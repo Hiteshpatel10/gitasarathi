@@ -42,7 +42,7 @@ final class VerseSettingsNotifierProvider
 }
 
 String _$verseSettingsNotifierHash() =>
-    r'92405bdc494e0be6059f1b86d7c7e9739e01b8b3';
+    r'1b4d3be07bed9643e11a4914fc166d24129eb133';
 
 abstract class _$VerseSettingsNotifier extends $Notifier<VerseSettings> {
   VerseSettings build();

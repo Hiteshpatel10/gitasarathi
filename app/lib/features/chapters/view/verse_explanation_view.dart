@@ -7,7 +7,8 @@ import '../../bookmarks/provider/bookmarks_provider.dart';
 import '../provider/chapters_providers.dart';
 import '../provider/verse_settings_provider.dart';
 import '../model/verse_models.dart';
-import 'widgets/verse_audio_player.dart';
+import 'package:app/core/providers/global_audio_provider.dart';
+import 'package:app/core/router/app_routes.dart';
 
 class VerseExplanationView extends ConsumerStatefulWidget {
   const VerseExplanationView({
@@ -103,6 +104,27 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
         },
         loading: () => const Center(child: CircularProgressIndicator(color: Colors.orange)),
         error: (error, stack) => Center(child: Text('Error: $error', style: TextStyle(color: colors.label))),
+      ),
+      floatingActionButton: verseAsync.whenOrNull(
+        data: (verse) {
+          if (verse?.audioLinks != null) {
+            return FloatingActionButton(
+              backgroundColor: colors.saffron,
+              onPressed: () async {
+                final chapters = await ref.read(chaptersListProvider.future);
+                if (chapters != null) {
+                  final chapter = chapters.firstWhere((c) => c.chapterNumber == verse!.chapterNumber);
+                  await ref.read(globalAudioProvider.notifier).playVerse(verse!, chapter);
+                  if (context.mounted) {
+                    context.goNamed(AppRoutes.listen.name);
+                  }
+                }
+              },
+              child: const Icon(Icons.play_arrow, color: Colors.white, size: 28),
+            );
+          }
+          return null;
+        },
       ),
     );
   }
@@ -202,8 +224,6 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
               fontStyle: FontStyle.italic,
             ),
           ),
-          if (verse.audioLinks != null)
-            VerseAudioPlayer(audioLinks: verse.audioLinks),
         ],
       ),
     );

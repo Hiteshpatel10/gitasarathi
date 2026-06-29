@@ -26,12 +26,17 @@ class ScaffoldWithNavBar extends StatelessWidget {
           unselectedItemColor: context.colors.gray1,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          currentIndex: navigationShell.currentIndex,
+          currentIndex: _getVisualIndex(navigationShell.currentIndex),
           onTap: (index) {
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
+            if (index == 2) {
+              context.pushNamed('listen');
+            } else {
+              int shellIndex = index > 2 ? index - 1 : index;
+              navigationShell.goBranch(
+                shellIndex,
+                initialLocation: shellIndex == navigationShell.currentIndex,
+              );
+            }
           },
           items: const [
             BottomNavigationBarItem(
@@ -63,5 +68,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int _getVisualIndex(int shellIndex) {
+    return shellIndex >= 2 ? shellIndex + 1 : shellIndex;
   }
 }
