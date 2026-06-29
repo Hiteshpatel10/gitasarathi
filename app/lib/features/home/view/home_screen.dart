@@ -4,7 +4,6 @@ import 'widgets/home_header.dart';
 import 'widgets/continue_reading_card.dart';
 import 'widgets/streak_card.dart';
 import 'widgets/todays_verse_card.dart';
-import 'widgets/experience_selector.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,8 +25,6 @@ class HomeScreen extends StatelessWidget {
               StreakCard(),
               SizedBox(height: 24),
               TodaysVerseCard(),
-              SizedBox(height: 24),
-              ExperienceSelector(),
               SizedBox(height: 32),
             ],
           ),

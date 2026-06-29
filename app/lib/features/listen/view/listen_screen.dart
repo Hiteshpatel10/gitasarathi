@@ -23,6 +23,15 @@ class ListenScreen extends ConsumerWidget {
     final audioNotifier = ref.read(globalAudioProvider.notifier);
     final verseSettings = ref.watch(verseSettingsProvider);
 
+    if (audioState.isInitializing) {
+      return Scaffold(
+        backgroundColor: colors.systemBackground,
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     if (audioState.currentVerse == null || audioState.currentChapter == null) {
       return Scaffold(
         backgroundColor: colors.systemBackground,

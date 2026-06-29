@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:go_router/go_router.dart';
+import 'package:app/core/router/app_routes.dart';
+import 'package:app/core/router/route_destinations.dart';
+import 'package:app/core/providers/global_audio_provider.dart';
+import 'package:app/features/chapters/provider/chapters_providers.dart';
 import '../../provider/home_providers.dart';
 
 class ContinueReadingCard extends ConsumerWidget {
@@ -58,7 +63,20 @@ class ContinueReadingCard extends ConsumerWidget {
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          final vId = activity.verseId;
+                          final cId = activity.chapterId ?? 1;
+                          if (vId != null) {
+                            final dest = VerseExplanationDestination(
+                              chapterId: cId,
+                              verseId: vId,
+                            );
+                            context.pushNamed(
+                              dest.name,
+                              pathParameters: dest.pathParameters,
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
@@ -75,7 +93,23 @@ class ContinueReadingCard extends ConsumerWidget {
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final vId = activity.verseId;
+                          final cId = activity.chapterId ?? 1;
+                          if (vId == null) return;
+                          
+                          final chapters = await ref.read(chaptersListProvider.future);
+                          if (chapters != null) {
+                            final chapter = chapters.firstWhere((c) => c.chapterNumber == cId || c.id == cId);
+                            final fullVerse = await ref.read(verseExplanationProvider(vId).future);
+                            if (fullVerse != null) {
+                              await ref.read(globalAudioProvider.notifier).playVerse(fullVerse, chapter);
+                              if (context.mounted) {
+                                context.pushNamed(AppRoutes.listen.name);
+                              }
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: context.colors.systemBackground,
                           foregroundColor: context.colors.saffron,

@@ -6,6 +6,8 @@ import 'package:app/features/chapters/model/chapter_models.dart';
 import 'package:app/features/chapters/provider/verse_settings_provider.dart';
 import 'package:app/features/chapters/provider/chapters_providers.dart';
 import 'package:app/core/services/audio_cache_service.dart';
+import 'package:app/core/services/pref_service.dart';
+import 'package:app/core/constants/pref_keys.dart';
 
 part 'global_audio_provider.g.dart';
 
@@ -22,6 +24,7 @@ class GlobalAudioState {
     this.playbackSpeed = 1.0,
     this.autoAdvance = true,
     this.isLoadingNext = false,
+    this.isInitializing = true,
   });
 
   final bool isPlaying;
@@ -33,6 +36,7 @@ class GlobalAudioState {
   final double playbackSpeed;
   final bool autoAdvance;
   final bool isLoadingNext;
+  final bool isInitializing;
 
   GlobalAudioState copyWith({
     bool? isPlaying,
@@ -44,6 +48,7 @@ class GlobalAudioState {
     double? playbackSpeed,
     bool? autoAdvance,
     bool? isLoadingNext,
+    bool? isInitializing,
   }) {
     return GlobalAudioState(
       isPlaying: isPlaying ?? this.isPlaying,
@@ -55,6 +60,7 @@ class GlobalAudioState {
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       autoAdvance: autoAdvance ?? this.autoAdvance,
       isLoadingNext: isLoadingNext ?? this.isLoadingNext,
+      isInitializing: isInitializing ?? this.isInitializing,
     );
   }
 }
@@ -114,7 +120,7 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
     });
 
     Future.microtask(() {
-      if (state.currentVerse == null) _initInitialState();
+      if (state.isInitializing) _initInitialState();
     });
 
     return const GlobalAudioState();
@@ -124,27 +130,43 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
 
   Future<void> _initInitialState() async {
     try {
-      final chapters = await ref.read(chaptersListProvider.future);
-      if (chapters == null || chapters.isEmpty) return;
+      final allVerses = await ref.read(allVersesProvider.future);
+      if (allVerses.isEmpty) {
+        state = state.copyWith(isInitializing: false);
+        return;
+      }
 
-      final chapter1 = chapters.firstWhere(
-        (c) => c.chapterNumber == 1,
+      final prefs = ref.read(prefServiceProvider);
+      final lastVerseId = prefs.getInt(PrefKeys.lastPlayedVerseId);
+
+      final targetIdx = allVerses.indexWhere((v) => v.id == lastVerseId);
+      final targetMeta = targetIdx != -1 ? allVerses[targetIdx] : allVerses.first;
+
+      final verse = await ref.read(verseExplanationProvider(targetMeta.id).future);
+      if (verse == null) {
+        state = state.copyWith(isInitializing: false);
+        return;
+      }
+
+      final chapters = await ref.read(chaptersListProvider.future);
+      if (chapters == null) {
+        state = state.copyWith(isInitializing: false);
+        return;
+      }
+      final chapter = chapters.firstWhere(
+        (c) => c.id == targetMeta.chapterId,
         orElse: () => chapters.first,
       );
-      final verses = await ref.read(chapterVersesProvider(chapter1.id).future);
-      if (verses == null || verses.isEmpty) return;
 
-      final verse1Meta = verses.firstWhere(
-        (v) => v.verseNumber == 1,
-        orElse: () => verses.first,
-      );
-      final verse1 = await ref.read(verseExplanationProvider(verse1Meta.id).future);
-      if (verse1 != null) {
-        state = state.copyWith(currentVerse: verse1, currentChapter: chapter1);
-        // Warm up cache for first verse in background
-        _prefetchCurrentPhase();
-      }
-    } catch (_) {}
+      // Prevent overwriting if user already started playing a verse
+      if (!state.isInitializing) return;
+
+      state = state.copyWith(currentVerse: verse, currentChapter: chapter, isInitializing: false);
+      // Warm up cache for first verse in background
+      _prefetchCurrentPhase();
+    } catch (_) {
+      state = state.copyWith(isInitializing: false);
+    }
   }
 
   // ─── Public API ───────────────────────────────────────────────────────────
@@ -155,13 +177,17 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
   }
 
   Future<void> playVerse(VerseDetails verse, Chapter chapter) async {
-    _isAdvancing = false; // Reset lock when manually selecting a verse
+    _isAdvancing = false;   // reset lock when manually selecting a verse
+    
+    ref.read(prefServiceProvider).setInt(PrefKeys.lastPlayedVerseId, verse.id);
+    
     state = state.copyWith(
       currentVerse: verse,
       currentChapter: chapter,
       currentPhase: AudioPhase.mool,
       position: Duration.zero,
       duration: Duration.zero,
+      isInitializing: false,
     );
     await _playCurrentPhase();
   }
@@ -254,6 +280,8 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
   Future<void> _advanceToNextVerse() async {
     final next = await _getAdjacentVerse(1);
     if (next != null) {
+      ref.read(prefServiceProvider).setInt(PrefKeys.lastPlayedVerseId, next.$1.id);
+      
       state = state.copyWith(
         currentVerse: next.$1,
         currentChapter: next.$2,

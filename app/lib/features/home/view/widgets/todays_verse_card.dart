@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/router/app_routes.dart';
+import 'package:app/core/router/route_destinations.dart';
+import 'package:app/core/providers/global_audio_provider.dart';
+import 'package:app/features/chapters/provider/chapters_providers.dart';
 import '../../provider/home_providers.dart';
 import '../../model/home_models.dart';
 
@@ -125,23 +130,67 @@ class TodaysVerseCard extends ConsumerWidget {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Read more',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: colors.saffron,
-                          ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          final dest = VerseExplanationDestination(
+                            chapterId: verse.chapterId,
+                            verseId: verse.id,
+                          );
+                          context.pushNamed(
+                            dest.name,
+                            pathParameters: dest.pathParameters,
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Read',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: colors.saffron,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(Icons.menu_book, color: colors.saffron, size: 14),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Icon(Icons.arrow_forward, color: colors.saffron, size: 14),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 24),
+                      GestureDetector(
+                        onTap: () async {
+                          final chapters = await ref.read(chaptersListProvider.future);
+                          if (chapters != null) {
+                            final chapter = chapters.firstWhere((c) => c.chapterNumber == verse.chapterId);
+                            final fullVerse = await ref.read(verseExplanationProvider(verse.id).future);
+                            if (fullVerse != null) {
+                              await ref.read(globalAudioProvider.notifier).playVerse(fullVerse, chapter);
+                              if (context.mounted) {
+                                context.pushNamed(AppRoutes.listen.name);
+                              }
+                            }
+                          }
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Listen',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: colors.saffron,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(Icons.play_circle_fill, color: colors.saffron, size: 14),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );
