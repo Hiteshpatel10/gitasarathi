@@ -33,7 +33,7 @@ final class BookmarksNotifierProvider
   BookmarksNotifier create() => BookmarksNotifier();
 }
 
-String _$bookmarksNotifierHash() => r'7d638941a57ecc313071f2122735b6aa204e9a7b';
+String _$bookmarksNotifierHash() => r'75b229ec60c55fcf6161edc19b68e3322c6a9fd9';
 
 abstract class _$BookmarksNotifier extends $AsyncNotifier<Set<int>> {
   FutureOr<Set<int>> build();

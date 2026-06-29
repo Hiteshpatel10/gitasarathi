@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:app/core/theme/app_theme.dart';
+import 'package:app/core/theme/theme_provider.dart';
+import 'package:app/core/theme/font_size_provider.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/services/cache_service.dart';
 import 'package:app/features/auth/repository/auth_repository.dart';
@@ -33,13 +35,25 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final fontScale = ref.watch(fontSizeProvider.notifier).scaleFactor;
+    // We also need to watch the provider itself so it rebuilds when changed
+    ref.watch(fontSizeProvider);
 
     return MaterialApp.router(
       title: 'GitaSarathi',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       routerConfig: goRouter,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(fontScale),
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:app/features/home/view/home_screen.dart';
 import 'package:app/features/bookmarks/view/bookmarks_screen.dart';
 import 'package:app/features/chapters/view/verse_list_view.dart';
 import 'package:app/features/chapters/view/verse_explanation_view.dart';
+import 'package:app/features/profile/view/profile_screen.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
 
@@ -119,7 +120,7 @@ GoRouter appRouter(Ref ref) {
               GoRoute(
                 name: AppRoutes.profile.name,
                 path: AppRoutes.profile.path,
-                builder: (context, state) => const _PlaceholderScreen('Profile'),
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),
