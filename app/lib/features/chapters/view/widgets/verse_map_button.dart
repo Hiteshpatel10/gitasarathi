@@ -8,7 +8,7 @@ enum VerseState {
   locked,
 }
 
-class VerseMapButton extends StatefulWidget {
+class VerseMapButton extends StatelessWidget {
   const VerseMapButton({
     super.key,
     required this.verseNumber,
@@ -21,51 +21,6 @@ class VerseMapButton extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<VerseMapButton> createState() => _VerseMapButtonState();
-}
-
-class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onTapDown(TapDownDetails details) {
-    if (widget.state != VerseState.locked) {
-      _controller.forward();
-    }
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    if (widget.state != VerseState.locked) {
-      _controller.reverse();
-      widget.onTap();
-    }
-  }
-
-  void _onTapCancel() {
-    if (widget.state != VerseState.locked) {
-      _controller.reverse();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     
@@ -76,7 +31,7 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
     List<BoxShadow> shadows = [];
     double buttonDepth = 0;
 
-    switch (widget.state) {
+    switch (state) {
       case VerseState.completed:
         topColor = colors.saffron;
         bottomColor = const Color(0xFFC07628); // Darker orange for 3D depth
@@ -98,8 +53,8 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
         break;
       case VerseState.locked:
         topColor = colors.systemBackground;
-        textColor = colors.label.withValues(alpha: 0.4);
-        borderSide = BorderSide(color: colors.label.withValues(alpha: 0.2), width: 1);
+        textColor = colors.label.withValues(alpha: 0.8);
+        borderSide = BorderSide(color: colors.label.withValues(alpha: 0.3), width: 1);
         buttonDepth = 0; // Flat
         break;
     }
@@ -112,10 +67,10 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
       buttonColor: topColor,
       backgroundColor: bottomColor,
       side: borderSide,
-      onPressed: widget.state != VerseState.locked ? widget.onTap : null,
+      onPressed: onTap,
       child: Center(
         child: Text(
-          '${widget.verseNumber}',
+          '$verseNumber',
           style: TextStyle(
             color: textColor,
             fontSize: 18,
@@ -125,7 +80,7 @@ class _VerseMapButtonState extends State<VerseMapButton> with SingleTickerProvid
       ),
     );
 
-    if (widget.state == VerseState.current) {
+    if (state == VerseState.current) {
       return Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,

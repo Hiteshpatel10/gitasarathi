@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/core/theme/app_colors.dart';
+import 'package:app/core/router/app_routes.dart';
 
 class ScaffoldWithNavBar extends StatelessWidget {
   const ScaffoldWithNavBar({
@@ -26,15 +27,14 @@ class ScaffoldWithNavBar extends StatelessWidget {
           unselectedItemColor: context.colors.gray1,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          currentIndex: _getVisualIndex(navigationShell.currentIndex),
+          currentIndex: navigationShell.currentIndex,
           onTap: (index) {
             if (index == 2) {
-              context.pushNamed('listen');
+              context.pushNamed(AppRoutes.listen.name);
             } else {
-              int shellIndex = index > 2 ? index - 1 : index;
               navigationShell.goBranch(
-                shellIndex,
-                initialLocation: shellIndex == navigationShell.currentIndex,
+                index,
+                initialLocation: index == navigationShell.currentIndex,
               );
             }
           },
@@ -68,9 +68,5 @@ class ScaffoldWithNavBar extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  int _getVisualIndex(int shellIndex) {
-    return shellIndex >= 2 ? shellIndex + 1 : shellIndex;
   }
 }

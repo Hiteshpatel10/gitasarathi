@@ -20,7 +20,7 @@ final class GlobalAudioNotifierProvider
         argument: null,
         retry: null,
         name: r'globalAudioProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -42,7 +42,7 @@ final class GlobalAudioNotifierProvider
 }
 
 String _$globalAudioNotifierHash() =>
-    r'4da150aeee0cab1209416fdc14866676922b751c';
+    r'4e15c0cb0257d10be047d7346fb7c7eb4d62124a';
 
 abstract class _$GlobalAudioNotifier extends $Notifier<GlobalAudioState> {
   GlobalAudioState build();

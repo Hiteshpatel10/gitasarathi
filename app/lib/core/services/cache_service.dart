@@ -32,7 +32,7 @@ class CacheService {
   CacheService(this._prefs);
   final SharedPreferences _prefs;
 
-  static const _prefix = 'cache:';
+  static const _prefix = 'cache_v1:';
   static const _metaSuffix = ':meta';
 
   // ── Key factory constants ─────────────────────────────────────────────────

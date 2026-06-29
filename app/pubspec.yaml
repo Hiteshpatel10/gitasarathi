@@ -23,6 +23,8 @@ dependencies:
   google_fonts: ^8.1.0
   dio: ^5.9.2
   audioplayers: ^6.7.1
+  path_provider: ^2.1.4
+  crypto: ^3.0.3
   firebase_core: ^4.11.0
   firebase_auth: ^6.5.3
   shared_preferences: ^2.5.5

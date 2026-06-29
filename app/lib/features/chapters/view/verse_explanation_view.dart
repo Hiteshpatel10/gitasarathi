@@ -105,6 +105,9 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
         loading: () => const Center(child: CircularProgressIndicator(color: Colors.orange)),
         error: (error, stack) => Center(child: Text('Error: $error', style: TextStyle(color: colors.label))),
       ),
+      bottomNavigationBar: verseAsync.whenOrNull(
+        data: (verse) => verse != null ? _buildBottomNavigation(colors, verse) : null,
+      ),
       floatingActionButton: verseAsync.whenOrNull(
         data: (verse) {
           if (verse?.audioLinks != null) {
@@ -130,28 +133,21 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
   }
 
   Widget _buildBody(BuildContext context, AppThemeColors colors, VerseDetails verse, VerseSettings settings) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildSanskritCard(colors, verse),
-                const SizedBox(height: 24),
-                _buildWordByWordSection(colors, verse),
-                const SizedBox(height: 24),
-                _buildTranslationSection(colors, verse, settings),
-                const SizedBox(height: 24),
-                _buildCommentarySection(colors, verse, settings),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        ),
-        _buildBottomNavigation(colors, verse),
-      ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildSanskritCard(colors, verse),
+          const SizedBox(height: 24),
+          _buildWordByWordSection(colors, verse),
+          const SizedBox(height: 24),
+          _buildTranslationSection(colors, verse, settings),
+          const SizedBox(height: 24),
+          _buildCommentarySection(colors, verse, settings),
+          const SizedBox(height: 100), // extra padding for bottom navigation and FAB
+        ],
+      ),
     );
   }
 
@@ -309,7 +305,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
             Text(
               'TRANSLATION',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
+                color: colors.tertiaryLabel,
                 fontSize: 12,
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.bold,
@@ -374,7 +370,7 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
             Text(
               'COMMENTARY',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
+                color: colors.tertiaryLabel,
                 fontSize: 12,
                 letterSpacing: 1.5,
                 fontWeight: FontWeight.bold,

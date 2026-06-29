@@ -163,7 +163,7 @@ export class GitaService {
     const paddedChapter = String(verse.chapterNumber).padStart(2, '0');
     const paddedVerse = String(verse.verseNumber).padStart(2, '0');
     
-    const baseUrl = `${constants.S3Url}audos/slokas/chapter_${paddedChapter}/verse_${paddedVerse}`;
+    const baseUrl = `${constants.S3Url}slokas/chapter_${paddedChapter}/verse_${paddedVerse}`;
 
     verse.audioLinks = {
       mool_female: `${baseUrl}/mool_female.mp3`,
