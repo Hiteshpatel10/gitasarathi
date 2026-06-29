@@ -1,8 +1,8 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // Use http://172.23.16.170:3000/ for physical device on the same Wi-Fi network
-  static const String baseURL = "http://172.23.16.170:3000/";
+  // Use https://gitasarathi.hiteshbuilds.com/ for the live server
+  static const String baseURL = "https://api.hiteshbuilds.com/gitasarathi/";
   
   static const String authentication = "authentication";
   static const String user = "user";

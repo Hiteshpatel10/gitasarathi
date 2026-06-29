@@ -64,8 +64,10 @@ rsync -avz \
 # Install dependencies & restart PM2 on server
 # =====================
 echo "🔧 Installing dependencies & restarting PM2..."
-ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" << EOF
-  cd $EC2_PATH
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" << 'EOF'
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  cd /var/www/gitasarathi.hiteshbuilds.com/
   mv .env.production .env
   npm install --production
   pm2 restart gitasarathi || pm2 start dist/main.js --name gitasarathi
