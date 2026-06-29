@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app/core/theme/app_colors.dart';
-import 'package:app/core/router/app_routes.dart';
 import 'package:app/core/router/route_destinations.dart';
 import '../provider/chapters_providers.dart';
 import 'widgets/chapter_card.dart';
@@ -37,14 +36,6 @@ class _ChaptersScreenState extends ConsumerState<ChaptersScreen> {
             color: colors.label,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search, color: colors.label),
-            onPressed: () {
-              // TODO: Implement search
-            },
-          ),
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
