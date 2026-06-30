@@ -77,7 +77,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('updateFcmToken')
+  @Put('fcm-token')
   async updateFCMToken(
     @Request() req: Request & { user: Claims },
     @Body() fcmTokenDto: FcmTokenDto,
@@ -143,7 +143,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('insertUserActivity')
+  @Post('activity')
   async insertUserActivity(
     @Body() userActivityDto: UserActivityDto,
     @Request() req: Request & { user: Claims },

@@ -10,6 +10,8 @@ import '../model/verse_models.dart';
 import 'package:app/core/providers/global_audio_provider.dart';
 import 'package:app/core/router/app_routes.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:app/core/services/activity_service.dart';
+import 'package:app/core/services/analytics_service.dart';
 
 class VerseExplanationView extends ConsumerStatefulWidget {
   const VerseExplanationView({
@@ -30,6 +32,18 @@ class _VerseExplanationViewState extends ConsumerState<VerseExplanationView> {
   
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<VerseDetails?>>(verseExplanationProvider(widget.verseId), (previous, next) {
+      if (next is AsyncData && next.value != null) {
+        final verse = next.value!;
+        ref.read(activityServiceProvider).insertUserActivity(
+          chapterNo: verse.chapterNumber,
+          verseNo: verse.verseNumber,
+          activity: UserActivity.verseRead,
+        );
+        ref.read(analyticsServiceProvider).logVerseRead(verse.id);
+      }
+    });
+
     final colors = context.colors;
     final verseAsync = ref.watch(verseExplanationProvider(widget.verseId));
 
@@ -74,6 +88,12 @@ https://links.gitasarathi.geekaid.in/verse/${verse.id}
 
 Hare Krishna! 🙏💛''';
                 Share.share(message);
+                ref.read(activityServiceProvider).insertUserActivity(
+                  chapterNo: verse.chapterNumber,
+                  verseNo: verse.verseNumber,
+                  activity: UserActivity.share,
+                );
+                ref.read(analyticsServiceProvider).logShare(verse.id);
               }
             },
           ),

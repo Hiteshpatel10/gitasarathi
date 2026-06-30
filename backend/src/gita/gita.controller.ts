@@ -25,7 +25,7 @@ export class GitaController {
     };
   }
 
-  @Get('chaptersAndVerses')
+  @Get('chapters-and-verses')
   async getChaptersAndVerses() {
     const chaptersAndVerse = await this.gitaService.getChapters({
       includeRelations: true,
@@ -59,7 +59,7 @@ export class GitaController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('verseExplanation')
+  @Post('verse-explanation')
   async verseExplanation(
     @Body() verseExplanationDto: VerseExplanationDto,
     @Request() req: Request & { user?: Claims },
@@ -79,7 +79,7 @@ export class GitaController {
     };
   }
 
-  @Get('languageAndAuthors')
+  @Get('language-and-authors')
   async languageAndAuthors() {
     const langAndAuth = await this.gitaService.getLanguageAndAuthors({
       includeRelations: true,

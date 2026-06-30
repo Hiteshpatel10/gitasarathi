@@ -10,10 +10,12 @@ class ApiEndpoints {
   static const String streakSummary = "streak-summary";
   static const String verseOfTheDay = "verse-of-the-day";
   static const String chapters = "chapters";
-  static const String chaptersAndVerses = "chaptersAndVerses";
-  static const String verseExplanation = "verseExplanation";
+  static const String chaptersAndVerses = "chapters-and-verses";
+  static const String verseExplanation = "verse-explanation";
   static const String progress = "progress";
   static const String favoriteList = "favorite/list";
   static const String favoriteAdd = "favorite/add";
   static const String favoriteRemove = "favorite/remove";
+  static const String insertUserActivity = "activity";
+  static const String updateFcmToken = "fcm-token";
 }

@@ -6,6 +6,8 @@ import 'package:app/core/router/route_destinations.dart';
 import '../provider/chapters_providers.dart';
 import 'widgets/verse_map_node.dart';
 import 'widgets/verse_map_button.dart';
+import 'package:app/core/services/activity_service.dart';
+import 'package:app/core/services/analytics_service.dart';
 
 class VerseListView extends ConsumerStatefulWidget {
   const VerseListView({super.key, required this.chapterId});
@@ -47,6 +49,16 @@ class _VerseListViewState extends ConsumerState<VerseListView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(chapterVersesProvider(widget.chapterId), (previous, next) {
+      if (next is AsyncData && next.value != null && next.value!.isNotEmpty) {
+        ref.read(activityServiceProvider).insertUserActivity(
+          chapterNo: widget.chapterId,
+          activity: UserActivity.chapterOpen,
+        );
+        ref.read(analyticsServiceProvider).logChapterOpen(widget.chapterId);
+      }
+    });
+
     final colors = context.colors;
     
     final versesAsync = ref.watch(chapterVersesProvider(widget.chapterId));

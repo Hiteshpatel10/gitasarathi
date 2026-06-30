@@ -6,4 +6,6 @@ class PrefKeys {
   static const String userFontSize = 'user_font_size';
   static const String hasSeenOnboarding = 'has_seen_onboarding';
   static const String lastPlayedVerseId = 'last_played_verse_id';
+  static const String sessionId = 'session_id';
+  static const String userEmail = 'user_email';
 }

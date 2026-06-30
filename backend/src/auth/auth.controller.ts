@@ -18,7 +18,7 @@ export class AuthController {
     );
   }
 
-  @Post('superAuthUser')
+  @Post('super-auth-user')
   async superAuth(@Body() dto: SuperAuthDto) {
     if (dto.secret == 'mhakaal10')
       return this.authService.getUserByEmail(dto.email);

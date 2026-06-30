@@ -8,6 +8,8 @@ import 'package:app/features/chapters/provider/chapters_providers.dart';
 import 'package:app/core/services/audio_cache_service.dart';
 import 'package:app/core/services/pref_service.dart';
 import 'package:app/core/constants/pref_keys.dart';
+import 'package:app/core/services/activity_service.dart';
+import 'package:app/core/services/analytics_service.dart';
 
 part 'global_audio_provider.g.dart';
 
@@ -194,6 +196,12 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
       duration: Duration.zero,
       isInitializing: false,
     );
+    ref.read(activityServiceProvider).insertUserActivity(
+      chapterNo: verse.chapterNumber,
+      verseNo: verse.verseNumber,
+      activity: UserActivity.verseListen,
+    );
+    ref.read(analyticsServiceProvider).logVerseListen(verse.id);
     await _playCurrentPhase();
   }
 
@@ -302,6 +310,12 @@ class GlobalAudioNotifier extends _$GlobalAudioNotifier {
         position: Duration.zero,
         duration: Duration.zero,
       );
+      ref.read(activityServiceProvider).insertUserActivity(
+        chapterNo: next.$1.chapterNumber,
+        verseNo: next.$1.verseNumber,
+        activity: UserActivity.verseListen,
+      );
+      ref.read(analyticsServiceProvider).logVerseListen(next.$1.id);
       await _playCurrentPhase();
     } else {
       // End of all chapters
